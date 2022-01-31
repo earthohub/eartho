@@ -1,1 +1,1 @@
-Petro token
+Eartho token and swap
