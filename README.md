@@ -1,1 +1,1 @@
-Eartho token and swap
+Eartho token and NFT swap contracts
