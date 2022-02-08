@@ -228,6 +228,77 @@ contract('EarthoExchangeTest', async accounts => {
         var approveAmount = new BigNumber("1e+30");
         await atoken.approve(earthoExchangeIns.address, approveAmount, {from: andy});
         console.log('purchaseByToken value=' + atokenAmount);
+        // nft add minter
+        await earthoNFT.updateMinter(earthoExchangeIns.address, true, {from: owner});
+        // test success for atokenAmount is small
+        //atokenAmount = atokenAmount.multipliedBy(new BigNumber('96')).dividedToIntegerBy(new BigNumber('100'));
+        console.log('atoken amount=' + atokenAmount.toString());
         await earthoExchangeIns.purchaseByToken(atoken.address, atokenAmount, purchaseInput, {from: andy});
-    });
+        var nft = await earthoNFT.getEarthos(andy);
+        console.log(nft.toString());
+
+        purchaseInput = [];
+        purchaseInput.push(0);
+        purchaseInput.push(1);
+        purchaseInput.push("https://www.google.com");
+        purchaseInput.push(andy);
+        await btoken.approve(earthoExchangeIns.address, approveAmount, {from: andy});
+        // test success for atokenAmount is small
+        // btokenAmount = btokenAmount.multipliedBy(new BigNumber('96')).dividedToIntegerBy(new BigNumber('100'));
+        console.log('btoken amount=' + btokenAmount.toString());
+        await earthoExchangeIns.purchaseByToken(btoken.address, btokenAmount, purchaseInput, {from: andy});
+        nft = await earthoNFT.getEarthos(andy);
+        console.log(nft.toString());
+
+        purchaseInput = [];
+        purchaseInput.push(10);
+        purchaseInput.push(10);
+        purchaseInput.push("https://www.google.com");
+        purchaseInput.push(andy);
+        await usdc.approve(earthoExchangeIns.address, approveAmount, {from: andy});
+        // test success for atokenAmount is small
+        // usdcAmount = usdcAmount.multipliedBy(new BigNumber('91')).dividedToIntegerBy(new BigNumber('100'));
+        console.log('usdc amount=' + usdcAmount.toString());
+        var balance = new BigNumber(await usdc.balanceOf(recipient));
+        console.log('recipient usdc balance 0= ' + balance.div(usdcBase).toFixed(3));
+        await earthoExchangeIns.purchaseByToken(usdc.address, usdcAmount, purchaseInput, {from: andy});
+        nft = await earthoNFT.getEarthos(andy);
+        console.log(nft.toString());
+        balance = new BigNumber(await usdc.balanceOf(recipient));
+        console.log('recipient usdc balance 1= ' + balance.div(usdcBase).toFixed(2));
+
+        purchaseInput = [];
+        purchaseInput.push(11);
+        purchaseInput.push(11);
+        purchaseInput.push("https://www.google.com");
+        purchaseInput.push(andy);
+        await usdt.approve(earthoExchangeIns.address, approveAmount, {from: andy});
+        // test success for atokenAmount is small
+        //usdtAmount = usdcAmount.multipliedBy(new BigNumber('93')).dividedToIntegerBy(new BigNumber('100'));
+        console.log('usdt amount=' + usdtAmount.toString());
+        var balance = new BigNumber(await usdt.balanceOf(recipient));
+        console.log('recipient usdt balance 0= ' + balance.div(usdtBase).toFixed(2));
+        await earthoExchangeIns.purchaseByToken(usdt.address, usdtAmount, purchaseInput, {from: andy});
+        nft = await earthoNFT.getEarthos(andy);
+        console.log(nft.toString());
+        balance = new BigNumber(await usdt.balanceOf(recipient));
+        console.log('recipient usdt balance 1= ' + balance.div(usdtBase).toFixed(2));
+
+        // buy nft by gas
+        purchaseInput = [];
+        purchaseInput.push(12);
+        purchaseInput.push(11);
+        purchaseInput.push("https://www.google.com");
+        purchaseInput.push(andy);
+
+        await earthoExchangeIns.purchaseByETH(purchaseInput,
+                                              {from: andy, value: wethAmount});
+        nft = await earthoNFT.getEarthos(andy);
+        console.log(nft.toString());
+
+        balance = new BigNumber(await usdt.balanceOf(recipient));
+        console.log('recipient usdt balance = ' + balance.div(usdtBase).toFixed(2));
+        balance = new BigNumber(await usdc.balanceOf(recipient));
+        console.log('recipient usdc balance = ' + balance.div(usdcBase).toFixed(2));
+  });
 });
