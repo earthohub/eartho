@@ -354,7 +354,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "// SPDX-License-Identifier: MIT\r\n\r\npragma solidity ^0.8.0;\r\n\r\nimport \"../ERC721.sol\";\r\nimport \"../../../utils/Context.sol\";\r\n\r\n/**\r\n * @title ERC721 Burnable Token\r\n * @dev ERC721 Token that can be irreversibly burned (destroyed).\r\n */\r\nabstract contract ERC721Burnable is Context, ERC721 {\r\n    /**\r\n     * @dev Burns `tokenId`. See {ERC721-_burn}.\r\n     *\r\n     * Requirements:\r\n     *\r\n     * - The caller must own `tokenId` or be an approved operator.\r\n     */\r\n    function burn(uint256 tokenId) public virtual {\r\n        //solhint-disable-next-line max-line-length\r\n        require(_isApprovedOrOwner(_msgSender(), tokenId), \"ERC721Burnable: caller is not owner nor approved\");\r\n        _burn(tokenId);\r\n    }\r\n}\r\n",
-  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\Earth_token\\contracts\\dependencies\\contracts\\token\\ERC721\\extensions\\ERC721Burnable.sol",
+  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\eartho\\contracts\\dependencies\\contracts\\token\\ERC721\\extensions\\ERC721Burnable.sol",
   "ast": {
     "absolutePath": "project:/contracts/dependencies/contracts/token/ERC721/extensions/ERC721Burnable.sol",
     "exportedSymbols": {
@@ -1161,7 +1161,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-01-29T04:49:57.835Z",
+  "updatedAt": "2022-02-09T08:44:05.655Z",
   "devdoc": {
     "details": "ERC721 Token that can be irreversibly burned (destroyed).",
     "kind": "dev",

@@ -45,7 +45,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "// SPDX-License-Identifier: MIT\r\n\r\npragma solidity ^0.8.0;\r\n\r\n/**\r\n * @title ERC721 token receiver interface\r\n * @dev Interface for any contract that wants to support safeTransfers\r\n * from ERC721 asset contracts.\r\n */\r\ninterface IERC721Receiver {\r\n    /**\r\n     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}\r\n     * by `operator` from `from`, this function is called.\r\n     *\r\n     * It must return its Solidity selector to confirm the token transfer.\r\n     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be reverted.\r\n     *\r\n     * The selector can be obtained in Solidity with `IERC721.onERC721Received.selector`.\r\n     */\r\n    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4);\r\n}\r\n",
-  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\Earth_token\\contracts\\dependencies\\contracts\\token\\ERC721\\IERC721Receiver.sol",
+  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\eartho\\contracts\\dependencies\\contracts\\token\\ERC721\\IERC721Receiver.sol",
   "ast": {
     "absolutePath": "project:/contracts/dependencies/contracts/token/ERC721/IERC721Receiver.sol",
     "exportedSymbols": {
@@ -498,7 +498,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-01-29T04:49:57.834Z",
+  "updatedAt": "2022-02-09T08:44:05.653Z",
   "devdoc": {
     "details": "Interface for any contract that wants to support safeTransfers from ERC721 asset contracts.",
     "kind": "dev",

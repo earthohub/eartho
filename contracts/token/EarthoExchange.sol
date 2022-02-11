@@ -98,6 +98,7 @@ contract EarthoExchange is Ownable {
         }*/
         require((price > 0 && price >= amount), 'purchase eartho fail for amount is not enough');
         _mintNFT(input);
+        emit Purchase(input.to, asset, amount);
     }
 
     /*
@@ -114,6 +115,7 @@ contract EarthoExchange is Ownable {
 
         require(price >= amount, 'purchase eartho fail for amount is not enough');
         _mintNFT(input);
+        emit Purchase(input.to, address(_weth), amount);
     }
 
     /*

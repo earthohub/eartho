@@ -10,7 +10,7 @@
   "sourceMap": "382:906:33:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;382:906:33;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "382:906:33:-:0;;;;;;;;",
   "source": "// SPDX-License-Identifier: MIT\r\n\r\npragma solidity ^0.8.0;\r\n\r\n/**\r\n * @title Counters\r\n * @author Matt Condon (@shrugs)\r\n * @dev Provides counters that can only be incremented or decremented by one. This can be used e.g. to track the number\r\n * of elements in a mapping, issuing ERC721 ids, or counting request ids.\r\n *\r\n * Include with `using Counters for Counters.Counter;`\r\n */\r\nlibrary Counters {\r\n    struct Counter {\r\n        // This variable should never be directly accessed by users of the library: interactions must be restricted to\r\n        // the library's function. As of Solidity v0.5.2, this cannot be enforced, though there is a proposal to add\r\n        // this feature: see https://github.com/ethereum/solidity/issues/4637\r\n        uint256 _value; // default: 0\r\n    }\r\n\r\n    function current(Counter storage counter) internal view returns (uint256) {\r\n        return counter._value;\r\n    }\r\n\r\n    function increment(Counter storage counter) internal {\r\n        unchecked {\r\n            counter._value += 1;\r\n        }\r\n    }\r\n\r\n    function decrement(Counter storage counter) internal {\r\n        uint256 value = counter._value;\r\n        require(value > 0, \"Counter: decrement overflow\");\r\n        unchecked {\r\n            counter._value = value - 1;\r\n        }\r\n    }\r\n}\r\n",
-  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\Earth_token\\contracts\\dependencies\\contracts\\utils\\Counters.sol",
+  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\eartho\\contracts\\dependencies\\contracts\\utils\\Counters.sol",
   "ast": {
     "absolutePath": "project:/contracts/dependencies/contracts/utils/Counters.sol",
     "exportedSymbols": {
@@ -1411,7 +1411,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-01-29T04:49:57.888Z",
+  "updatedAt": "2022-02-09T08:44:05.702Z",
   "devdoc": {
     "author": "Matt Condon (@shrugs)",
     "details": "Provides counters that can only be incremented or decremented by one. This can be used e.g. to track the number of elements in a mapping, issuing ERC721 ids, or counting request ids. Include with `using Counters for Counters.Counter;`",

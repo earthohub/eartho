@@ -80,5 +80,7 @@ module.exports = async function(deployer, network, accounts) {
     //await factoryIns.createPair(wethIns.address, atoken.address);
     // 6. btoken/eth
     //await factoryIns.createPair(wethIns.address, btoken.address);
+  } else {
+    console.log(accounts[0]);
   }
 };

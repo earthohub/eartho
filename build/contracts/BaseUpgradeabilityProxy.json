@@ -28,7 +28,7 @@
   "sourceMap": "344:1671:6:-:0;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "344:1671:6:-:0;;;514:11:10;:9;:11::i;:::-;344:1671:6;2162:93:10;2221:28;2231:17;844:66:6;1214:11;;1035:202;2231:17:10;2221:9;:28::i;:::-;2162:93::o;961:840::-;1300:14;1297:1;1294;1281:34;1500:1;1497;1481:14;1478:1;1462:14;1455:5;1442:60;1567:16;1564:1;1561;1546:38;1601:6;1662:58;;;;1761:16;1758:1;1751:27;1662:58;1692:16;1689:1;1682:27",
   "source": "// SPDX-License-Identifier: agpl-3.0\r\npragma solidity ^0.8.0;\r\n\r\nimport './Proxy.sol';\r\nimport '../utils/Address.sol';\r\n\r\n/**\r\n * @title BaseUpgradeabilityProxy\r\n * @dev This contract implements a proxy that allows to change the\r\n * implementation address to which it will delegate.\r\n * Such a change is called an implementation upgrade.\r\n */\r\ncontract BaseUpgradeabilityProxy is Proxy {\r\n  /**\r\n   * @dev Emitted when the implementation is upgraded.\r\n   * @param implementation Address of the new implementation.\r\n   */\r\n  event Upgraded(address indexed implementation);\r\n\r\n  /**\r\n   * @dev Storage slot with the address of the current implementation.\r\n   * This is the keccak-256 hash of \"eip1967.proxy.implementation\" subtracted by 1, and is\r\n   * validated in the constructor.\r\n   */\r\n  bytes32 internal constant IMPLEMENTATION_SLOT =\r\n    0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;\r\n\r\n  /**\r\n   * @dev Returns the current implementation.\r\n   * @return impl Address of the current implementation\r\n   */\r\n  function _implementation() internal view override returns (address impl) {\r\n    bytes32 slot = IMPLEMENTATION_SLOT;\r\n    //solium-disable-next-line\r\n    assembly {\r\n      impl := sload(slot)\r\n    }\r\n  }\r\n\r\n  /**\r\n   * @dev Upgrades the proxy to a new implementation.\r\n   * @param newImplementation Address of the new implementation.\r\n   */\r\n  function _upgradeTo(address newImplementation) internal {\r\n    _setImplementation(newImplementation);\r\n    emit Upgraded(newImplementation);\r\n  }\r\n\r\n  /**\r\n   * @dev Sets the implementation address of the proxy.\r\n   * @param newImplementation Address of the new implementation.\r\n   */\r\n  function _setImplementation(address newImplementation) internal {\r\n    require(\r\n      Address.isContract(newImplementation),\r\n      'Cannot set a proxy implementation to a non-contract address'\r\n    );\r\n\r\n    bytes32 slot = IMPLEMENTATION_SLOT;\r\n\r\n    //solium-disable-next-line\r\n    assembly {\r\n      sstore(slot, newImplementation)\r\n    }\r\n  }\r\n}\r\n",
-  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\Earth_token\\contracts\\dependencies\\contracts\\proxy\\BaseUpgradeabilityProxy.sol",
+  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\eartho\\contracts\\dependencies\\contracts\\proxy\\BaseUpgradeabilityProxy.sol",
   "ast": {
     "absolutePath": "project:/contracts/dependencies/contracts/proxy/BaseUpgradeabilityProxy.sol",
     "exportedSymbols": {
@@ -1727,7 +1727,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-01-29T04:49:57.755Z",
+  "updatedAt": "2022-02-09T08:44:05.576Z",
   "devdoc": {
     "details": "This contract implements a proxy that allows to change the implementation address to which it will delegate. Such a change is called an implementation upgrade.",
     "events": {

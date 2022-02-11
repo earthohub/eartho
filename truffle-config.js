@@ -22,7 +22,7 @@ const HDWalletProvider = require('@truffle/hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
 const fs = require('fs');
-const mnemonic = fs.readFileSync(".secret_testnet").toString().trim();
+const mnemonic = fs.readFileSync(".secret_eth").toString().trim();
 console.log('private key:' + mnemonic);
 require('dotenv').config();
 console.log(process.env.ETHERSCAN_API_KEY)

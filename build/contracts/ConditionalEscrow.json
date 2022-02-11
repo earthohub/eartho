@@ -165,7 +165,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "// SPDX-License-Identifier: MIT\r\n\r\npragma solidity ^0.8.0;\r\n\r\nimport \"./Escrow.sol\";\r\n\r\n/**\r\n * @title ConditionalEscrow\r\n * @dev Base abstract escrow to only allow withdrawal if a condition is met.\r\n * @dev Intended usage: See {Escrow}. Same usage guidelines apply here.\r\n */\r\nabstract contract ConditionalEscrow is Escrow {\r\n    /**\r\n     * @dev Returns whether an address is allowed to withdraw their funds. To be\r\n     * implemented by derived contracts.\r\n     * @param payee The destination address of the funds.\r\n     */\r\n    function withdrawalAllowed(address payee) public view virtual returns (bool);\r\n\r\n    function withdraw(address payable payee) public virtual override {\r\n        require(withdrawalAllowed(payee), \"ConditionalEscrow: payee is not allowed to withdraw\");\r\n        super.withdraw(payee);\r\n    }\r\n}\r\n",
-  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\Earth_token\\contracts\\dependencies\\contracts\\utils\\escrow\\ConditionalEscrow.sol",
+  "sourcePath": "E:\\my_work\\Blockchain\\Polylend\\core\\eartho\\contracts\\dependencies\\contracts\\utils\\escrow\\ConditionalEscrow.sol",
   "ast": {
     "absolutePath": "project:/contracts/dependencies/contracts/utils/escrow/ConditionalEscrow.sol",
     "exportedSymbols": {
@@ -1038,7 +1038,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-01-29T04:49:57.901Z",
+  "updatedAt": "2022-02-09T08:44:05.715Z",
   "devdoc": {
     "details": "Base abstract escrow to only allow withdrawal if a condition is met.Intended usage: See {Escrow}. Same usage guidelines apply here.",
     "kind": "dev",
