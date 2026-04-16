@@ -38,34 +38,6 @@
         color: var(--muted);
         line-height: 1.5;
       }
-      .toolbar {
-        margin-top: 14px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: center;
-      }
-      .btn {
-        border: 1px solid #3c4f79;
-        background: #243453;
-        color: var(--text);
-        border-radius: 10px;
-        padding: 8px 12px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .status-chip {
-        border: 1px solid var(--card-border);
-        border-radius: 10px;
-        background: var(--card);
-        padding: 8px 12px;
-        font-size: 13px;
-        color: var(--muted);
-      }
       .meta-grid {
         margin-top: 20px;
         display: grid;
@@ -206,10 +178,6 @@
         使用“量化基金/投行”风格的多因子框架，在开放 user vault
         中筛选可投策略。该页面由本地脚本自动更新，可反复复用。
       </p>
-      <div class="toolbar">
-        <button id="updateBtn" class="btn">设置/更新：自动拉取最新数据</button>
-        <span id="updateStatus" class="status-chip">更新服务状态：未检测</span>
-      </div>
 
       <div id="meta" class="meta-grid"></div>
 
@@ -224,9 +192,7 @@
       </section>
 
       <p class="footnote">
-        自动更新（推荐）：先启动控制服务
-        <code>node vault-research/scripts/web-control-server.mjs</code>，然后点击上方按钮。<br />
-        手动更新：在仓库根目录执行
+        更新方法：在仓库根目录执行
         <code>node vault-research/scripts/update-analysis.mjs</code>，然后刷新本页面。<br />
         本分析为数据驱动筛选，不构成投资建议；实盘前建议二次尽调（交易风格、容量冲击、风控规则、链上操作风险）。
       </p>
@@ -265,77 +231,6 @@
         if (value > 0) return "positive";
         if (value < 0) return "negative";
         return "";
-      }
-
-      const CONTROL_BASE = "http://127.0.0.1:8787";
-
-      async function fetchControl(path, options = {}) {
-        const response = await fetch(`${CONTROL_BASE}${path}`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        return response.json();
-      }
-
-      async function refreshServiceStatus() {
-        const statusEl = document.getElementById("updateStatus");
-        const btn = document.getElementById("updateBtn");
-        try {
-          const payload = await fetchControl("/api/status");
-          if (payload.running) {
-            statusEl.textContent = `更新服务状态：执行中（开始于 ${new Date(
-              payload.startedAt,
-            ).toLocaleString()}）`;
-            btn.disabled = true;
-          } else {
-            statusEl.textContent = "更新服务状态：可用";
-            btn.disabled = false;
-          }
-        } catch (error) {
-          statusEl.textContent =
-            "更新服务状态：未连接。请先启动 node vault-research/scripts/web-control-server.mjs";
-          btn.disabled = true;
-        }
-      }
-
-      async function triggerUpdate() {
-        const statusEl = document.getElementById("updateStatus");
-        const btn = document.getElementById("updateBtn");
-        btn.disabled = true;
-        statusEl.textContent = "更新服务状态：正在执行更新命令，请稍候...";
-        try {
-          await fetchControl("/api/update", { method: "POST" });
-          statusEl.textContent = "更新服务状态：命令已提交，等待完成...";
-
-          const interval = setInterval(async () => {
-            try {
-              const state = await fetchControl("/api/status");
-              if (!state.running) {
-                clearInterval(interval);
-                if (state.lastResult?.ok) {
-                  statusEl.textContent = "更新服务状态：更新成功，正在刷新页面...";
-                  setTimeout(() => window.location.reload(), 900);
-                } else if (state.lastResult) {
-                  const msg = state.lastResult.stderr
-                    ? state.lastResult.stderr.split("\n").filter(Boolean).slice(-1)[0]
-                    : "更新失败，请查看控制服务终端日志";
-                  statusEl.textContent = `更新服务状态：失败 - ${msg}`;
-                  btn.disabled = false;
-                } else {
-                  statusEl.textContent = "更新服务状态：未获取到执行结果";
-                  btn.disabled = false;
-                }
-              }
-            } catch (error) {
-              clearInterval(interval);
-              statusEl.textContent = "更新服务状态：轮询失败，请检查服务是否仍在运行";
-              btn.disabled = false;
-            }
-          }, 1800);
-        } catch (error) {
-          statusEl.textContent = "更新服务状态：提交失败，请确认控制服务已启动";
-          btn.disabled = false;
-        }
       }
 
       function render() {
@@ -448,10 +343,7 @@
           .join("");
       }
 
-      document.getElementById("updateBtn").addEventListener("click", triggerUpdate);
       render();
-      refreshServiceStatus();
-      setInterval(refreshServiceStatus, 10000);
     </script>
   </body>
 </html>

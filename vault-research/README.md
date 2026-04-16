@@ -34,24 +34,6 @@ node vault-research/scripts/update-analysis.mjs
 
 然后打开 `vault-research/web/index.html` 即可查看结果。
 
-## 网页按钮自动更新（推荐）
-
-如果你希望在网页里点击按钮自动执行更新并刷新页面，请启动本地控制服务：
-
-```bash
-node vault-research/scripts/web-control-server.mjs
-```
-
-启动后访问：
-
-`http://localhost:8787`
-
-页面中会出现“设置与更新”区域，点击“更新数据并刷新页面”即可自动执行：
-
-`node vault-research/scripts/update-analysis.mjs`
-
-并在完成后自动刷新页面数据。
-
 ## 可调参数（环境变量）
 
 - `VAULT_CONCURRENCY`：并发抓取详情请求数（默认 `20`）
