@@ -1,14 +1,14 @@
 window.VAULT_ANALYSIS = {
   "meta": {
-    "generatedAt": "2026-04-15T07:10:42.106Z",
+    "generatedAt": "2026-04-16T07:25:44.475Z",
     "source": {
       "statsUrl": "https://stats-data.hyperliquid.xyz/Mainnet/vaults",
       "infoUrl": "https://api.hyperliquid.xyz/info"
     },
     "universeCounts": {
       "rawVaultRows": 9447,
-      "openUserVaults": 3338,
-      "investableAfterFilters": 29
+      "openUserVaults": 3326,
+      "investableAfterFilters": 27
     },
     "filters": {
       "allowDeposits": true,
@@ -16,24 +16,35 @@ window.VAULT_ANALYSIS = {
       "relationshipType": "normal",
       "minTvlUsd": 250000,
       "minTrackDays": 60,
-      "minObservations": 18
+      "minObservations": 18,
+      "minDepositorDays": 30,
+      "longDepositorDays": 90
     },
     "methodology": {
       "style": "quant multi-factor ranking",
       "factors": [
-        "Sharpe proxy percentile (22%)",
-        "Sortino proxy percentile (10%)",
-        "Calmar percentile (14%)",
-        "Annualized return percentile (16%, winsorized)",
-        "Drawdown control percentile (14%)",
-        "Volatility control percentile (8%)",
-        "TVL robustness percentile (8%)",
-        "Track record age percentile (4%)",
-        "Recent consistency percentile (4%)"
+        "Sharpe proxy percentile (19%)",
+        "Sortino proxy percentile (8%)",
+        "Calmar percentile (12%)",
+        "Annualized return percentile (13%, winsorized)",
+        "Drawdown control percentile (12%)",
+        "Volatility control percentile (7%)",
+        "TVL robustness percentile (7%)",
+        "Track record age percentile (3%)",
+        "Recent consistency percentile (3%)",
+        "Depositor quality composite (16%)"
+      ],
+      "depositorComposite": [
+        "Depositor 正收益占比（>=30天）",
+        "Depositor 资金加权正收益占比",
+        "Depositor 长期跟随资金占比（>=90天）",
+        "Depositor 中位日收益代理",
+        "Depositor 有效样本覆盖度"
       ],
       "normalization": [
         "Sharpe/Sortino/Calmar/Annualized return 因子均做区间封顶，避免异常值主导",
-        "年化波动单独作为负向控制因子"
+        "年化波动单独作为负向控制因子",
+        "Depositor 日收益代理做区间裁剪（-1%~+1%/日）"
       ],
       "penalties": [
         "Max drawdown > 45%",
@@ -43,7 +54,11 @@ window.VAULT_ANALYSIS = {
         "Negative all-time return",
         "Negative APR",
         "Leader commission > 20%",
-        "Track record age < 120 days"
+        "Track record age < 120 days",
+        "Depositor 有效样本偏少（<10）",
+        "Depositor 正收益占比偏低",
+        "Depositor 资金加权正收益占比偏低",
+        "Depositor 深度亏损占比偏高"
       ]
     }
   },
@@ -55,177 +70,44 @@ window.VAULT_ANALYSIS = {
       "leader": "0x1fa1b4c4cda61b3c1ce805ae82e64a90d8821d08",
       "style": "成长进攻型",
       "investmentThesis": [
-        "风险调整后收益较强（Sharpe 代理 3.28）。",
-        "管理规模较大（TVL 3,566,783 USD），容量与稳定性更好。",
-        "运行周期较长（195 天），样本更充分。"
+        "风险调整后收益较强（Sharpe 代理 3.25）。",
+        "管理规模较大（TVL 3,523,006 USD），容量与稳定性更好。",
+        "运行周期较长（196 天），样本更充分。"
       ],
       "riskFlags": [
-        "年化收益代理异常高，可能受短样本放大"
+        "年化收益代理异常高，可能受短样本放大",
+        "近期日/周/月收益一致性较弱"
       ],
       "metrics": {
-        "score": 0.8421,
-        "tvlUsd": 3566782.98,
-        "apr": 0.259212,
-        "annualizedReturn": 8.799911,
-        "annualizedVolatility": 0.795594,
+        "score": 0.728,
+        "tvlUsd": 3523006.18,
+        "apr": -0.007367,
+        "annualizedReturn": 8.466535,
+        "annualizedVolatility": 0.790741,
         "maxDrawdown": 0.224268,
-        "sharpeProxy": 3.279753,
-        "sortinoProxy": 5.179844,
-        "calmarRatio": 39.238379,
-        "consistencyScore": 0.666667,
-        "dayReturn": 0.005276,
-        "weekReturn": -0.027162,
-        "monthReturn": 0.058868,
-        "trackDays": 188.37,
+        "sharpeProxy": 3.250349,
+        "sortinoProxy": 4.944203,
+        "calmarRatio": 37.751871,
+        "consistencyScore": 0.333333,
+        "depositorCompositeScore": 0.7,
+        "dayReturn": -0.013172,
+        "weekReturn": -0.048029,
+        "monthReturn": 0.030972,
+        "trackDays": 189.38,
         "observations": 40,
         "leaderCommission": 0.1,
-        "followerCount": 100
+        "followerCount": 100,
+        "depositorEligibleFollowers": 95,
+        "depositorPositivePnlRatio": 0.926316,
+        "depositorEquityWeightedPositiveRatio": 0.973615,
+        "depositorLongTenureCapitalShare": 0.963703,
+        "depositorMedianDailyPnlUsd": 8.89664,
+        "depositorMedianDailyReturnApprox": 0.00062118,
+        "depositorDeepLossRatio": 0
       }
     },
     {
       "rank": 2,
-      "name": "OnlyShorts",
-      "vaultAddress": "0x61b1cf5c2d7c4bf6d5db14f36651b2242e7cba0a",
-      "leader": "0xdaffbc69a0be655469257b43e1ceffb5eab920c0",
-      "style": "成长进攻型",
-      "investmentThesis": [
-        "风险调整后收益较强（Sharpe 代理 2.22）。",
-        "管理规模较大（TVL 1,094,286 USD），容量与稳定性更好。",
-        "运行周期较长（183 天），样本更充分。"
-      ],
-      "riskFlags": [
-        "年化波动偏高（268.40%）",
-        "年化收益代理异常高，可能受短样本放大"
-      ],
-      "metrics": {
-        "score": 0.7164,
-        "tvlUsd": 1094286.29,
-        "apr": 1.093322,
-        "annualizedReturn": 60.018378,
-        "annualizedVolatility": 2.683963,
-        "maxDrawdown": 0.239442,
-        "sharpeProxy": 2.222815,
-        "sortinoProxy": 18.566571,
-        "calmarRatio": 250.659142,
-        "consistencyScore": 1,
-        "dayReturn": 0.157162,
-        "weekReturn": 0.180759,
-        "monthReturn": 0.415392,
-        "trackDays": 181.32,
-        "observations": 40,
-        "leaderCommission": 0.1,
-        "followerCount": 100
-      }
-    },
-    {
-      "rank": 3,
-      "name": "Overdose",
-      "vaultAddress": "0xe67dbf2d051106b42104c1a6631af5e5a458b682",
-      "leader": "0xdeb7582b362a752970fbd2507d0fb5dd27ed379a",
-      "style": "均衡配置型",
-      "investmentThesis": [
-        "风险调整后收益较强（Sharpe 代理 3.02）。",
-        "收益弹性极高，需重点核查可持续性与容量冲击风险。"
-      ],
-      "riskFlags": [
-        "年化波动偏高（209.82%）",
-        "年化收益代理异常高，可能受短样本放大",
-        "近期日/周/月收益一致性较弱"
-      ],
-      "metrics": {
-        "score": 0.7155,
-        "tvlUsd": 426989.01,
-        "apr": -0.154192,
-        "annualizedReturn": 98.459715,
-        "annualizedVolatility": 2.098164,
-        "maxDrawdown": 0.256028,
-        "sharpeProxy": 3.018167,
-        "sortinoProxy": 9.577574,
-        "calmarRatio": 384.566517,
-        "consistencyScore": 0.333333,
-        "dayReturn": 0.006258,
-        "weekReturn": -0.059248,
-        "monthReturn": -0.076073,
-        "trackDays": 125.3,
-        "observations": 34,
-        "leaderCommission": 0.1,
-        "followerCount": 100
-      }
-    },
-    {
-      "rank": 4,
-      "name": "AIQuantPulse",
-      "vaultAddress": "0x8231fdf9997c003a267374b45fb25c0455aa1dcb",
-      "leader": "0xcbdf15e12fc3b8e8fc8bacf577c4d1071cf2b4b3",
-      "style": "成长进攻型",
-      "investmentThesis": [
-        "风险调整后收益较强（Sharpe 代理 7.88）。",
-        "历史最大回撤较低（0.23%）。",
-        "管理规模较大（TVL 1,877,865 USD），容量与稳定性更好。"
-      ],
-      "riskFlags": [
-        "年化波动偏高（447.98%）",
-        "年化收益代理异常高，可能受短样本放大",
-        "策略运行时间较短（72 天）"
-      ],
-      "metrics": {
-        "score": 0.6972,
-        "tvlUsd": 1877864.84,
-        "apr": 0.11756,
-        "annualizedReturn": 1004405223032.1837,
-        "annualizedVolatility": 4.479769,
-        "maxDrawdown": 0.002298,
-        "sharpeProxy": 7.879425,
-        "sortinoProxy": 1908.965827,
-        "calmarRatio": 437140660370846.75,
-        "consistencyScore": 1,
-        "dayReturn": 0.186691,
-        "weekReturn": 15.148564,
-        "monthReturn": 190.244467,
-        "trackDays": 69.39,
-        "observations": 45,
-        "leaderCommission": 0.1,
-        "followerCount": 100
-      }
-    },
-    {
-      "rank": 5,
-      "name": "Archangel Quant Fund I",
-      "vaultAddress": "0x8c7bd04cf8d00d68ce8bc7d2f3f02f98d16a5ab0",
-      "leader": "0xe2422bca1570e1b1c352164b0b41dae434035f6c",
-      "style": "均衡配置型",
-      "investmentThesis": [
-        "风险调整后收益较强（Sharpe 代理 2.76）。",
-        "运行周期较长（204 天），样本更充分。",
-        "近月收益为正（23.01%），近期动量健康。"
-      ],
-      "riskFlags": [
-        "年化波动偏高（313.03%）",
-        "年化收益代理异常高，可能受短样本放大",
-        "近期日/周/月收益一致性较弱"
-      ],
-      "metrics": {
-        "score": 0.6454,
-        "tvlUsd": 284616.16,
-        "apr": 0.150764,
-        "annualizedReturn": 402.700292,
-        "annualizedVolatility": 3.130252,
-        "maxDrawdown": 0.262874,
-        "sharpeProxy": 2.764839,
-        "sortinoProxy": 14.971882,
-        "calmarRatio": 1531.912766,
-        "consistencyScore": 0.333333,
-        "dayReturn": -0.032103,
-        "weekReturn": -0.167455,
-        "monthReturn": 0.230146,
-        "trackDays": 202.36,
-        "observations": 40,
-        "leaderCommission": 0.1,
-        "followerCount": 77
-      }
-    },
-    {
-      "rank": 6,
       "name": "Orbit Value Strategies",
       "vaultAddress": "0x115849ce84370f25cadcf0d348510d73837e1aa5",
       "leader": "0xf292b42e6167e0d591449ebd67d2e989a3479edf",
@@ -233,172 +115,388 @@ window.VAULT_ANALYSIS = {
       "investmentThesis": [
         "风险调整后收益较强（Sharpe 代理 1.76）。",
         "历史最大回撤较低（11.09%）。",
-        "管理规模较大（TVL 3,013,846 USD），容量与稳定性更好。"
+        "管理规模较大（TVL 2,996,096 USD），容量与稳定性更好。"
       ],
       "riskFlags": [
-        "年化波动偏高（3133.54%）",
+        "年化波动偏高（3120.29%）",
         "年化收益代理异常高，可能受短样本放大"
       ],
       "metrics": {
-        "score": 0.4986,
-        "tvlUsd": 3013846.46,
-        "apr": 0.436272,
-        "annualizedReturn": 10448.789731,
-        "annualizedVolatility": 31.33541,
+        "score": 0.5098,
+        "tvlUsd": 2996095.63,
+        "apr": 0.74224,
+        "annualizedReturn": 9518.715961,
+        "annualizedVolatility": 31.202894,
         "maxDrawdown": 0.110916,
-        "sharpeProxy": 1.764375,
-        "sortinoProxy": 311.302184,
-        "calmarRatio": 94204.702136,
+        "sharpeProxy": 1.756395,
+        "sortinoProxy": 311.209469,
+        "calmarRatio": 85819.298207,
         "consistencyScore": 0.666667,
-        "dayReturn": 0.008279,
-        "weekReturn": 0.04152,
-        "monthReturn": -0.001155,
-        "trackDays": 118.33,
-        "observations": 32,
+        "depositorCompositeScore": 0.875,
+        "dayReturn": -0.00387,
+        "weekReturn": 0.011453,
+        "monthReturn": 0.025262,
+        "trackDays": 119.34,
+        "observations": 33,
         "leaderCommission": 0.1,
-        "followerCount": 100
+        "followerCount": 100,
+        "depositorEligibleFollowers": 95,
+        "depositorPositivePnlRatio": 1,
+        "depositorEquityWeightedPositiveRatio": 1,
+        "depositorLongTenureCapitalShare": 0.955013,
+        "depositorMedianDailyPnlUsd": 13.482137,
+        "depositorMedianDailyReturnApprox": 0.00088761,
+        "depositorDeepLossRatio": 0
+      }
+    },
+    {
+      "rank": 3,
+      "name": "OnlyShorts",
+      "vaultAddress": "0x61b1cf5c2d7c4bf6d5db14f36651b2242e7cba0a",
+      "leader": "0xdaffbc69a0be655469257b43e1ceffb5eab920c0",
+      "style": "成长进攻型",
+      "investmentThesis": [
+        "风险调整后收益较强（Sharpe 代理 2.10）。",
+        "运行周期较长（184 天），样本更充分。",
+        "近月收益为正（22.49%），近期动量健康。"
+      ],
+      "riskFlags": [
+        "年化波动偏高（269.27%）",
+        "年化收益代理异常高，可能受短样本放大",
+        "跟随者赚钱比例偏低（18.87%）"
+      ],
+      "metrics": {
+        "score": 0.4945,
+        "tvlUsd": 961367.26,
+        "apr": -0.06344,
+        "annualizedReturn": 42.925541,
+        "annualizedVolatility": 2.692738,
+        "maxDrawdown": 0.239442,
+        "sharpeProxy": 2.100313,
+        "sortinoProxy": 12.844793,
+        "calmarRatio": 179.273078,
+        "consistencyScore": 0.666667,
+        "depositorCompositeScore": 0.382692,
+        "dayReturn": -0.144064,
+        "weekReturn": 0.001044,
+        "monthReturn": 0.22493,
+        "trackDays": 182.33,
+        "observations": 39,
+        "leaderCommission": 0.1,
+        "followerCount": 100,
+        "depositorEligibleFollowers": 53,
+        "depositorPositivePnlRatio": 0.188679,
+        "depositorEquityWeightedPositiveRatio": 0.876196,
+        "depositorLongTenureCapitalShare": 0.898954,
+        "depositorMedianDailyPnlUsd": -0.294068,
+        "depositorMedianDailyReturnApprox": -0.00100264,
+        "depositorDeepLossRatio": 0
+      }
+    },
+    {
+      "rank": 4,
+      "name": "Overdose",
+      "vaultAddress": "0xe67dbf2d051106b42104c1a6631af5e5a458b682",
+      "leader": "0xdeb7582b362a752970fbd2507d0fb5dd27ed379a",
+      "style": "均衡配置型",
+      "investmentThesis": [
+        "风险调整后收益较强（Sharpe 代理 2.82）。",
+        "长期跟随资金占比较高（75.09%），资金粘性更好。",
+        "收益弹性极高，需重点核查可持续性与容量冲击风险。"
+      ],
+      "riskFlags": [
+        "历史回撤偏高（31.92%）",
+        "年化波动偏高（210.96%）",
+        "年化收益代理异常高，可能受短样本放大"
+      ],
+      "metrics": {
+        "score": 0.4066,
+        "tvlUsd": 376278.44,
+        "apr": -0.182601,
+        "annualizedReturn": 65.962208,
+        "annualizedVolatility": 2.109606,
+        "maxDrawdown": 0.319191,
+        "sharpeProxy": 2.817358,
+        "sortinoProxy": 9.164554,
+        "calmarRatio": 206.65412,
+        "consistencyScore": 0,
+        "depositorCompositeScore": 0.313462,
+        "dayReturn": -0.11962,
+        "weekReturn": -0.196061,
+        "monthReturn": -0.184818,
+        "trackDays": 126.31,
+        "observations": 34,
+        "leaderCommission": 0.1,
+        "followerCount": 100,
+        "depositorEligibleFollowers": 99,
+        "depositorPositivePnlRatio": 0.222222,
+        "depositorEquityWeightedPositiveRatio": 0.723135,
+        "depositorLongTenureCapitalShare": 0.750935,
+        "depositorMedianDailyPnlUsd": -0.144787,
+        "depositorMedianDailyReturnApprox": -0.01408411,
+        "depositorDeepLossRatio": 0.474747
+      }
+    },
+    {
+      "rank": 5,
+      "name": "[ Systemic Strategies ] ♾️ HyperGrowth ♾️",
+      "vaultAddress": "0xd6e56265890b76413d1d527eb9b75e334c0c5b42",
+      "leader": "0x2b804617c6f63c040377e95bb276811747006f4b",
+      "style": "均衡配置型",
+      "investmentThesis": [
+        "风险调整后收益较强（Sharpe 代理 1.96）。",
+        "管理规模较大（TVL 11,494,467 USD），容量与稳定性更好。",
+        "运行周期较长（229 天），样本更充分。"
+      ],
+      "riskFlags": [
+        "历史回撤偏高（53.88%）",
+        "年化波动偏高（250.06%）",
+        "年化收益代理异常高，可能受短样本放大"
+      ],
+      "metrics": {
+        "score": 0.3852,
+        "tvlUsd": 11494467.21,
+        "apr": 0.949967,
+        "annualizedReturn": 14.317115,
+        "annualizedVolatility": 2.500557,
+        "maxDrawdown": 0.538835,
+        "sharpeProxy": 1.955051,
+        "sortinoProxy": 6.616062,
+        "calmarRatio": 26.570487,
+        "consistencyScore": 1,
+        "depositorCompositeScore": 0.861538,
+        "dayReturn": 0.003512,
+        "weekReturn": 0.061577,
+        "monthReturn": 0.368946,
+        "trackDays": 224.34,
+        "observations": 41,
+        "leaderCommission": 0.1,
+        "followerCount": 100,
+        "depositorEligibleFollowers": 72,
+        "depositorPositivePnlRatio": 1,
+        "depositorEquityWeightedPositiveRatio": 1,
+        "depositorLongTenureCapitalShare": 0.326116,
+        "depositorMedianDailyPnlUsd": 85.383924,
+        "depositorMedianDailyReturnApprox": 0.00455356,
+        "depositorDeepLossRatio": 0
+      }
+    },
+    {
+      "rank": 6,
+      "name": "AIQuantPulse",
+      "vaultAddress": "0x8231fdf9997c003a267374b45fb25c0455aa1dcb",
+      "leader": "0xcbdf15e12fc3b8e8fc8bacf577c4d1071cf2b4b3",
+      "style": "成长进攻型",
+      "investmentThesis": [
+        "风险调整后收益较强（Sharpe 代理 8.07）。",
+        "历史最大回撤较低（0.23%）。",
+        "管理规模较大（TVL 2,258,730 USD），容量与稳定性更好。"
+      ],
+      "riskFlags": [
+        "年化波动偏高（445.13%）",
+        "年化收益代理异常高，可能受短样本放大",
+        "策略运行时间较短（73 天）"
+      ],
+      "metrics": {
+        "score": 0.3709,
+        "tvlUsd": 2258729.7,
+        "apr": -0.002727,
+        "annualizedReturn": 1758072597793.6067,
+        "annualizedVolatility": 4.451292,
+        "maxDrawdown": 0.002298,
+        "sharpeProxy": 8.065996,
+        "sortinoProxy": 1955.827221,
+        "calmarRatio": 765154340853882.4,
+        "consistencyScore": 1,
+        "depositorCompositeScore": 0.113462,
+        "dayReturn": 0.202387,
+        "weekReturn": 10.10313,
+        "monthReturn": 228.983341,
+        "trackDays": 70.4,
+        "observations": 45,
+        "leaderCommission": 0.1,
+        "followerCount": 100,
+        "depositorEligibleFollowers": 1,
+        "depositorPositivePnlRatio": 0,
+        "depositorEquityWeightedPositiveRatio": 0,
+        "depositorLongTenureCapitalShare": 0,
+        "depositorMedianDailyPnlUsd": -8.379892,
+        "depositorMedianDailyReturnApprox": -0.00005241,
+        "depositorDeepLossRatio": 0
       }
     },
     {
       "rank": 7,
-      "name": "Black Ops",
-      "vaultAddress": "0x49a648936441b22f28f069d3c088928682b277ae",
-      "leader": "0x970ed103da353023dc6726c04f183b38ce35943c",
+      "name": "drkmttr",
+      "vaultAddress": "0xc179e03922afe8fa9533d3f896338b9fb87ce0c8",
+      "leader": "0xf4f7cebbd2c7b6dee34ab29fa55a116eff25239f",
       "style": "均衡配置型",
       "investmentThesis": [
-        "风险调整后收益较强（Sharpe 代理 2.50）。",
-        "近月收益为正（185.58%），近期动量健康。",
-        "收益弹性极高，需重点核查可持续性与容量冲击风险。"
+        "风险调整后收益较强（Sharpe 代理 1.76）。",
+        "管理规模较大（TVL 5,707,243 USD），容量与稳定性更好。",
+        "长期跟随资金占比较高（99.78%），资金粘性更好。"
       ],
       "riskFlags": [
-        "年化波动偏高（1224.88%）",
-        "年化收益代理异常高，可能受短样本放大",
-        "策略运行时间较短（98 天）"
+        "历史回撤偏高（32.51%）",
+        "年化波动偏高（16032.31%）",
+        "年化收益代理异常高，可能受短样本放大"
       ],
       "metrics": {
-        "score": 0.4676,
-        "tvlUsd": 867210.97,
-        "apr": 0.728434,
-        "annualizedReturn": 299754.357799,
-        "annualizedVolatility": 12.248813,
-        "maxDrawdown": 0.25515,
-        "sharpeProxy": 2.498489,
-        "sortinoProxy": 44.459926,
-        "calmarRatio": 1174815.711747,
-        "consistencyScore": 1,
-        "dayReturn": 0.015983,
-        "weekReturn": 1.059217,
-        "monthReturn": 1.855844,
-        "trackDays": 97.37,
-        "observations": 40,
+        "score": 0.3531,
+        "tvlUsd": 5707242.6,
+        "apr": -0.034136,
+        "annualizedReturn": 684638103.371624,
+        "annualizedVolatility": 160.323085,
+        "maxDrawdown": 0.325144,
+        "sharpeProxy": 1.757793,
+        "sortinoProxy": 538.246769,
+        "calmarRatio": 2105647242.824516,
+        "consistencyScore": 0.666667,
+        "depositorCompositeScore": 0.551923,
+        "dayReturn": 0.017554,
+        "weekReturn": 0.15704,
+        "monthReturn": -0.037634,
+        "trackDays": 126.34,
+        "observations": 34,
         "leaderCommission": 0.1,
-        "followerCount": 13
+        "followerCount": 100,
+        "depositorEligibleFollowers": 18,
+        "depositorPositivePnlRatio": 0.555556,
+        "depositorEquityWeightedPositiveRatio": 0.946234,
+        "depositorLongTenureCapitalShare": 0.99781,
+        "depositorMedianDailyPnlUsd": 0.302374,
+        "depositorMedianDailyReturnApprox": 0.0002336,
+        "depositorDeepLossRatio": 0.055556
       }
     },
     {
       "rank": 8,
-      "name": "FC Genesis - Quantum",
-      "vaultAddress": "0xa6a34f0bf2ccea9a1ddf9e9a973f17c498dc5e40",
-      "leader": "0x3d32e286bb737ba348e28823863f02308768cfec",
-      "style": "成长进攻型",
+      "name": "69 Jump Street",
+      "vaultAddress": "0xa844d7ac9fa3424c4fd38a25baa23e460ec3e802",
+      "leader": "0x84803dc3df988d5493d9be2ee75e36f0043ee272",
+      "style": "均衡配置型",
       "investmentThesis": [
         "风险调整后收益较强（Sharpe 代理 1.91）。",
-        "管理规模较大（TVL 2,491,412 USD），容量与稳定性更好。",
-        "运行周期较长（214 天），样本更充分。"
+        "年化收益代理较高（404.00%）。",
+        "运行周期较长（454 天），样本更充分。"
       ],
       "riskFlags": [
-        "年化波动偏高（577.81%）",
-        "年化收益代理异常高，可能受短样本放大",
-        "近期日/周/月收益一致性较弱"
+        "历史回撤偏高（51.46%）"
       ],
       "metrics": {
-        "score": 0.4557,
-        "tvlUsd": 2491412.2,
-        "apr": -0.000416,
-        "annualizedReturn": 179.078193,
-        "annualizedVolatility": 5.778078,
-        "maxDrawdown": 0.166221,
-        "sharpeProxy": 1.908727,
-        "sortinoProxy": 50.58462,
-        "calmarRatio": 1077.349979,
-        "consistencyScore": 0,
-        "dayReturn": 0,
-        "weekReturn": -0.001135,
-        "monthReturn": -0.000236,
-        "trackDays": 209.33,
-        "observations": 39,
+        "score": 0.3522,
+        "tvlUsd": 583677.38,
+        "apr": 0.247851,
+        "annualizedReturn": 4.039998,
+        "annualizedVolatility": 1.084717,
+        "maxDrawdown": 0.514561,
+        "sharpeProxy": 1.913874,
+        "sortinoProxy": 6.0417,
+        "calmarRatio": 7.851355,
+        "consistencyScore": 0.666667,
+        "depositorCompositeScore": 0.613462,
+        "dayReturn": -0.000445,
+        "weekReturn": 0.011277,
+        "monthReturn": 0.106601,
+        "trackDays": 448.37,
+        "observations": 68,
         "leaderCommission": 0.1,
-        "followerCount": 58
+        "followerCount": 100,
+        "depositorEligibleFollowers": 88,
+        "depositorPositivePnlRatio": 0.693182,
+        "depositorEquityWeightedPositiveRatio": 0.967321,
+        "depositorLongTenureCapitalShare": 0.95798,
+        "depositorMedianDailyPnlUsd": 0.015141,
+        "depositorMedianDailyReturnApprox": 0.0001118,
+        "depositorDeepLossRatio": 0.022727
       }
     },
     {
       "rank": 9,
+      "name": "[ Systemic Strategies ] L/S Grids",
+      "vaultAddress": "0x07fd993f0fa3a185f7207adccd29f7a87404689d",
+      "leader": "0x2b804617c6f63c040377e95bb276811747006f4b",
+      "style": "均衡配置型",
+      "investmentThesis": [
+        "风险调整后收益较强（Sharpe 代理 1.83）。",
+        "管理规模较大（TVL 6,567,221 USD），容量与稳定性更好。",
+        "运行周期较长（448 天），样本更充分。"
+      ],
+      "riskFlags": [
+        "历史回撤偏高（80.62%）",
+        "年化波动偏高（263.03%）",
+        "年化收益代理异常高，可能受短样本放大"
+      ],
+      "metrics": {
+        "score": 0.3489,
+        "tvlUsd": 6567221.07,
+        "apr": 0.635515,
+        "annualizedReturn": 11.310953,
+        "annualizedVolatility": 2.630346,
+        "maxDrawdown": 0.806169,
+        "sharpeProxy": 1.826023,
+        "sortinoProxy": 4.743129,
+        "calmarRatio": 14.030504,
+        "consistencyScore": 1,
+        "depositorCompositeScore": 0.755769,
+        "dayReturn": 0.001881,
+        "weekReturn": 0.325742,
+        "monthReturn": 0.793583,
+        "trackDays": 441.35,
+        "observations": 67,
+        "leaderCommission": 0.1,
+        "followerCount": 100,
+        "depositorEligibleFollowers": 52,
+        "depositorPositivePnlRatio": 0.942308,
+        "depositorEquityWeightedPositiveRatio": 0.985284,
+        "depositorLongTenureCapitalShare": 0.951099,
+        "depositorMedianDailyPnlUsd": 16.671268,
+        "depositorMedianDailyReturnApprox": 0.00149143,
+        "depositorDeepLossRatio": 0.019231
+      }
+    },
+    {
+      "rank": 10,
       "name": "ASTEROID",
       "vaultAddress": "0x9a28b01435ca5c4b39a79ae2c27fce01292a7f39",
       "leader": "0xceec9c279d4f79e1b43cb23014e17a8c34e6793a",
       "style": "成长进攻型",
       "investmentThesis": [
         "风险调整后收益较强（Sharpe 代理 1.47）。",
-        "历史最大回撤较低（7.99%）。",
-        "运行周期较长（190 天），样本更充分。"
+        "历史最大回撤较低（7.77%）。",
+        "运行周期较长（191 天），样本更充分。"
       ],
       "riskFlags": [
-        "年化波动偏高（964.47%）",
-        "年化收益代理异常高，可能受短样本放大"
+        "年化波动偏高（961.87%）",
+        "年化收益代理异常高，可能受短样本放大",
+        "跟随者深度亏损比例偏高（31.58%）"
       ],
       "metrics": {
-        "score": 0.4444,
-        "tvlUsd": 406544.98,
-        "apr": 0.00112,
-        "annualizedReturn": 111.897317,
-        "annualizedVolatility": 9.644693,
-        "maxDrawdown": 0.079914,
-        "sharpeProxy": 1.474267,
-        "sortinoProxy": 72.034838,
-        "calmarRatio": 1400.224335,
+        "score": 0.3411,
+        "tvlUsd": 406858.38,
+        "apr": -0.001854,
+        "annualizedReturn": 109.248769,
+        "annualizedVolatility": 9.618715,
+        "maxDrawdown": 0.077651,
+        "sharpeProxy": 1.470315,
+        "sortinoProxy": 70.594126,
+        "calmarRatio": 1406.920507,
         "consistencyScore": 0.666667,
-        "dayReturn": -0.004856,
-        "weekReturn": 0.109386,
-        "monthReturn": 0.184685,
-        "trackDays": 188.32,
+        "depositorCompositeScore": 0.494231,
+        "dayReturn": 0.000771,
+        "weekReturn": -0.001289,
+        "monthReturn": 0.182737,
+        "trackDays": 189.33,
         "observations": 40,
         "leaderCommission": 0.1,
-        "followerCount": 27
-      }
-    },
-    {
-      "rank": 10,
-      "name": "Equinox · Blackalgo",
-      "vaultAddress": "0x7048b287889c5913d59f812795d7fd5d724be77a",
-      "leader": "0x3db735d71673b3d57b34f55013b9b25e2d2dd9cf",
-      "style": "成长进攻型",
-      "investmentThesis": [
-        "风险调整后收益较强（Sharpe 代理 2.09）。",
-        "收益弹性极高，需重点核查可持续性与容量冲击风险。"
-      ],
-      "riskFlags": [
-        "年化波动偏高（829508.91%）",
-        "年化收益代理异常高，可能受短样本放大",
-        "近期日/周/月收益一致性较弱"
-      ],
-      "metrics": {
-        "score": 0.4083,
-        "tvlUsd": 970180.88,
-        "apr": -0.123583,
-        "annualizedReturn": 84257136300715460,
-        "annualizedVolatility": 8295.089068,
-        "maxDrawdown": 0.197618,
-        "sharpeProxy": 2.092817,
-        "sortinoProxy": 92384.47956,
-        "calmarRatio": 426363536596071800,
-        "consistencyScore": 0,
-        "dayReturn": -0.00245,
-        "weekReturn": -0.013831,
-        "monthReturn": -0.129044,
-        "trackDays": 83.38,
-        "observations": 41,
-        "leaderCommission": 0.1,
-        "followerCount": 54
+        "followerCount": 28,
+        "depositorEligibleFollowers": 19,
+        "depositorPositivePnlRatio": 0.578947,
+        "depositorEquityWeightedPositiveRatio": 0.976664,
+        "depositorLongTenureCapitalShare": 0.976662,
+        "depositorMedianDailyPnlUsd": 0.000624,
+        "depositorMedianDailyReturnApprox": -0.00356256,
+        "depositorDeepLossRatio": 0.315789
       }
     }
   ]

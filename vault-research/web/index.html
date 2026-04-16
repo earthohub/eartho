@@ -145,6 +145,12 @@
         color: var(--yellow);
         line-height: 1.5;
       }
+      .depositor-flags {
+        margin: 8px 0 0;
+        padding-left: 18px;
+        color: #9ad3ff;
+        line-height: 1.5;
+      }
       .positive {
         color: var(--green);
       }
@@ -325,6 +331,19 @@
                 <div class="metric"><div class="k">管理人分成 / 关注数</div><div class="v">${pct(
                   m.leaderCommission,
                 )} / ${m.followerCount}</div></div>
+                <div class="metric"><div class="k">跟随者正收益占比(30+天)</div><div class="v">${pct(
+                  m.depositorPositiveRatio30,
+                )}</div></div>
+                <div class="metric"><div class="k">资金加权正收益占比</div><div class="v">${pct(
+                  m.depositorPositiveCapitalRatio30,
+                )}</div></div>
+                <div class="metric"><div class="k">长期跟随资金占比(90+天)</div><div class="v">${pct(
+                  m.depositorLongTenureCapitalRatio90,
+                )}</div></div>
+                <div class="metric"><div class="k">跟随者中位日PnL(USD)</div><div class="v">${num(
+                  m.depositorMedianDailyPnl30,
+                  2,
+                )}</div></div>
               </div>
 
               <ul class="reasons">
@@ -334,6 +353,13 @@
                 strategy.riskFlags?.length
                   ? `<ul class="risk-flags">${strategy.riskFlags
                       .map((flag) => `<li>风险提示：${flag}</li>`)
+                      .join("")}</ul>`
+                  : ""
+              }
+              ${
+                strategy.depositorNotes?.length
+                  ? `<ul class="depositor-flags">${strategy.depositorNotes
+                      .map((note) => `<li>跟随者层观察：${note}</li>`)
                       .join("")}</ul>`
                   : ""
               }

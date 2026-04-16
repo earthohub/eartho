@@ -13,6 +13,8 @@ const CONCURRENCY = Number(process.env.VAULT_CONCURRENCY ?? 20);
 const MIN_TVL_USD = Number(process.env.MIN_TVL_USD ?? 250_000);
 const MIN_TRACK_DAYS = Number(process.env.MIN_TRACK_DAYS ?? 60);
 const MIN_OBSERVATIONS = Number(process.env.MIN_OBSERVATIONS ?? 18);
+const MIN_DEPOSITOR_DAYS = Number(process.env.MIN_DEPOSITOR_DAYS ?? 30);
+const LONG_DEPOSITOR_DAYS = Number(process.env.LONG_DEPOSITOR_DAYS ?? 90);
 
 function toNumber(value, fallback = 0) {
   if (value === null || value === undefined) return fallback;
@@ -36,6 +38,16 @@ function std(values) {
     values.reduce((acc, current) => acc + (current - m) ** 2, 0) /
     (values.length - 1);
   return Math.sqrt(Math.max(variance, 0));
+}
+
+function median(values) {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  if (sorted.length % 2 === 0) {
+    return (sorted[mid - 1] + sorted[mid]) / 2;
+  }
+  return sorted[mid];
 }
 
 function formatPct(value) {
@@ -166,6 +178,75 @@ function calcRiskMetrics(allTimeSeries) {
   };
 }
 
+function calcDepositorMetrics(followers) {
+  const list = Array.isArray(followers) ? followers : [];
+  if (!list.length) {
+    return {
+      totalFollowers: 0,
+      eligibleFollowers: 0,
+      positivePnlRatio: null,
+      equityWeightedPositiveRatio: null,
+      longTenureCapitalShare: null,
+      medianDailyPnlUsd: null,
+      medianDailyReturnApprox: null,
+      deepLossRatio: null,
+      coverageScore: 0,
+    };
+  }
+
+  let eligibleFollowers = 0;
+  let positiveFollowers = 0;
+  let deepLossFollowers = 0;
+  let eligibleEquity = 0;
+  let positiveEquity = 0;
+  let longTenureEquity = 0;
+  const dailyPnls = [];
+  const dailyReturnApprox = [];
+
+  for (const follower of list) {
+    const days = toNumber(follower.daysFollowing, 0);
+    if (days < MIN_DEPOSITOR_DAYS) continue;
+    const pnl = toNumber(follower.allTimePnl, 0);
+    const equity = Math.max(0, toNumber(follower.vaultEquity, 0));
+    const initialCapitalApprox = equity - pnl;
+
+    eligibleFollowers += 1;
+    dailyPnls.push(pnl / Math.max(days, 1));
+    if (pnl > 0) positiveFollowers += 1;
+    if (days >= LONG_DEPOSITOR_DAYS) longTenureEquity += equity;
+
+    eligibleEquity += equity;
+    if (pnl > 0) positiveEquity += equity;
+
+    if (initialCapitalApprox > 1e-9) {
+      const allTimeReturnApprox = pnl / initialCapitalApprox;
+      dailyReturnApprox.push(allTimeReturnApprox / Math.max(days, 1));
+      if (allTimeReturnApprox < -0.3) deepLossFollowers += 1;
+    }
+  }
+
+  const positivePnlRatio =
+    eligibleFollowers > 0 ? positiveFollowers / eligibleFollowers : null;
+  const equityWeightedPositiveRatio =
+    eligibleEquity > 0 ? positiveEquity / eligibleEquity : null;
+  const longTenureCapitalShare =
+    eligibleEquity > 0 ? longTenureEquity / eligibleEquity : null;
+  const deepLossRatio =
+    eligibleFollowers > 0 ? deepLossFollowers / eligibleFollowers : null;
+
+  return {
+    totalFollowers: list.length,
+    eligibleFollowers,
+    positivePnlRatio,
+    equityWeightedPositiveRatio,
+    longTenureCapitalShare,
+    medianDailyPnlUsd: dailyPnls.length ? median(dailyPnls) : null,
+    medianDailyReturnApprox: dailyReturnApprox.length ? median(dailyReturnApprox) : null,
+    deepLossRatio,
+    coverageScore: clamp(eligibleFollowers / 30, 0, 1),
+  };
+}
+
 function percentileRankMap(items, key) {
   const sorted = [...items]
     .map((item) => toNumber(item[key], 0))
@@ -213,6 +294,22 @@ function buildRationale(vault) {
   if (vault.monthReturn !== null && vault.monthReturn > 0) {
     reasons.push(`近月收益为正（${formatPct(vault.monthReturn)}），近期动量健康。`);
   }
+  if (
+    vault.depositorPositivePnlRatio !== null &&
+    vault.depositorPositivePnlRatio >= 0.65
+  ) {
+    reasons.push(
+      `跟随者赚钱比例较高（${formatPct(vault.depositorPositivePnlRatio)}，样本>=${MIN_DEPOSITOR_DAYS}天）。`,
+    );
+  }
+  if (
+    vault.depositorLongTenureCapitalShare !== null &&
+    vault.depositorLongTenureCapitalShare >= 0.55
+  ) {
+    reasons.push(
+      `长期跟随资金占比较高（${formatPct(vault.depositorLongTenureCapitalShare)}），资金粘性更好。`,
+    );
+  }
   if (vault.annualizedReturn > 5) {
     reasons.push("收益弹性极高，需重点核查可持续性与容量冲击风险。");
   }
@@ -248,6 +345,20 @@ function buildRiskFlags(vault) {
   }
   if (vault.ageDays < 120) {
     flags.push(`策略运行时间较短（${vault.ageDays.toFixed(0)} 天）`);
+  }
+  if (vault.depositorEligibleFollowers < 10) {
+    flags.push(`跟随者有效样本偏少（${vault.depositorEligibleFollowers} 人）`);
+  }
+  if (
+    vault.depositorPositivePnlRatio !== null &&
+    vault.depositorPositivePnlRatio < 0.45
+  ) {
+    flags.push(`跟随者赚钱比例偏低（${formatPct(vault.depositorPositivePnlRatio)}）`);
+  }
+  if (vault.depositorDeepLossRatio !== null && vault.depositorDeepLossRatio > 0.2) {
+    flags.push(
+      `跟随者深度亏损比例偏高（${formatPct(vault.depositorDeepLossRatio)}）`,
+    );
   }
   return flags.slice(0, 3);
 }
@@ -348,6 +459,7 @@ async function main() {
       consistencySignals.length > 0 ? positiveSignals / consistencySignals.length : 0.5;
 
     const commission = toNumber(details.leaderCommission);
+    const depositorStats = calcDepositorMetrics(details.followers);
 
     modeled.push({
       name: summary.name ?? details.name ?? "Unknown Vault",
@@ -364,6 +476,15 @@ async function main() {
       weekReturn,
       monthReturn,
       consistencyScore,
+      depositorEligibleFollowers: depositorStats.eligibleFollowers,
+      depositorPositivePnlRatio: depositorStats.positivePnlRatio,
+      depositorEquityWeightedPositiveRatio:
+        depositorStats.equityWeightedPositiveRatio,
+      depositorLongTenureCapitalShare: depositorStats.longTenureCapitalShare,
+      depositorMedianDailyPnlUsd: depositorStats.medianDailyPnlUsd,
+      depositorMedianDailyReturnApprox: depositorStats.medianDailyReturnApprox,
+      depositorDeepLossRatio: depositorStats.deepLossRatio,
+      depositorCoverageScore: depositorStats.coverageScore,
       ...risk,
     });
   }
@@ -379,6 +500,22 @@ async function main() {
     calmarForScore: clamp(item.calmarRatio, -2, 10),
     annualizedForScore: clamp(item.annualizedReturn, -0.8, 3),
     volatilityControl: 1 - clamp(item.annualizedVolatility / 2.5, 0, 1),
+    depositorPositiveForScore:
+      item.depositorPositivePnlRatio === null
+        ? 0
+        : clamp(item.depositorPositivePnlRatio, 0, 1),
+    depositorEquityPositiveForScore:
+      item.depositorEquityWeightedPositiveRatio === null
+        ? 0
+        : clamp(item.depositorEquityWeightedPositiveRatio, 0, 1),
+    depositorLongTenureForScore:
+      item.depositorLongTenureCapitalShare === null
+        ? 0
+        : clamp(item.depositorLongTenureCapitalShare, 0, 1),
+    depositorDailyReturnForScore:
+      item.depositorMedianDailyReturnApprox === null
+        ? -0.01
+        : clamp(item.depositorMedianDailyReturnApprox, -0.01, 0.01),
   }));
 
   const percentileMaps = {
@@ -403,19 +540,38 @@ async function main() {
     ),
     age: percentileRankMap(scoringBase, "ageDays"),
     consistency: percentileRankMap(scoringBase, "consistencyScore"),
+    depositorPositive: percentileRankMap(scoringBase, "depositorPositiveForScore"),
+    depositorEquityPositive: percentileRankMap(
+      scoringBase,
+      "depositorEquityPositiveForScore",
+    ),
+    depositorLongTenure: percentileRankMap(scoringBase, "depositorLongTenureForScore"),
+    depositorDailyReturn: percentileRankMap(
+      scoringBase,
+      "depositorDailyReturnForScore",
+    ),
+    depositorCoverage: percentileRankMap(scoringBase, "depositorCoverageScore"),
   };
 
   for (const vault of modeled) {
+    const depositorComposite =
+      0.3 * percentileMaps.depositorPositive.get(vault.vaultAddress) +
+      0.25 * percentileMaps.depositorEquityPositive.get(vault.vaultAddress) +
+      0.2 * percentileMaps.depositorDailyReturn.get(vault.vaultAddress) +
+      0.15 * percentileMaps.depositorLongTenure.get(vault.vaultAddress) +
+      0.1 * percentileMaps.depositorCoverage.get(vault.vaultAddress);
+
     const score =
-      0.22 * percentileMaps.sharpe.get(vault.vaultAddress) +
-      0.1 * percentileMaps.sortino.get(vault.vaultAddress) +
-      0.14 * percentileMaps.calmar.get(vault.vaultAddress) +
-      0.16 * percentileMaps.annualizedReturn.get(vault.vaultAddress) +
-      0.14 * percentileMaps.drawdownInverse.get(vault.vaultAddress) +
-      0.08 * percentileMaps.volatilityControl.get(vault.vaultAddress) +
-      0.08 * percentileMaps.tvl.get(vault.vaultAddress) +
-      0.04 * percentileMaps.age.get(vault.vaultAddress) +
-      0.04 * percentileMaps.consistency.get(vault.vaultAddress);
+      0.19 * percentileMaps.sharpe.get(vault.vaultAddress) +
+      0.08 * percentileMaps.sortino.get(vault.vaultAddress) +
+      0.12 * percentileMaps.calmar.get(vault.vaultAddress) +
+      0.13 * percentileMaps.annualizedReturn.get(vault.vaultAddress) +
+      0.12 * percentileMaps.drawdownInverse.get(vault.vaultAddress) +
+      0.07 * percentileMaps.volatilityControl.get(vault.vaultAddress) +
+      0.07 * percentileMaps.tvl.get(vault.vaultAddress) +
+      0.03 * percentileMaps.age.get(vault.vaultAddress) +
+      0.03 * percentileMaps.consistency.get(vault.vaultAddress) +
+      0.16 * depositorComposite;
 
     let penalty = 1;
     if (vault.maxDrawdown > 0.45) penalty *= 0.7;
@@ -427,8 +583,25 @@ async function main() {
     if (vault.apr < 0) penalty *= 0.9;
     if (vault.leaderCommission > 0.2) penalty *= 0.9;
     if (vault.ageDays < 120) penalty *= 0.9;
+    if (vault.depositorEligibleFollowers < 10) penalty *= 0.9;
+    if (
+      vault.depositorPositivePnlRatio !== null &&
+      vault.depositorPositivePnlRatio < 0.4
+    ) {
+      penalty *= 0.85;
+    }
+    if (
+      vault.depositorEquityWeightedPositiveRatio !== null &&
+      vault.depositorEquityWeightedPositiveRatio < 0.45
+    ) {
+      penalty *= 0.9;
+    }
+    if (vault.depositorDeepLossRatio !== null && vault.depositorDeepLossRatio > 0.2) {
+      penalty *= 0.9;
+    }
 
     vault.compositeScore = score * penalty;
+    vault.depositorCompositeScore = depositorComposite;
   }
 
   const ranked = modeled
@@ -453,6 +626,7 @@ async function main() {
         sortinoProxy: Number(vault.sortinoProxy.toFixed(6)),
         calmarRatio: Number(vault.calmarRatio.toFixed(6)),
         consistencyScore: Number(vault.consistencyScore.toFixed(6)),
+        depositorCompositeScore: Number(vault.depositorCompositeScore.toFixed(6)),
         dayReturn: vault.dayReturn === null ? null : Number(vault.dayReturn.toFixed(6)),
         weekReturn: vault.weekReturn === null ? null : Number(vault.weekReturn.toFixed(6)),
         monthReturn:
@@ -461,6 +635,31 @@ async function main() {
         observations: vault.observations,
         leaderCommission: Number(vault.leaderCommission.toFixed(4)),
         followerCount: vault.followers,
+        depositorEligibleFollowers: vault.depositorEligibleFollowers,
+        depositorPositivePnlRatio:
+          vault.depositorPositivePnlRatio === null
+            ? null
+            : Number(vault.depositorPositivePnlRatio.toFixed(6)),
+        depositorEquityWeightedPositiveRatio:
+          vault.depositorEquityWeightedPositiveRatio === null
+            ? null
+            : Number(vault.depositorEquityWeightedPositiveRatio.toFixed(6)),
+        depositorLongTenureCapitalShare:
+          vault.depositorLongTenureCapitalShare === null
+            ? null
+            : Number(vault.depositorLongTenureCapitalShare.toFixed(6)),
+        depositorMedianDailyPnlUsd:
+          vault.depositorMedianDailyPnlUsd === null
+            ? null
+            : Number(vault.depositorMedianDailyPnlUsd.toFixed(6)),
+        depositorMedianDailyReturnApprox:
+          vault.depositorMedianDailyReturnApprox === null
+            ? null
+            : Number(vault.depositorMedianDailyReturnApprox.toFixed(8)),
+        depositorDeepLossRatio:
+          vault.depositorDeepLossRatio === null
+            ? null
+            : Number(vault.depositorDeepLossRatio.toFixed(6)),
       },
     }));
 
@@ -483,23 +682,34 @@ async function main() {
         minTvlUsd: MIN_TVL_USD,
         minTrackDays: MIN_TRACK_DAYS,
         minObservations: MIN_OBSERVATIONS,
+        minDepositorDays: MIN_DEPOSITOR_DAYS,
+        longDepositorDays: LONG_DEPOSITOR_DAYS,
       },
       methodology: {
         style: "quant multi-factor ranking",
         factors: [
-          "Sharpe proxy percentile (22%)",
-          "Sortino proxy percentile (10%)",
-          "Calmar percentile (14%)",
-          "Annualized return percentile (16%, winsorized)",
-          "Drawdown control percentile (14%)",
-          "Volatility control percentile (8%)",
-          "TVL robustness percentile (8%)",
-          "Track record age percentile (4%)",
-          "Recent consistency percentile (4%)",
+          "Sharpe proxy percentile (19%)",
+          "Sortino proxy percentile (8%)",
+          "Calmar percentile (12%)",
+          "Annualized return percentile (13%, winsorized)",
+          "Drawdown control percentile (12%)",
+          "Volatility control percentile (7%)",
+          "TVL robustness percentile (7%)",
+          "Track record age percentile (3%)",
+          "Recent consistency percentile (3%)",
+          "Depositor quality composite (16%)",
+        ],
+        depositorComposite: [
+          `Depositor 正收益占比（>=${MIN_DEPOSITOR_DAYS}天）`,
+          "Depositor 资金加权正收益占比",
+          `Depositor 长期跟随资金占比（>=${LONG_DEPOSITOR_DAYS}天）`,
+          "Depositor 中位日收益代理",
+          "Depositor 有效样本覆盖度",
         ],
         normalization: [
           "Sharpe/Sortino/Calmar/Annualized return 因子均做区间封顶，避免异常值主导",
           "年化波动单独作为负向控制因子",
+          "Depositor 日收益代理做区间裁剪（-1%~+1%/日）",
         ],
         penalties: [
           "Max drawdown > 45%",
@@ -510,6 +720,10 @@ async function main() {
           "Negative APR",
           "Leader commission > 20%",
           "Track record age < 120 days",
+          "Depositor 有效样本偏少（<10）",
+          "Depositor 正收益占比偏低",
+          "Depositor 资金加权正收益占比偏低",
+          "Depositor 深度亏损占比偏高",
         ],
       },
     },
