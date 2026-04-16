@@ -279,6 +279,17 @@
         cards.innerHTML = analysis.topStrategies
           .map((strategy) => {
             const m = strategy.metrics;
+            const depositorPositiveRatio =
+              m.depositorPositivePnlRatio ?? m.depositorPositiveRatio30;
+            const depositorPositiveCapitalRatio =
+              m.depositorEquityWeightedPositiveRatio ??
+              m.depositorPositiveCapitalRatio30;
+            const depositorLongTenureRatio =
+              m.depositorLongTenureCapitalShare ??
+              m.depositorLongTenureCapitalRatio90;
+            const depositorMedianDailyPnl =
+              m.depositorMedianDailyPnlUsd ?? m.depositorMedianDailyPnl30;
+            const depositorDeepLossRatio = m.depositorDeepLossRatio;
             return `
             <article class="card">
               <div class="card-head">
@@ -332,18 +343,23 @@
                   m.leaderCommission,
                 )} / ${m.followerCount}</div></div>
                 <div class="metric"><div class="k">跟随者正收益占比(30+天)</div><div class="v">${pct(
-                  m.depositorPositiveRatio30,
+                  depositorPositiveRatio,
                 )}</div></div>
                 <div class="metric"><div class="k">资金加权正收益占比</div><div class="v">${pct(
-                  m.depositorPositiveCapitalRatio30,
+                  depositorPositiveCapitalRatio,
                 )}</div></div>
                 <div class="metric"><div class="k">长期跟随资金占比(90+天)</div><div class="v">${pct(
-                  m.depositorLongTenureCapitalRatio90,
+                  depositorLongTenureRatio,
                 )}</div></div>
                 <div class="metric"><div class="k">跟随者中位日PnL(USD)</div><div class="v">${num(
-                  m.depositorMedianDailyPnl30,
+                  depositorMedianDailyPnl,
                   2,
                 )}</div></div>
+                <div class="metric"><div class="k">跟随者深亏占比</div><div class="v ${signedClass(
+                  depositorDeepLossRatio !== null && depositorDeepLossRatio > 0
+                    ? -1
+                    : 0,
+                )}">${pct(depositorDeepLossRatio)}</div></div>
               </div>
 
               <ul class="reasons">
