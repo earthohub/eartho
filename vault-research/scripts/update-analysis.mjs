@@ -640,7 +640,16 @@ async function main() {
           vault.depositorPositivePnlRatio === null
             ? null
             : Number(vault.depositorPositivePnlRatio.toFixed(6)),
+        // Backward-compatible aliases for older dashboard field names.
+        depositorPositiveRatio30:
+          vault.depositorPositivePnlRatio === null
+            ? null
+            : Number(vault.depositorPositivePnlRatio.toFixed(6)),
         depositorEquityWeightedPositiveRatio:
+          vault.depositorEquityWeightedPositiveRatio === null
+            ? null
+            : Number(vault.depositorEquityWeightedPositiveRatio.toFixed(6)),
+        depositorPositiveCapitalRatio30:
           vault.depositorEquityWeightedPositiveRatio === null
             ? null
             : Number(vault.depositorEquityWeightedPositiveRatio.toFixed(6)),
@@ -648,7 +657,15 @@ async function main() {
           vault.depositorLongTenureCapitalShare === null
             ? null
             : Number(vault.depositorLongTenureCapitalShare.toFixed(6)),
+        depositorLongTenureCapitalRatio90:
+          vault.depositorLongTenureCapitalShare === null
+            ? null
+            : Number(vault.depositorLongTenureCapitalShare.toFixed(6)),
         depositorMedianDailyPnlUsd:
+          vault.depositorMedianDailyPnlUsd === null
+            ? null
+            : Number(vault.depositorMedianDailyPnlUsd.toFixed(6)),
+        depositorMedianDailyPnl30:
           vault.depositorMedianDailyPnlUsd === null
             ? null
             : Number(vault.depositorMedianDailyPnlUsd.toFixed(6)),
