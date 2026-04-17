@@ -258,17 +258,24 @@
 
       function hasDepositorMetrics(metrics) {
         if (!metrics) return false;
-        return (
-          metrics.depositorPositivePnlRatio !== undefined ||
-          metrics.depositorPositiveRatio30 !== undefined ||
-          metrics.depositorEquityWeightedPositiveRatio !== undefined ||
-          metrics.depositorPositiveCapitalRatio30 !== undefined ||
-          metrics.depositorLongTenureCapitalShare !== undefined ||
-          metrics.depositorLongTenureCapitalRatio90 !== undefined ||
+        const hasDailyPnl =
           metrics.depositorMedianDailyPnlUsd !== undefined ||
-          metrics.depositorMedianDailyPnl30 !== undefined ||
+          metrics.depositorMedianDailyPnl30 !== undefined;
+        const hasInvestAmount =
           metrics.depositorMedianInvestedAmountUsd !== undefined ||
-          metrics.depositorMedianInvestAmount30 !== undefined
+          metrics.depositorMedianInvestmentAmountUsd !== undefined ||
+          metrics.depositorMedianInvestAmountUsd !== undefined ||
+          metrics.depositorMedianDailyPnlAmountUsd !== undefined ||
+          metrics.depositorMedianInvestAmount30 !== undefined;
+        return (
+          (metrics.depositorPositivePnlRatio !== undefined ||
+            metrics.depositorPositiveRatio30 !== undefined) &&
+          (metrics.depositorEquityWeightedPositiveRatio !== undefined ||
+            metrics.depositorPositiveCapitalRatio30 !== undefined) &&
+          (metrics.depositorLongTenureCapitalShare !== undefined ||
+            metrics.depositorLongTenureCapitalRatio90 !== undefined) &&
+          hasDailyPnl &&
+          hasInvestAmount
         );
       }
 
@@ -361,6 +368,10 @@
                 depositorMedianDailyPnl30: patched.depositorMedianDailyPnlUsd,
                 depositorMedianInvestedAmountUsd:
                   patched.depositorMedianInvestAmountUsd,
+                depositorMedianInvestmentAmountUsd:
+                  patched.depositorMedianInvestAmountUsd,
+                depositorMedianDailyPnlAmountUsd:
+                  patched.depositorMedianInvestAmountUsd,
                 depositorMedianInvestAmount30:
                   patched.depositorMedianInvestAmountUsd,
               });
@@ -422,6 +433,8 @@
               m.depositorLongTenureCapitalRatio90;
             const depositorMedianInvestAmount =
               m.depositorMedianInvestedAmountUsd ??
+              m.depositorMedianInvestmentAmountUsd ??
+              m.depositorMedianInvestAmountUsd ??
               m.depositorMedianDailyPnlAmountUsd ??
               m.depositorMedianInvestAmount30;
             const depositorDeepLossRatio = m.depositorDeepLossRatio;
@@ -478,11 +491,10 @@
                 <div class="metric"><div class="k">长期跟随资金占比(90+天)</div><div class="v">${pct(
                   depositorLongTenureRatio,
                 )}</div></div>
-                <div class="metric"><div class="k">跟随者中位日PnL</div><div class="v">${num(
+                <div class="metric"><div class="k">跟随者中位日PnL / 中位总投资金额(USD)</div><div class="v">${num(
                   m.depositorMedianDailyPnlUsd ?? m.depositorMedianDailyPnl30,
                   2,
-                )}</div></div>
-                <div class="metric"><div class="k">跟随者中位投资金额</div><div class="v">${num(
+                )} / ${num(
                   depositorMedianInvestAmount,
                   2,
                 )}</div></div>
