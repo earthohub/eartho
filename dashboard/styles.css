@@ -1,0 +1,290 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f1116;
+  --panel: #171a22;
+  --panel-2: #1d2230;
+  --text: #e5e9f0;
+  --muted: #9aa3b2;
+  --primary: #3f8cff;
+  --positive: #39d98a;
+  --warning: #f6c760;
+  --negative: #ff6b7a;
+  --border: #2a3040;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 28px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn.primary {
+  background: var(--primary);
+  border-color: #5da3ff;
+  color: white;
+}
+
+.summary-card {
+  margin: 18px 28px 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.metrics {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.metric-pill {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.layout {
+  display: grid;
+  gap: 16px;
+  padding: 18px 28px 30px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.hint {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+tr:hover td {
+  background: #1d2230;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.score {
+  font-weight: 700;
+  color: #99d7ff;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 3px 9px;
+  margin-right: 6px;
+  border: 1px solid transparent;
+}
+
+.tag.trend {
+  background: rgba(57, 217, 138, 0.15);
+  color: #83efb8;
+  border-color: rgba(57, 217, 138, 0.35);
+}
+
+.tag.reversal {
+  background: rgba(246, 199, 96, 0.15);
+  color: #ffd98a;
+  border-color: rgba(246, 199, 96, 0.35);
+}
+
+.tag.hft-mm {
+  background: rgba(63, 140, 255, 0.15);
+  color: #9cc7ff;
+  border-color: rgba(63, 140, 255, 0.35);
+}
+
+.tag.event {
+  background: rgba(255, 107, 122, 0.15);
+  color: #ffadb7;
+  border-color: rgba(255, 107, 122, 0.35);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.rule-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  background: var(--panel-2);
+}
+
+.rule-card h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.rule-card p {
+  margin: 6px 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.tier-layout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rank-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.rank-list li {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 9px;
+  font-size: 13px;
+  background: var(--panel-2);
+}
+
+.method-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.method-list li + li {
+  margin-top: 6px;
+}
+
+.pos {
+  color: var(--positive);
+}
+
+.neg {
+  color: var(--negative);
+}
+
+@media (max-width: 980px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary-card {
+    margin-left: 16px;
+    margin-right: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .layout {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .tier-layout {
+    grid-template-columns: 1fr;
+  }
+}

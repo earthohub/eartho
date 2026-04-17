@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hyperliquid 私人跟踪面板</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div>
+        <h1>Hyperliquid 私人跟踪面板</h1>
+        <p class="subtitle">
+          10地址风格画像 + 可执行跟踪清单 + Top30分层池（核心/观察/淘汰）
+        </p>
+      </div>
+      <div class="header-actions">
+        <button id="refreshBtn" class="btn primary">更新数据</button>
+        <button id="exportBtn" class="btn">导出JSON</button>
+      </div>
+    </header>
+
+    <section class="summary-card" id="summaryCard">
+      <div>
+        <h2>运行概览</h2>
+        <p id="statusText">准备加载...</p>
+      </div>
+      <div class="metrics" id="summaryMetrics"></div>
+    </section>
+
+    <main class="layout">
+      <section class="card">
+        <h2>Top10 地址：交易风格画像</h2>
+        <p class="hint">按多因子综合分排序，标签为主风格/次风格。</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>地址</th>
+                <th>风格画像</th>
+                <th>账户净值</th>
+                <th>月ROI</th>
+                <th>月PnL</th>
+                <th>月成交额</th>
+                <th>综合分</th>
+              </tr>
+            </thead>
+            <tbody id="top10Body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>可执行跟踪清单（入场/跟随/止损）</h2>
+        <p class="hint">规则按地址风格自动生成，可直接执行或二次微调。</p>
+        <div id="checklistGrid" class="grid"></div>
+      </section>
+
+      <section class="card">
+        <h2>Top30 分层名单</h2>
+        <p class="hint">核心池=优先实盘跟踪；观察池=候选；淘汰池=暂不跟踪。</p>
+        <div class="tier-layout">
+          <div>
+            <h3>核心池（Top1-10）</h3>
+            <ul id="corePool" class="rank-list"></ul>
+          </div>
+          <div>
+            <h3>观察池（Top11-20）</h3>
+            <ul id="watchPool" class="rank-list"></ul>
+          </div>
+          <div>
+            <h3>淘汰池（Top21-30）</h3>
+            <ul id="dropPool" class="rank-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>方法与说明</h2>
+        <ul class="method-list">
+          <li>数据源：Mainnet leaderboard + vaults（实时拉取）。</li>
+          <li>过滤：剔除子Vault、HLP/Liquidator、treasury等非目标地址。</li>
+          <li>
+            可跟踪门槛：账户净值 ≥ 500k USDC，月成交额 ≥ 50m USDC（可在代码中调参）。
+          </li>
+          <li>
+            综合分权重：收益质量28% + 绝对Alpha22% + 交易效率20% + 一致性15% + 容量10% + 回撤代理5%。
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

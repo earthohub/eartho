@@ -1,0 +1,292 @@
+#!/usr/bin/env node
+
+/**
+ * Hyperliquid dashboard data updater
+ * Pulls latest Mainnet leaderboard + vaults,
+ * computes rankings, styles, rules, and writes data/latest.json.
+ */
+
+const fs = require("fs");
+const path = require("path");
+
+const LEADERBOARD_URL =
+  "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard";
+const VAULTS_URL = "https://stats-data.hyperliquid.xyz/Mainnet/vaults";
+
+const OUTPUT_DIR = path.join(__dirname, "data");
+const OUTPUT_FILE = path.join(OUTPUT_DIR, "latest.json");
+
+const TREASURY_ADDRESSES = new Set(
+  [
+    "0x1f6093d33db935b2ebd81d23312da5f11759973e",
+    "0x24de6b77e8bc31c40aa452926daa6bbab7a71b0f",
+    "0x2d1e9d7702fc42a1dc0d19c5a4e46925d5b7d9ac",
+    "0x54cd89623888e8010fdea1c62e86265a9c6da950",
+    "0x574bafce69d9411f662a433896e74e4f153096fa",
+    "0x5b6fce52630f5f11fc9b77dfa5cfa8970f944ec2",
+    "0x6777dba3e54300b7c69f68fa6f796e5e7d0d0c61",
+    "0x8dafbe89302656a7df43c470e9ebcb4c540835c0",
+    "0x8ac07902383196b25a8a48efeb5a59e317da789e",
+    "0xa822a9ceb6d6cb5b565bd10098abcfa9cf18d748",
+    "0xe6111266afdcdf0b1fe8505028cc1f7419d798a7",
+    "0xbfdf5fb5680cd15375f751f6262143fc4b3f6e1e",
+    "0xdc78799911e46baca335e6c5ba50da89e9885520",
+    "0xf3b6be5fb66f4e1a7f74454e9579985f038579bc",
+    "0x010461c14e146ac35fe42271bdc1134ee31c703a",
+    "0x31ca8395cf837de08b24da3f660e77761dfb974b",
+    "0xffffffffffffffffffffffffffffffffffffffff",
+  ].map((x) => x.toLowerCase()),
+);
+
+const EXCLUDE_VAULT_NAMES = new Set([
+  "Liquidator",
+  "Hyperliquidity Provider (HLP)",
+]);
+
+const TRACKING_FLOOR = {
+  accountValue: 500_000,
+  monthVlm: 50_000_000,
+};
+
+function toNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function parseWindowPerformance(windowPerformances) {
+  const m = new Map(windowPerformances || []);
+  const read = (w, k) => toNum((m.get(w) || {})[k]);
+  return {
+    pnl_d: read("day", "pnl"),
+    pnl_w: read("week", "pnl"),
+    pnl_m: read("month", "pnl"),
+    pnl_a: read("allTime", "pnl"),
+    roi_d: read("day", "roi"),
+    roi_w: read("week", "roi"),
+    roi_m: read("month", "roi"),
+    roi_a: read("allTime", "roi"),
+    vlm_d: read("day", "vlm"),
+    vlm_w: read("week", "vlm"),
+    vlm_m: read("month", "vlm"),
+    vlm_a: read("allTime", "vlm"),
+  };
+}
+
+function percentileRanks(rows, key, outKey) {
+  const pairs = rows.map((r, i) => ({ i, v: r[key] })).sort((a, b) => a.v - b.v);
+  const n = pairs.length;
+  let start = 0;
+  while (start < n) {
+    let end = start;
+    while (end + 1 < n && pairs[end + 1].v === pairs[start].v) end += 1;
+    const p = n > 1 ? ((start + end) / 2) / (n - 1) : 1;
+    for (let j = start; j <= end; j += 1) rows[pairs[j].i][outKey] = p;
+    start = end + 1;
+  }
+}
+
+function classifyStyle(row) {
+  const roiM = row.roi_m;
+  const roiW = row.roi_w;
+  const eff = row.eff_raw;
+  const monthlyTurnover = row.vlm_m / Math.max(row.accountValue, 1);
+  const signFlip = row.pnls.filter((x) => x > 0).length <= 2;
+  const speed = row.vlm_d / Math.max(row.vlm_m, 1);
+
+  let primary = "趋势";
+  let secondary = "事件驱动";
+
+  if (monthlyTurnover > 30 && eff < 60) {
+    primary = "高频做市";
+    secondary = "反转";
+  } else if (signFlip && Math.abs(roiM) < 0.2 && Math.abs(roiW) < 0.1) {
+    primary = "反转";
+    secondary = "事件驱动";
+  } else if (roiM > 0.2 && roiW > 0) {
+    primary = "趋势";
+    secondary = speed > 0.09 ? "事件驱动" : "高频做市";
+  } else if (speed > 0.12) {
+    primary = "事件驱动";
+    secondary = "高频做市";
+  }
+
+  return { primary, secondary };
+}
+
+function buildRules(row) {
+  const { primary, secondary } = row.style;
+  const risk = row.accountValue > 15_000_000 ? "稳健" : "进取";
+
+  let entry = "";
+  let follow = "";
+  let stop = "";
+
+  if (primary === "趋势") {
+    entry = "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。";
+    follow = "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。";
+    stop = "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。";
+  } else if (primary === "反转") {
+    entry = "日PnL转负但周/月PnL仍正，且出现逆向开仓时小仓试单。";
+    follow = "首单10%，确认盈利后加到25%；严禁追单超过2次。";
+    stop = "单笔-1.5R止损，连续3次失败当周停止跟随。";
+  } else if (primary === "高频做市") {
+    entry = "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。";
+    follow = "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。";
+    stop = "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。";
+  } else {
+    entry = "重大波动窗口（资金费率、公告、链上异动）出现后再跟随。";
+    follow = "事件后首30分钟轻仓，确认延续后加仓，事件结束逐步退出。";
+    stop = "事件反向2根K线或波动衰减50%即离场。";
+  }
+
+  return {
+    riskProfile: risk,
+    style: `${primary}/${secondary}`,
+    entryCondition: entry,
+    followThreshold: follow,
+    stopRule: stop,
+  };
+}
+
+async function pullJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Request failed: ${url} (${res.status})`);
+  return res.json();
+}
+
+async function main() {
+  const [lbRaw, vaults] = await Promise.all([
+    pullJson(LEADERBOARD_URL),
+    pullJson(VAULTS_URL),
+  ]);
+
+  const exclude = new Set(TREASURY_ADDRESSES);
+
+  for (const v of vaults) {
+    const s = v.summary || {};
+    const relType = (s.relationship || {}).type;
+    const name = s.name;
+    if (relType === "child" || EXCLUDE_VAULT_NAMES.has(name)) {
+      const addr = String(s.vaultAddress || "").toLowerCase();
+      if (addr) exclude.add(addr);
+    }
+  }
+
+  const rows = (lbRaw.leaderboardRows || [])
+    .map((r) => {
+      const w = parseWindowPerformance(r.windowPerformances);
+      return {
+        address: String(r.ethAddress || "").toLowerCase(),
+        displayName: r.displayName || "",
+        accountValue: toNum(r.accountValue),
+        ...w,
+      };
+    })
+    .filter((r) => r.address && !exclude.has(r.address));
+
+  const eligible = rows.filter(
+    (r) =>
+      r.accountValue >= TRACKING_FLOOR.accountValue &&
+      r.vlm_m >= TRACKING_FLOOR.monthVlm,
+  );
+
+  for (const r of eligible) {
+    r.profit_roi_raw = 0.45 * r.roi_m + 0.2 * r.roi_w + 0.2 * r.roi_a + 0.15 * r.roi_d;
+    r.alpha_pnl_raw = 0.4 * r.pnl_m + 0.3 * r.pnl_a + 0.2 * r.pnl_w + 0.1 * r.pnl_d;
+    r.eff_raw =
+      10000 *
+      (0.65 * (r.pnl_m / Math.max(r.vlm_m, 1)) +
+        0.25 * (r.pnl_w / Math.max(r.vlm_w, 1)) +
+        0.1 * (r.pnl_a / Math.max(r.vlm_a, 1)));
+    const posPnl = [r.pnl_d, r.pnl_w, r.pnl_m, r.pnl_a].filter((x) => x > 0).length;
+    const posRoi = [r.roi_d, r.roi_w, r.roi_m, r.roi_a].filter((x) => x > 0).length;
+    r.cons_raw =
+      0.6 * (posPnl / 4) +
+      0.4 * (posRoi / 4) -
+      0.35 * Math.max(0, -r.roi_m) -
+      0.2 * Math.max(0, -r.roi_w);
+    r.capacity_raw =
+      0.55 * Math.log10(r.accountValue + 1) + 0.45 * Math.log10(r.vlm_m + 1);
+    r.drawdown_raw =
+      Math.min(r.pnl_d, r.pnl_w, r.pnl_m, 0) / Math.max(r.accountValue, 1);
+    r.pnls = [r.pnl_d, r.pnl_w, r.pnl_m, r.pnl_a];
+  }
+
+  percentileRanks(eligible, "profit_roi_raw", "profit_roi_pct");
+  percentileRanks(eligible, "alpha_pnl_raw", "alpha_pnl_pct");
+  percentileRanks(eligible, "eff_raw", "eff_pct");
+  percentileRanks(eligible, "cons_raw", "cons_pct");
+  percentileRanks(eligible, "capacity_raw", "capacity_pct");
+  percentileRanks(eligible, "drawdown_raw", "drawdown_pct");
+
+  for (const r of eligible) {
+    r.score =
+      0.28 * r.profit_roi_pct +
+      0.22 * r.alpha_pnl_pct +
+      0.2 * r.eff_pct +
+      0.15 * r.cons_pct +
+      0.1 * r.capacity_pct +
+      0.05 * r.drawdown_pct;
+    r.style = classifyStyle(r);
+    r.ruleBook = buildRules(r);
+  }
+
+  eligible.sort((a, b) => b.score - a.score);
+
+  const top30 = eligible.slice(0, 30).map((r, i) => ({
+    rank: i + 1,
+    address: r.address,
+    displayName: r.displayName,
+    style: r.style,
+    accountValue: r.accountValue,
+    monthRoiPct: r.roi_m * 100,
+    monthPnl: r.pnl_m,
+    monthVlm: r.vlm_m,
+    score: r.score,
+    factorPct: {
+      roi: r.profit_roi_pct * 100,
+      alpha: r.alpha_pnl_pct * 100,
+      efficiency: r.eff_pct * 100,
+      consistency: r.cons_pct * 100,
+      capacity: r.capacity_pct * 100,
+      drawdown: r.drawdown_pct * 100,
+    },
+    ruleBook: r.ruleBook,
+  }));
+
+  const top10 = top30.slice(0, 10);
+
+  const output = {
+    generatedAt: new Date().toISOString(),
+    source: {
+      leaderboard: LEADERBOARD_URL,
+      vaults: VAULTS_URL,
+    },
+    summary: {
+      totalRowsRaw: (lbRaw.leaderboardRows || []).length,
+      totalRowsFiltered: rows.length,
+      totalEligible: eligible.length,
+      floor: TRACKING_FLOOR,
+    },
+    top10,
+    tiers: {
+      core: top30.slice(0, 10),
+      watch: top30.slice(10, 20),
+      drop: top30.slice(20, 30),
+    },
+    top30,
+  };
+
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2), "utf8");
+  console.log(`Updated dashboard data: ${OUTPUT_FILE}`);
+  console.log(
+    `Rows(raw/filtered/eligible): ${output.summary.totalRowsRaw}/${output.summary.totalRowsFiltered}/${output.summary.totalEligible}`,
+  );
+}
+
+main().catch((err) => {
+  console.error("Update failed:", err);
+  process.exit(1);
+});
+
