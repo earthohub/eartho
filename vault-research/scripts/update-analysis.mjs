@@ -280,9 +280,6 @@ function buildRationale(vault) {
   if (vault.maxDrawdown <= 0.15) {
     reasons.push(`历史最大回撤较低（${formatPct(vault.maxDrawdown)}）。`);
   }
-  if (vault.annualizedReturn >= 0.3 && vault.annualizedReturn <= 5) {
-    reasons.push(`年化收益代理较高（${formatAnnualizedForHumans(vault.annualizedReturn)}）。`);
-  }
   if (vault.tvlUsd >= 1_000_000) {
     reasons.push(
       `管理规模较大（TVL ${vault.tvlUsd.toLocaleString("en-US", { maximumFractionDigits: 0 })} USD），容量与稳定性更好。`,
@@ -310,9 +307,6 @@ function buildRationale(vault) {
       `长期跟随资金占比较高（${formatPct(vault.depositorLongTenureCapitalShare)}），资金粘性更好。`,
     );
   }
-  if (vault.annualizedReturn > 5) {
-    reasons.push("收益弹性极高，需重点核查可持续性与容量冲击风险。");
-  }
   if (!reasons.length) {
     reasons.push("综合评分在可投策略中位于前列，兼顾收益与回撤。");
   }
@@ -320,11 +314,20 @@ function buildRationale(vault) {
 }
 
 function computeStyle(vault) {
-  if (vault.maxDrawdown < 0.1 && vault.annualizedVolatility < 0.35) {
-    return "低波动稳健型";
+  if (
+    vault.maxDrawdown < 0.12 &&
+    vault.depositorPositivePnlRatio !== null &&
+    vault.depositorPositivePnlRatio >= 0.6
+  ) {
+    return "低回撤稳健型";
   }
-  if (vault.annualizedReturn > 0.5 && vault.maxDrawdown < 0.25) {
-    return "成长进攻型";
+  if (
+    vault.depositorPositivePnlRatio !== null &&
+    vault.depositorPositivePnlRatio >= 0.6 &&
+    vault.depositorLongTenureCapitalShare !== null &&
+    vault.depositorLongTenureCapitalShare >= 0.5
+  ) {
+    return "跟随者验证型";
   }
   return "均衡配置型";
 }
@@ -333,12 +336,6 @@ function buildRiskFlags(vault) {
   const flags = [];
   if (vault.maxDrawdown > 0.3) {
     flags.push(`历史回撤偏高（${formatPct(vault.maxDrawdown)}）`);
-  }
-  if (vault.annualizedVolatility > 1.5) {
-    flags.push(`年化波动偏高（${formatPct(vault.annualizedVolatility)}）`);
-  }
-  if (vault.annualizedReturn > 5) {
-    flags.push("年化收益代理异常高，可能受短样本放大");
   }
   if (vault.consistencyScore < 0.34) {
     flags.push("近期日/周/月收益一致性较弱");
@@ -505,9 +502,9 @@ async function main() {
 
   const scoringBase = modeled.map((item) => ({
     ...item,
-    sharpeForScore: clamp(item.sharpeProxy, -2, 5),
-    sortinoForScore: clamp(item.sortinoProxy, -2, 8),
-    calmarForScore: clamp(item.calmarRatio, -2, 10),
+    sharpeForScore: item.sharpeProxy,
+    sortinoForScore: item.sortinoProxy,
+    calmarForScore: item.calmarRatio,
     depositorPositiveForScore:
       item.depositorPositivePnlRatio === null
         ? 0
@@ -523,7 +520,7 @@ async function main() {
     depositorDailyReturnForScore:
       item.depositorMedianDailyReturnApprox === null
         ? -0.01
-        : clamp(item.depositorMedianDailyReturnApprox, -0.01, 0.01),
+        : item.depositorMedianDailyReturnApprox,
   }));
 
   const percentileMaps = {
@@ -720,10 +717,8 @@ async function main() {
           "Depositor 有效样本覆盖度",
         ],
         normalization: [
-          "Sharpe/Sortino/Calmar 因子做区间封顶，避免异常值主导",
           "年化收益代理不参与打分，仅保留“需为正”门槛",
           "一致性仅做轻权重辅助，且负一致性策略直接排除",
-          "Depositor 日收益代理做区间裁剪（-1%~+1%/日）",
         ],
         penalties: [
           "Max drawdown > 45%",

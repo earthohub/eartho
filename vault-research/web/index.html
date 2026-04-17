@@ -431,12 +431,6 @@
                 <div class="metric"><div class="k">综合评分</div><div class="v">${num(m.score, 4)}</div></div>
                 <div class="metric"><div class="k">TVL</div><div class="v">${usd(m.tvlUsd)}</div></div>
                 <div class="metric"><div class="k">APR</div><div class="v ${signedClass(m.apr)}">${pct(m.apr)}</div></div>
-                <div class="metric"><div class="k">年化收益代理</div><div class="v ${signedClass(
-                  m.annualizedReturn,
-                )}">${pct(m.annualizedReturn, { capLarge: true })}</div></div>
-                <div class="metric"><div class="k">年化波动</div><div class="v warning">${pct(
-                  m.annualizedVolatility,
-                )}</div></div>
                 <div class="metric"><div class="k">最大回撤</div><div class="v negative">${pct(
                   m.maxDrawdown,
                 )}</div></div>
@@ -461,9 +455,7 @@
                   m.trackDays,
                   0,
                 )} 天 (${m.observations} 点)</div></div>
-                <div class="metric"><div class="k">管理人分成 / 关注数</div><div class="v">${pct(
-                  m.leaderCommission,
-                )} / ${m.followerCount}</div></div>
+                <div class="metric"><div class="k">关注数</div><div class="v">${m.followerCount}</div></div>
                 <div class="metric"><div class="k">跟随者正收益占比(30+天)</div><div class="v">${pct(
                   depositorPositiveRatio,
                 )}</div></div>
