@@ -283,6 +283,7 @@
         let longTenureEquity = 0;
         let deepLossFollowers = 0;
         const dailyPnls = [];
+        const investAmounts = [];
 
         for (const follower of list) {
           const days = toNumber(follower.daysFollowing, 0);
@@ -298,6 +299,9 @@
 
           eligibleEquity += equity;
           if (pnl > 0) positiveEquity += equity;
+          if (initialCapitalApprox > 0) {
+            investAmounts.push(initialCapitalApprox);
+          }
           if (initialCapitalApprox > 1e-9 && pnl / initialCapitalApprox < -0.3) {
             deepLossFollowers += 1;
           }
@@ -312,6 +316,7 @@
           depositorLongTenureCapitalShare:
             eligibleEquity > 0 ? longTenureEquity / eligibleEquity : null,
           depositorMedianDailyPnlUsd: median(dailyPnls),
+          depositorMedianInvestAmountUsd: median(investAmounts),
           depositorDeepLossRatio:
             eligibleFollowers > 0 ? deepLossFollowers / eligibleFollowers : null,
         };
@@ -352,6 +357,7 @@
                 depositorLongTenureCapitalRatio90:
                   patched.depositorLongTenureCapitalShare,
                 depositorMedianDailyPnl30: patched.depositorMedianDailyPnlUsd,
+                depositorMedianInvestAmount30: patched.depositorMedianInvestAmountUsd,
               });
             } catch (error) {
               // ignore and keep existing metrics as-is
@@ -409,8 +415,8 @@
             const depositorLongTenureRatio =
               m.depositorLongTenureCapitalShare ??
               m.depositorLongTenureCapitalRatio90;
-            const depositorMedianDailyPnl =
-              m.depositorMedianDailyPnlUsd ?? m.depositorMedianDailyPnl30;
+            const depositorMedianInvestAmount =
+              m.depositorMedianInvestAmountUsd ?? m.depositorMedianInvestAmount30;
             const depositorDeepLossRatio = m.depositorDeepLossRatio;
             return `
             <article class="card">
@@ -465,8 +471,8 @@
                 <div class="metric"><div class="k">长期跟随资金占比(90+天)</div><div class="v">${pct(
                   depositorLongTenureRatio,
                 )}</div></div>
-                <div class="metric"><div class="k">跟随者中位日PnL(USD)</div><div class="v">${num(
-                  depositorMedianDailyPnl,
+                <div class="metric"><div class="k">跟随者中位日PnL（金额）</div><div class="v">${num(
+                  depositorMedianInvestAmount,
                   2,
                 )}</div></div>
                 <div class="metric"><div class="k">跟随者深亏占比</div><div class="v ${signedClass(

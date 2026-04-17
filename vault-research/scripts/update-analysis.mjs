@@ -188,6 +188,7 @@ function calcDepositorMetrics(followers) {
       equityWeightedPositiveRatio: null,
       longTenureCapitalShare: null,
       medianDailyPnlUsd: null,
+      medianInvestedAmountUsd: null,
       medianDailyReturnApprox: null,
       deepLossRatio: null,
       coverageScore: 0,
@@ -201,6 +202,7 @@ function calcDepositorMetrics(followers) {
   let positiveEquity = 0;
   let longTenureEquity = 0;
   const dailyPnls = [];
+  const investedAmounts = [];
   const dailyReturnApprox = [];
 
   for (const follower of list) {
@@ -219,6 +221,7 @@ function calcDepositorMetrics(followers) {
     if (pnl > 0) positiveEquity += equity;
 
     if (initialCapitalApprox > 1e-9) {
+      investedAmounts.push(initialCapitalApprox);
       const allTimeReturnApprox = pnl / initialCapitalApprox;
       dailyReturnApprox.push(allTimeReturnApprox / Math.max(days, 1));
       if (allTimeReturnApprox < -0.3) deepLossFollowers += 1;
@@ -241,6 +244,7 @@ function calcDepositorMetrics(followers) {
     equityWeightedPositiveRatio,
     longTenureCapitalShare,
     medianDailyPnlUsd: dailyPnls.length ? median(dailyPnls) : null,
+    medianInvestedAmountUsd: investedAmounts.length ? median(investedAmounts) : null,
     medianDailyReturnApprox: dailyReturnApprox.length ? median(dailyReturnApprox) : null,
     deepLossRatio,
     coverageScore: clamp(eligibleFollowers / 30, 0, 1),
@@ -489,6 +493,7 @@ async function main() {
         depositorStats.equityWeightedPositiveRatio,
       depositorLongTenureCapitalShare: depositorStats.longTenureCapitalShare,
       depositorMedianDailyPnlUsd: depositorStats.medianDailyPnlUsd,
+      depositorMedianInvestedAmountUsd: depositorStats.medianInvestedAmountUsd,
       depositorMedianDailyReturnApprox: depositorStats.medianDailyReturnApprox,
       depositorDeepLossRatio: depositorStats.deepLossRatio,
       depositorCoverageScore: depositorStats.coverageScore,
@@ -660,6 +665,14 @@ async function main() {
           vault.depositorMedianDailyPnlUsd === null
             ? null
             : Number(vault.depositorMedianDailyPnlUsd.toFixed(6)),
+        depositorMedianInvestedAmountUsd:
+          vault.depositorMedianInvestedAmountUsd === null
+            ? null
+            : Number(vault.depositorMedianInvestedAmountUsd.toFixed(6)),
+        depositorMedianDailyPnlAmountUsd:
+          vault.depositorMedianInvestedAmountUsd === null
+            ? null
+            : Number(vault.depositorMedianInvestedAmountUsd.toFixed(6)),
         depositorMedianDailyPnl30:
           vault.depositorMedianDailyPnlUsd === null
             ? null
