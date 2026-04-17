@@ -266,7 +266,9 @@
           metrics.depositorLongTenureCapitalShare !== undefined ||
           metrics.depositorLongTenureCapitalRatio90 !== undefined ||
           metrics.depositorMedianDailyPnlUsd !== undefined ||
-          metrics.depositorMedianDailyPnl30 !== undefined
+          metrics.depositorMedianDailyPnl30 !== undefined ||
+          metrics.depositorMedianInvestedAmountUsd !== undefined ||
+          metrics.depositorMedianInvestAmount30 !== undefined
         );
       }
 
@@ -357,7 +359,10 @@
                 depositorLongTenureCapitalRatio90:
                   patched.depositorLongTenureCapitalShare,
                 depositorMedianDailyPnl30: patched.depositorMedianDailyPnlUsd,
-                depositorMedianInvestAmount30: patched.depositorMedianInvestAmountUsd,
+                depositorMedianInvestedAmountUsd:
+                  patched.depositorMedianInvestAmountUsd,
+                depositorMedianInvestAmount30:
+                  patched.depositorMedianInvestAmountUsd,
               });
             } catch (error) {
               // ignore and keep existing metrics as-is
@@ -416,7 +421,9 @@
               m.depositorLongTenureCapitalShare ??
               m.depositorLongTenureCapitalRatio90;
             const depositorMedianInvestAmount =
-              m.depositorMedianInvestAmountUsd ?? m.depositorMedianInvestAmount30;
+              m.depositorMedianInvestedAmountUsd ??
+              m.depositorMedianDailyPnlAmountUsd ??
+              m.depositorMedianInvestAmount30;
             const depositorDeepLossRatio = m.depositorDeepLossRatio;
             return `
             <article class="card">
@@ -471,7 +478,11 @@
                 <div class="metric"><div class="k">长期跟随资金占比(90+天)</div><div class="v">${pct(
                   depositorLongTenureRatio,
                 )}</div></div>
-                <div class="metric"><div class="k">跟随者中位日PnL（金额）</div><div class="v">${num(
+                <div class="metric"><div class="k">跟随者中位日PnL</div><div class="v">${num(
+                  m.depositorMedianDailyPnlUsd ?? m.depositorMedianDailyPnl30,
+                  2,
+                )}</div></div>
+                <div class="metric"><div class="k">跟随者中位投资金额</div><div class="v">${num(
                   depositorMedianInvestAmount,
                   2,
                 )}</div></div>

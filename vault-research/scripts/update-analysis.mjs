@@ -669,6 +669,19 @@ async function main() {
           vault.depositorMedianInvestedAmountUsd === null
             ? null
             : Number(vault.depositorMedianInvestedAmountUsd.toFixed(6)),
+        depositorMedianInvestmentAmountUsd:
+          vault.depositorMedianInvestedAmountUsd === null
+            ? null
+            : Number(vault.depositorMedianInvestedAmountUsd.toFixed(6)),
+        // Compatibility aliases for prior frontend field names.
+        depositorMedianInvestAmountUsd:
+          vault.depositorMedianInvestedAmountUsd === null
+            ? null
+            : Number(vault.depositorMedianInvestedAmountUsd.toFixed(6)),
+        depositorMedianInvestAmount30:
+          vault.depositorMedianInvestedAmountUsd === null
+            ? null
+            : Number(vault.depositorMedianInvestedAmountUsd.toFixed(6)),
         depositorMedianDailyPnlAmountUsd:
           vault.depositorMedianInvestedAmountUsd === null
             ? null
