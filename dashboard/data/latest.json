@@ -1,0 +1,2058 @@
+{
+  "generatedAt": "2026-04-17T13:32:52.677Z",
+  "source": {
+    "leaderboard": "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard",
+    "vaults": "https://stats-data.hyperliquid.xyz/Mainnet/vaults"
+  },
+  "summary": {
+    "totalRowsRaw": 34414,
+    "totalRowsFiltered": 34403,
+    "totalEligible": 255,
+    "floor": {
+      "accountValue": 500000,
+      "monthVlm": 50000000
+    }
+  },
+  "top10": [
+    {
+      "rank": 1,
+      "address": "0x8af700ba841f30e0a3fcb0ee4c4a9d223e1efa05",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 24164697.057625,
+      "monthRoiPct": 9.44585489,
+      "monthPnl": 1998256.692578,
+      "monthVlm": 264490861.08,
+      "score": 0.8889370078740157,
+      "factorPct": {
+        "roi": 78.74015748031496,
+        "alpha": 97.24409448818898,
+        "efficiency": 96.8503937007874,
+        "consistency": 87.79527559055119,
+        "capacity": 86.61417322834646,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 2,
+      "address": "0xcb58b8f5ec6d47985f0728465c25a08ef9ad2c7b",
+      "displayName": "cat hot wallet",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 4598704.575372,
+      "monthRoiPct": 11.19701679,
+      "monthPnl": 473171.990695,
+      "monthVlm": 69165341.88,
+      "score": 0.8698818897637796,
+      "factorPct": {
+        "roi": 98.4251968503937,
+        "alpha": 80.70866141732283,
+        "efficiency": 98.03149606299213,
+        "consistency": 87.79527559055119,
+        "capacity": 46.45669291338583,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 3,
+      "address": "0x8def9f50456c6c4e37fa5d3d57f108ed23992dae",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 24466235.293048,
+      "monthRoiPct": 8.381101370000001,
+      "monthPnl": 1940267.708696,
+      "monthVlm": 248114156.27,
+      "score": 0.865236220472441,
+      "factorPct": {
+        "roi": 79.92125984251969,
+        "alpha": 94.09448818897637,
+        "efficiency": 87.00787401574803,
+        "consistency": 87.79527559055119,
+        "capacity": 86.22047244094489,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 4,
+      "address": "0x350e33a777d510616fbdb483d1de3b50d1edfcfb",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 3309036.521497,
+      "monthRoiPct": 50.845332320000004,
+      "monthPnl": 1167806.484707,
+      "monthVlm": 204780033.23,
+      "score": 0.8616141732283464,
+      "factorPct": {
+        "roi": 98.81889763779527,
+        "alpha": 87.00787401574803,
+        "efficiency": 81.10236220472441,
+        "consistency": 87.79527559055119,
+        "capacity": 57.08661417322835,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 5,
+      "address": "0x8bae3527e5a33fa0cf184f37bc112d071463ab6d",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 4966160.66744,
+      "monthRoiPct": 109.88164780000001,
+      "monthPnl": 1887502.387847,
+      "monthVlm": 69969683.71,
+      "score": 0.8607480314960629,
+      "factorPct": {
+        "roi": 95.66929133858267,
+        "alpha": 83.46456692913385,
+        "efficiency": 93.7007874015748,
+        "consistency": 87.79527559055119,
+        "capacity": 47.63779527559055,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 6,
+      "address": "0x880ac484a1743862989a441d6d867238c7aa311c",
+      "displayName": "x35767",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 30579793.562202,
+      "monthRoiPct": 3.46823696,
+      "monthPnl": 1155785.461895,
+      "monthVlm": 116937820.94,
+      "score": 0.8587007874015748,
+      "factorPct": {
+        "roi": 73.62204724409449,
+        "alpha": 98.4251968503937,
+        "efficiency": 90.15748031496062,
+        "consistency": 87.79527559055119,
+        "capacity": 81.49606299212599,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 7,
+      "address": "0x469e9a7f624b04c24f0e64edf8d8a277e6bf58a5",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 11588658.952674,
+      "monthRoiPct": 27.48835523,
+      "monthPnl": 2498684.474556,
+      "monthVlm": 389571126.71,
+      "score": 0.8561023622047244,
+      "factorPct": {
+        "roi": 87.4015748031496,
+        "alpha": 87.4015748031496,
+        "efficiency": 81.49606299212599,
+        "consistency": 87.79527559055119,
+        "capacity": 81.88976377952756,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 8,
+      "address": "0x9e8b1e51c642f4c8b87c6ba11c53d516a218afc4",
+      "displayName": "",
+      "style": {
+        "primary": "高频做市",
+        "secondary": "反转"
+      },
+      "accountValue": 5552235.720995,
+      "monthRoiPct": 14.267107070000002,
+      "monthPnl": 693238.356636,
+      "monthVlm": 615531376.74,
+      "score": 0.8541338582677165,
+      "factorPct": {
+        "roi": 98.03149606299213,
+        "alpha": 90.15748031496062,
+        "efficiency": 64.56692913385827,
+        "consistency": 87.79527559055119,
+        "capacity": 77.95275590551181,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "高频做市/反转",
+        "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+        "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+        "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+      }
+    },
+    {
+      "rank": 9,
+      "address": "0xa312114b5795dff9b8db50474dd57701aa78ad1e",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 3137471.408161,
+      "monthRoiPct": 7.87976784,
+      "monthPnl": 1905491.970572,
+      "monthVlm": 82809399.93,
+      "score": 0.849251968503937,
+      "factorPct": {
+        "roi": 83.07086614173228,
+        "alpha": 98.03149606299213,
+        "efficiency": 92.91338582677166,
+        "consistency": 87.79527559055119,
+        "capacity": 40.94488188976378,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 10,
+      "address": "0xd47587702a91731dc1089b5db0932cf820151a91",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 45478053.353584,
+      "monthRoiPct": 11.39056591,
+      "monthPnl": 5154831.826234001,
+      "monthVlm": 296924726.31,
+      "score": 0.8364960629921261,
+      "factorPct": {
+        "roi": 63.77952755905512,
+        "alpha": 97.63779527559055,
+        "efficiency": 89.37007874015748,
+        "consistency": 87.79527559055119,
+        "capacity": 90.15748031496062,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    }
+  ],
+  "tiers": {
+    "core": [
+      {
+        "rank": 1,
+        "address": "0x8af700ba841f30e0a3fcb0ee4c4a9d223e1efa05",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 24164697.057625,
+        "monthRoiPct": 9.44585489,
+        "monthPnl": 1998256.692578,
+        "monthVlm": 264490861.08,
+        "score": 0.8889370078740157,
+        "factorPct": {
+          "roi": 78.74015748031496,
+          "alpha": 97.24409448818898,
+          "efficiency": 96.8503937007874,
+          "consistency": 87.79527559055119,
+          "capacity": 86.61417322834646,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 2,
+        "address": "0xcb58b8f5ec6d47985f0728465c25a08ef9ad2c7b",
+        "displayName": "cat hot wallet",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 4598704.575372,
+        "monthRoiPct": 11.19701679,
+        "monthPnl": 473171.990695,
+        "monthVlm": 69165341.88,
+        "score": 0.8698818897637796,
+        "factorPct": {
+          "roi": 98.4251968503937,
+          "alpha": 80.70866141732283,
+          "efficiency": 98.03149606299213,
+          "consistency": 87.79527559055119,
+          "capacity": 46.45669291338583,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 3,
+        "address": "0x8def9f50456c6c4e37fa5d3d57f108ed23992dae",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 24466235.293048,
+        "monthRoiPct": 8.381101370000001,
+        "monthPnl": 1940267.708696,
+        "monthVlm": 248114156.27,
+        "score": 0.865236220472441,
+        "factorPct": {
+          "roi": 79.92125984251969,
+          "alpha": 94.09448818897637,
+          "efficiency": 87.00787401574803,
+          "consistency": 87.79527559055119,
+          "capacity": 86.22047244094489,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 4,
+        "address": "0x350e33a777d510616fbdb483d1de3b50d1edfcfb",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 3309036.521497,
+        "monthRoiPct": 50.845332320000004,
+        "monthPnl": 1167806.484707,
+        "monthVlm": 204780033.23,
+        "score": 0.8616141732283464,
+        "factorPct": {
+          "roi": 98.81889763779527,
+          "alpha": 87.00787401574803,
+          "efficiency": 81.10236220472441,
+          "consistency": 87.79527559055119,
+          "capacity": 57.08661417322835,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 5,
+        "address": "0x8bae3527e5a33fa0cf184f37bc112d071463ab6d",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 4966160.66744,
+        "monthRoiPct": 109.88164780000001,
+        "monthPnl": 1887502.387847,
+        "monthVlm": 69969683.71,
+        "score": 0.8607480314960629,
+        "factorPct": {
+          "roi": 95.66929133858267,
+          "alpha": 83.46456692913385,
+          "efficiency": 93.7007874015748,
+          "consistency": 87.79527559055119,
+          "capacity": 47.63779527559055,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 6,
+        "address": "0x880ac484a1743862989a441d6d867238c7aa311c",
+        "displayName": "x35767",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 30579793.562202,
+        "monthRoiPct": 3.46823696,
+        "monthPnl": 1155785.461895,
+        "monthVlm": 116937820.94,
+        "score": 0.8587007874015748,
+        "factorPct": {
+          "roi": 73.62204724409449,
+          "alpha": 98.4251968503937,
+          "efficiency": 90.15748031496062,
+          "consistency": 87.79527559055119,
+          "capacity": 81.49606299212599,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 7,
+        "address": "0x469e9a7f624b04c24f0e64edf8d8a277e6bf58a5",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 11588658.952674,
+        "monthRoiPct": 27.48835523,
+        "monthPnl": 2498684.474556,
+        "monthVlm": 389571126.71,
+        "score": 0.8561023622047244,
+        "factorPct": {
+          "roi": 87.4015748031496,
+          "alpha": 87.4015748031496,
+          "efficiency": 81.49606299212599,
+          "consistency": 87.79527559055119,
+          "capacity": 81.88976377952756,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 8,
+        "address": "0x9e8b1e51c642f4c8b87c6ba11c53d516a218afc4",
+        "displayName": "",
+        "style": {
+          "primary": "高频做市",
+          "secondary": "反转"
+        },
+        "accountValue": 5552235.720995,
+        "monthRoiPct": 14.267107070000002,
+        "monthPnl": 693238.356636,
+        "monthVlm": 615531376.74,
+        "score": 0.8541338582677165,
+        "factorPct": {
+          "roi": 98.03149606299213,
+          "alpha": 90.15748031496062,
+          "efficiency": 64.56692913385827,
+          "consistency": 87.79527559055119,
+          "capacity": 77.95275590551181,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "高频做市/反转",
+          "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+          "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+          "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+        }
+      },
+      {
+        "rank": 9,
+        "address": "0xa312114b5795dff9b8db50474dd57701aa78ad1e",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 3137471.408161,
+        "monthRoiPct": 7.87976784,
+        "monthPnl": 1905491.970572,
+        "monthVlm": 82809399.93,
+        "score": 0.849251968503937,
+        "factorPct": {
+          "roi": 83.07086614173228,
+          "alpha": 98.03149606299213,
+          "efficiency": 92.91338582677166,
+          "consistency": 87.79527559055119,
+          "capacity": 40.94488188976378,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 10,
+        "address": "0xd47587702a91731dc1089b5db0932cf820151a91",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 45478053.353584,
+        "monthRoiPct": 11.39056591,
+        "monthPnl": 5154831.826234001,
+        "monthVlm": 296924726.31,
+        "score": 0.8364960629921261,
+        "factorPct": {
+          "roi": 63.77952755905512,
+          "alpha": 97.63779527559055,
+          "efficiency": 89.37007874015748,
+          "consistency": 87.79527559055119,
+          "capacity": 90.15748031496062,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      }
+    ],
+    "watch": [
+      {
+        "rank": 11,
+        "address": "0x61ceef212ff4a86933c69fb6aca2fe35d8f2a62b",
+        "displayName": "",
+        "style": {
+          "primary": "高频做市",
+          "secondary": "反转"
+        },
+        "accountValue": 10395127.72389,
+        "monthRoiPct": 107.68721728,
+        "monthPnl": 7981975.298351,
+        "monthVlm": 4156249300.63,
+        "score": 0.8356299212598426,
+        "factorPct": {
+          "roi": 81.88976377952756,
+          "alpha": 89.76377952755905,
+          "efficiency": 70.07874015748031,
+          "consistency": 87.79527559055119,
+          "capacity": 94.48818897637796,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "高频做市/反转",
+          "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+          "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+          "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+        }
+      },
+      {
+        "rank": 12,
+        "address": "0x77375a8c9d13bf79afb2a87f1b0ac1dfd5f5bf66",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 18386903.481827,
+        "monthRoiPct": 4.82510605,
+        "monthPnl": 893314.807062,
+        "monthVlm": 285499084,
+        "score": 0.8310433070866142,
+        "factorPct": {
+          "roi": 91.33858267716536,
+          "alpha": 94.48818897637796,
+          "efficiency": 79.92125984251969,
+          "consistency": 67.91338582677166,
+          "capacity": 85.03937007874016,
+          "drawdown": 41.338582677165356
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 13,
+        "address": "0x863b676e5e4fea0541062c32983dc8f84749ca6d",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 2882313.216578,
+        "monthRoiPct": 50.65843395,
+        "monthPnl": 969168.933152,
+        "monthVlm": 68429475.35,
+        "score": 0.8275196850393701,
+        "factorPct": {
+          "roi": 100,
+          "alpha": 73.22834645669292,
+          "efficiency": 88.9763779527559,
+          "consistency": 87.79527559055119,
+          "capacity": 34.25196850393701,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 14,
+        "address": "0xb83de012dba672c76a7dbbbf3e459cb59d7d6e36",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 25003703.831575003,
+        "monthRoiPct": 3.57195597,
+        "monthPnl": 2445303.900544,
+        "monthVlm": 282375231.26,
+        "score": 0.8268110236220474,
+        "factorPct": {
+          "roi": 62.20472440944882,
+          "alpha": 98.81889763779527,
+          "efficiency": 86.61417322834646,
+          "consistency": 87.79527559055119,
+          "capacity": 87.79527559055119,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 15,
+        "address": "0x0748e296e5a350ec36c8487a1cea406e1b57d4b2",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 6610061.755439,
+        "monthRoiPct": 2.35579948,
+        "monthPnl": 152138.039486,
+        "monthVlm": 75752690.11,
+        "score": 0.8257874015748031,
+        "factorPct": {
+          "roi": 87.00787401574803,
+          "alpha": 79.13385826771653,
+          "efficiency": 90.5511811023622,
+          "consistency": 87.79527559055119,
+          "capacity": 52.75590551181102,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 16,
+        "address": "0x69906b0ed626ca01a4b7c001e5711e5714ccf207",
+        "displayName": "stuxfred",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 5733279.887118001,
+        "monthRoiPct": 1.3989151,
+        "monthPnl": 80186.769231,
+        "monthVlm": 90811017.53999999,
+        "score": 0.8253937007874017,
+        "factorPct": {
+          "roi": 96.06299212598425,
+          "alpha": 78.34645669291339,
+          "efficiency": 78.34645669291339,
+          "consistency": 87.79527559055119,
+          "capacity": 53.14960629921261,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 17,
+        "address": "0x89c645ecbd07825b194e3b98300eb3497aaba406",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 8515425.795384,
+        "monthRoiPct": 4.81349269,
+        "monthPnl": 391189.478965,
+        "monthVlm": 57478913.879999995,
+        "score": 0.8200393700787403,
+        "factorPct": {
+          "roi": 82.28346456692913,
+          "alpha": 85.03937007874016,
+          "efficiency": 87.4015748031496,
+          "consistency": 87.79527559055119,
+          "capacity": 53.54330708661418,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 18,
+        "address": "0xa31441e058492bc7cfffda9aa7623c407ae83a81",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 4249647.256754,
+        "monthRoiPct": 41.70419184,
+        "monthPnl": 6235316.824982,
+        "monthVlm": 248489153.86,
+        "score": 0.8198818897637796,
+        "factorPct": {
+          "roi": 72.44094488188976,
+          "alpha": 88.18897637795276,
+          "efficiency": 91.73228346456693,
+          "consistency": 87.79527559055119,
+          "capacity": 65.35433070866141,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 19,
+        "address": "0xa5b0edf6b55128e0ddae8e51ac538c3188401d41",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 37899594.314163,
+        "monthRoiPct": 12.68524483,
+        "monthPnl": 6517894.429356,
+        "monthVlm": 287328238.83,
+        "score": 0.8184842519685039,
+        "factorPct": {
+          "roi": 66.14173228346458,
+          "alpha": 96.06299212598425,
+          "efficiency": 94.09448818897637,
+          "consistency": 67.91338582677166,
+          "capacity": 89.37007874015748,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 20,
+        "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 10925430.309052,
+        "monthRoiPct": 7.193143109999999,
+        "monthPnl": 3934030.646978,
+        "monthVlm": 210818948.14,
+        "score": 0.8153149606299213,
+        "factorPct": {
+          "roi": 57.48031496062992,
+          "alpha": 99.60629921259843,
+          "efficiency": 92.1259842519685,
+          "consistency": 87.79527559055119,
+          "capacity": 76.77165354330708,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      }
+    ],
+    "drop": [
+      {
+        "rank": 21,
+        "address": "0x049bdc370620beab340b01072fa580fd57745e7d",
+        "displayName": "♤♤♤",
+        "style": {
+          "primary": "高频做市",
+          "secondary": "反转"
+        },
+        "accountValue": 5668183.919405,
+        "monthRoiPct": 44.70751415,
+        "monthPnl": 2349138.871734,
+        "monthVlm": 1719495158.94,
+        "score": 0.8115354330708663,
+        "factorPct": {
+          "roi": 85.8267716535433,
+          "alpha": 81.49606299212599,
+          "efficiency": 65.35433070866141,
+          "consistency": 87.79527559055119,
+          "capacity": 87.00787401574803,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "高频做市/反转",
+          "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+          "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+          "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+        }
+      },
+      {
+        "rank": 22,
+        "address": "0x6c8512516ce5669d35113a11ca8b8de322fd84f6",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 37003569.28189,
+        "monthRoiPct": 8.39545796,
+        "monthPnl": 2236558.405173,
+        "monthVlm": 118653033.16,
+        "score": 0.8028149606299213,
+        "factorPct": {
+          "roi": 64.56692913385827,
+          "alpha": 92.91338582677166,
+          "efficiency": 94.48818897637796,
+          "consistency": 67.91338582677166,
+          "capacity": 84.25196850393701,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 23,
+        "address": "0x833b99b27dac651d02080f5e220e929df891db06",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 1310824.787281,
+        "monthRoiPct": 96.28662412999999,
+        "monthPnl": 1072237.319807,
+        "monthVlm": 109968133.21,
+        "score": 0.7975196850393701,
+        "factorPct": {
+          "roi": 89.76377952755905,
+          "alpha": 80.31496062992126,
+          "efficiency": 85.43307086614173,
+          "consistency": 87.79527559055119,
+          "capacity": 24.409448818897637,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 24,
+        "address": "0x519c721de735f7c9e6146d167852e60d60496a47",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 25336262.431005,
+        "monthRoiPct": 3.11659768,
+        "monthPnl": 1032514.286209,
+        "monthVlm": 141695868.2,
+        "score": 0.7969881889763779,
+        "factorPct": {
+          "roi": 62.59842519685039,
+          "alpha": 89.37007874015748,
+          "efficiency": 100,
+          "consistency": 67.91338582677166,
+          "capacity": 80.70866141732283,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 25,
+        "address": "0x932bdd2d5e21475e62d2fea8158fc5974507cb1a",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 809507.778498,
+        "monthRoiPct": 194.68081536,
+        "monthPnl": 671087.356812,
+        "monthVlm": 155002607.47,
+        "score": 0.7961023622047244,
+        "factorPct": {
+          "roi": 99.60629921259843,
+          "alpha": 59.4488188976378,
+          "efficiency": 96.45669291338582,
+          "consistency": 87.79527559055119,
+          "capacity": 19.291338582677163,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 26,
+        "address": "0x795cfd1b03eafc11c4ec958b8a94cfc9aa64a242",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 3023110.982638,
+        "monthRoiPct": 89.81819297,
+        "monthPnl": 2022507.560125,
+        "monthVlm": 171945974.42,
+        "score": 0.7894881889763781,
+        "factorPct": {
+          "roi": 81.10236220472441,
+          "alpha": 74.80314960629921,
+          "efficiency": 86.22047244094489,
+          "consistency": 87.79527559055119,
+          "capacity": 51.181102362204726,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 27,
+        "address": "0xa65ce1d604fa901c13aa29f2126a57d9032e412b",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "高频做市"
+        },
+        "accountValue": 11028145.096879,
+        "monthRoiPct": 25.811390360000004,
+        "monthPnl": 2262548.234493,
+        "monthVlm": 70475122.87,
+        "score": 0.7864173228346457,
+        "factorPct": {
+          "roi": 68.11023622047244,
+          "alpha": 75.98425196850394,
+          "efficiency": 95.2755905511811,
+          "consistency": 87.79527559055119,
+          "capacity": 63.77952755905512,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/高频做市",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 28,
+        "address": "0x985f02b19dbc062e565c981aac5614baf2cf501f",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 9872402.195583,
+        "monthRoiPct": 12.35648694,
+        "monthPnl": 2735360.648186,
+        "monthVlm": 113115855.86,
+        "score": 0.7860236220472441,
+        "factorPct": {
+          "roi": 60.23622047244095,
+          "alpha": 85.8267716535433,
+          "efficiency": 92.51968503937007,
+          "consistency": 87.79527559055119,
+          "capacity": 69.29133858267717,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      },
+      {
+        "rank": 29,
+        "address": "0x023a3d058020fb76cca98f01b3c48c8938a22355",
+        "displayName": "Auros",
+        "style": {
+          "primary": "高频做市",
+          "secondary": "反转"
+        },
+        "accountValue": 40464614.89379799,
+        "monthRoiPct": -0.08856044,
+        "monthPnl": -36272.116789,
+        "monthVlm": 2188526467.27,
+        "score": 0.7707480314960631,
+        "factorPct": {
+          "roi": 84.64566929133859,
+          "alpha": 96.8503937007874,
+          "efficiency": 50.39370078740157,
+          "consistency": 59.84251968503938,
+          "capacity": 96.45669291338582,
+          "drawdown": 67.32283464566929
+        },
+        "ruleBook": {
+          "riskProfile": "稳健",
+          "style": "高频做市/反转",
+          "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+          "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+          "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+        }
+      },
+      {
+        "rank": 30,
+        "address": "0xd6ef5649200101eb44ce8949f4cfb167b0c5a07a",
+        "displayName": "",
+        "style": {
+          "primary": "趋势",
+          "secondary": "事件驱动"
+        },
+        "accountValue": 4268389.001932,
+        "monthRoiPct": 8.62995923,
+        "monthPnl": 404240.137419,
+        "monthVlm": 93657983.28,
+        "score": 0.7613779527559056,
+        "factorPct": {
+          "roi": 71.25984251968504,
+          "alpha": 81.88976377952756,
+          "efficiency": 79.52755905511812,
+          "consistency": 87.79527559055119,
+          "capacity": 48.4251968503937,
+          "drawdown": 85.03937007874016
+        },
+        "ruleBook": {
+          "riskProfile": "进取",
+          "style": "趋势/事件驱动",
+          "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+          "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+          "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        }
+      }
+    ]
+  },
+  "top30": [
+    {
+      "rank": 1,
+      "address": "0x8af700ba841f30e0a3fcb0ee4c4a9d223e1efa05",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 24164697.057625,
+      "monthRoiPct": 9.44585489,
+      "monthPnl": 1998256.692578,
+      "monthVlm": 264490861.08,
+      "score": 0.8889370078740157,
+      "factorPct": {
+        "roi": 78.74015748031496,
+        "alpha": 97.24409448818898,
+        "efficiency": 96.8503937007874,
+        "consistency": 87.79527559055119,
+        "capacity": 86.61417322834646,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 2,
+      "address": "0xcb58b8f5ec6d47985f0728465c25a08ef9ad2c7b",
+      "displayName": "cat hot wallet",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 4598704.575372,
+      "monthRoiPct": 11.19701679,
+      "monthPnl": 473171.990695,
+      "monthVlm": 69165341.88,
+      "score": 0.8698818897637796,
+      "factorPct": {
+        "roi": 98.4251968503937,
+        "alpha": 80.70866141732283,
+        "efficiency": 98.03149606299213,
+        "consistency": 87.79527559055119,
+        "capacity": 46.45669291338583,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 3,
+      "address": "0x8def9f50456c6c4e37fa5d3d57f108ed23992dae",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 24466235.293048,
+      "monthRoiPct": 8.381101370000001,
+      "monthPnl": 1940267.708696,
+      "monthVlm": 248114156.27,
+      "score": 0.865236220472441,
+      "factorPct": {
+        "roi": 79.92125984251969,
+        "alpha": 94.09448818897637,
+        "efficiency": 87.00787401574803,
+        "consistency": 87.79527559055119,
+        "capacity": 86.22047244094489,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 4,
+      "address": "0x350e33a777d510616fbdb483d1de3b50d1edfcfb",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 3309036.521497,
+      "monthRoiPct": 50.845332320000004,
+      "monthPnl": 1167806.484707,
+      "monthVlm": 204780033.23,
+      "score": 0.8616141732283464,
+      "factorPct": {
+        "roi": 98.81889763779527,
+        "alpha": 87.00787401574803,
+        "efficiency": 81.10236220472441,
+        "consistency": 87.79527559055119,
+        "capacity": 57.08661417322835,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 5,
+      "address": "0x8bae3527e5a33fa0cf184f37bc112d071463ab6d",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 4966160.66744,
+      "monthRoiPct": 109.88164780000001,
+      "monthPnl": 1887502.387847,
+      "monthVlm": 69969683.71,
+      "score": 0.8607480314960629,
+      "factorPct": {
+        "roi": 95.66929133858267,
+        "alpha": 83.46456692913385,
+        "efficiency": 93.7007874015748,
+        "consistency": 87.79527559055119,
+        "capacity": 47.63779527559055,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 6,
+      "address": "0x880ac484a1743862989a441d6d867238c7aa311c",
+      "displayName": "x35767",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 30579793.562202,
+      "monthRoiPct": 3.46823696,
+      "monthPnl": 1155785.461895,
+      "monthVlm": 116937820.94,
+      "score": 0.8587007874015748,
+      "factorPct": {
+        "roi": 73.62204724409449,
+        "alpha": 98.4251968503937,
+        "efficiency": 90.15748031496062,
+        "consistency": 87.79527559055119,
+        "capacity": 81.49606299212599,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 7,
+      "address": "0x469e9a7f624b04c24f0e64edf8d8a277e6bf58a5",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 11588658.952674,
+      "monthRoiPct": 27.48835523,
+      "monthPnl": 2498684.474556,
+      "monthVlm": 389571126.71,
+      "score": 0.8561023622047244,
+      "factorPct": {
+        "roi": 87.4015748031496,
+        "alpha": 87.4015748031496,
+        "efficiency": 81.49606299212599,
+        "consistency": 87.79527559055119,
+        "capacity": 81.88976377952756,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 8,
+      "address": "0x9e8b1e51c642f4c8b87c6ba11c53d516a218afc4",
+      "displayName": "",
+      "style": {
+        "primary": "高频做市",
+        "secondary": "反转"
+      },
+      "accountValue": 5552235.720995,
+      "monthRoiPct": 14.267107070000002,
+      "monthPnl": 693238.356636,
+      "monthVlm": 615531376.74,
+      "score": 0.8541338582677165,
+      "factorPct": {
+        "roi": 98.03149606299213,
+        "alpha": 90.15748031496062,
+        "efficiency": 64.56692913385827,
+        "consistency": 87.79527559055119,
+        "capacity": 77.95275590551181,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "高频做市/反转",
+        "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+        "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+        "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+      }
+    },
+    {
+      "rank": 9,
+      "address": "0xa312114b5795dff9b8db50474dd57701aa78ad1e",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 3137471.408161,
+      "monthRoiPct": 7.87976784,
+      "monthPnl": 1905491.970572,
+      "monthVlm": 82809399.93,
+      "score": 0.849251968503937,
+      "factorPct": {
+        "roi": 83.07086614173228,
+        "alpha": 98.03149606299213,
+        "efficiency": 92.91338582677166,
+        "consistency": 87.79527559055119,
+        "capacity": 40.94488188976378,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 10,
+      "address": "0xd47587702a91731dc1089b5db0932cf820151a91",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 45478053.353584,
+      "monthRoiPct": 11.39056591,
+      "monthPnl": 5154831.826234001,
+      "monthVlm": 296924726.31,
+      "score": 0.8364960629921261,
+      "factorPct": {
+        "roi": 63.77952755905512,
+        "alpha": 97.63779527559055,
+        "efficiency": 89.37007874015748,
+        "consistency": 87.79527559055119,
+        "capacity": 90.15748031496062,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 11,
+      "address": "0x61ceef212ff4a86933c69fb6aca2fe35d8f2a62b",
+      "displayName": "",
+      "style": {
+        "primary": "高频做市",
+        "secondary": "反转"
+      },
+      "accountValue": 10395127.72389,
+      "monthRoiPct": 107.68721728,
+      "monthPnl": 7981975.298351,
+      "monthVlm": 4156249300.63,
+      "score": 0.8356299212598426,
+      "factorPct": {
+        "roi": 81.88976377952756,
+        "alpha": 89.76377952755905,
+        "efficiency": 70.07874015748031,
+        "consistency": 87.79527559055119,
+        "capacity": 94.48818897637796,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "高频做市/反转",
+        "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+        "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+        "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+      }
+    },
+    {
+      "rank": 12,
+      "address": "0x77375a8c9d13bf79afb2a87f1b0ac1dfd5f5bf66",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 18386903.481827,
+      "monthRoiPct": 4.82510605,
+      "monthPnl": 893314.807062,
+      "monthVlm": 285499084,
+      "score": 0.8310433070866142,
+      "factorPct": {
+        "roi": 91.33858267716536,
+        "alpha": 94.48818897637796,
+        "efficiency": 79.92125984251969,
+        "consistency": 67.91338582677166,
+        "capacity": 85.03937007874016,
+        "drawdown": 41.338582677165356
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 13,
+      "address": "0x863b676e5e4fea0541062c32983dc8f84749ca6d",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 2882313.216578,
+      "monthRoiPct": 50.65843395,
+      "monthPnl": 969168.933152,
+      "monthVlm": 68429475.35,
+      "score": 0.8275196850393701,
+      "factorPct": {
+        "roi": 100,
+        "alpha": 73.22834645669292,
+        "efficiency": 88.9763779527559,
+        "consistency": 87.79527559055119,
+        "capacity": 34.25196850393701,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 14,
+      "address": "0xb83de012dba672c76a7dbbbf3e459cb59d7d6e36",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 25003703.831575003,
+      "monthRoiPct": 3.57195597,
+      "monthPnl": 2445303.900544,
+      "monthVlm": 282375231.26,
+      "score": 0.8268110236220474,
+      "factorPct": {
+        "roi": 62.20472440944882,
+        "alpha": 98.81889763779527,
+        "efficiency": 86.61417322834646,
+        "consistency": 87.79527559055119,
+        "capacity": 87.79527559055119,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 15,
+      "address": "0x0748e296e5a350ec36c8487a1cea406e1b57d4b2",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 6610061.755439,
+      "monthRoiPct": 2.35579948,
+      "monthPnl": 152138.039486,
+      "monthVlm": 75752690.11,
+      "score": 0.8257874015748031,
+      "factorPct": {
+        "roi": 87.00787401574803,
+        "alpha": 79.13385826771653,
+        "efficiency": 90.5511811023622,
+        "consistency": 87.79527559055119,
+        "capacity": 52.75590551181102,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 16,
+      "address": "0x69906b0ed626ca01a4b7c001e5711e5714ccf207",
+      "displayName": "stuxfred",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 5733279.887118001,
+      "monthRoiPct": 1.3989151,
+      "monthPnl": 80186.769231,
+      "monthVlm": 90811017.53999999,
+      "score": 0.8253937007874017,
+      "factorPct": {
+        "roi": 96.06299212598425,
+        "alpha": 78.34645669291339,
+        "efficiency": 78.34645669291339,
+        "consistency": 87.79527559055119,
+        "capacity": 53.14960629921261,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 17,
+      "address": "0x89c645ecbd07825b194e3b98300eb3497aaba406",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 8515425.795384,
+      "monthRoiPct": 4.81349269,
+      "monthPnl": 391189.478965,
+      "monthVlm": 57478913.879999995,
+      "score": 0.8200393700787403,
+      "factorPct": {
+        "roi": 82.28346456692913,
+        "alpha": 85.03937007874016,
+        "efficiency": 87.4015748031496,
+        "consistency": 87.79527559055119,
+        "capacity": 53.54330708661418,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 18,
+      "address": "0xa31441e058492bc7cfffda9aa7623c407ae83a81",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 4249647.256754,
+      "monthRoiPct": 41.70419184,
+      "monthPnl": 6235316.824982,
+      "monthVlm": 248489153.86,
+      "score": 0.8198818897637796,
+      "factorPct": {
+        "roi": 72.44094488188976,
+        "alpha": 88.18897637795276,
+        "efficiency": 91.73228346456693,
+        "consistency": 87.79527559055119,
+        "capacity": 65.35433070866141,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 19,
+      "address": "0xa5b0edf6b55128e0ddae8e51ac538c3188401d41",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 37899594.314163,
+      "monthRoiPct": 12.68524483,
+      "monthPnl": 6517894.429356,
+      "monthVlm": 287328238.83,
+      "score": 0.8184842519685039,
+      "factorPct": {
+        "roi": 66.14173228346458,
+        "alpha": 96.06299212598425,
+        "efficiency": 94.09448818897637,
+        "consistency": 67.91338582677166,
+        "capacity": 89.37007874015748,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 20,
+      "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 10925430.309052,
+      "monthRoiPct": 7.193143109999999,
+      "monthPnl": 3934030.646978,
+      "monthVlm": 210818948.14,
+      "score": 0.8153149606299213,
+      "factorPct": {
+        "roi": 57.48031496062992,
+        "alpha": 99.60629921259843,
+        "efficiency": 92.1259842519685,
+        "consistency": 87.79527559055119,
+        "capacity": 76.77165354330708,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 21,
+      "address": "0x049bdc370620beab340b01072fa580fd57745e7d",
+      "displayName": "♤♤♤",
+      "style": {
+        "primary": "高频做市",
+        "secondary": "反转"
+      },
+      "accountValue": 5668183.919405,
+      "monthRoiPct": 44.70751415,
+      "monthPnl": 2349138.871734,
+      "monthVlm": 1719495158.94,
+      "score": 0.8115354330708663,
+      "factorPct": {
+        "roi": 85.8267716535433,
+        "alpha": 81.49606299212599,
+        "efficiency": 65.35433070866141,
+        "consistency": 87.79527559055119,
+        "capacity": 87.00787401574803,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "高频做市/反转",
+        "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+        "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+        "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+      }
+    },
+    {
+      "rank": 22,
+      "address": "0x6c8512516ce5669d35113a11ca8b8de322fd84f6",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 37003569.28189,
+      "monthRoiPct": 8.39545796,
+      "monthPnl": 2236558.405173,
+      "monthVlm": 118653033.16,
+      "score": 0.8028149606299213,
+      "factorPct": {
+        "roi": 64.56692913385827,
+        "alpha": 92.91338582677166,
+        "efficiency": 94.48818897637796,
+        "consistency": 67.91338582677166,
+        "capacity": 84.25196850393701,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 23,
+      "address": "0x833b99b27dac651d02080f5e220e929df891db06",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 1310824.787281,
+      "monthRoiPct": 96.28662412999999,
+      "monthPnl": 1072237.319807,
+      "monthVlm": 109968133.21,
+      "score": 0.7975196850393701,
+      "factorPct": {
+        "roi": 89.76377952755905,
+        "alpha": 80.31496062992126,
+        "efficiency": 85.43307086614173,
+        "consistency": 87.79527559055119,
+        "capacity": 24.409448818897637,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 24,
+      "address": "0x519c721de735f7c9e6146d167852e60d60496a47",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 25336262.431005,
+      "monthRoiPct": 3.11659768,
+      "monthPnl": 1032514.286209,
+      "monthVlm": 141695868.2,
+      "score": 0.7969881889763779,
+      "factorPct": {
+        "roi": 62.59842519685039,
+        "alpha": 89.37007874015748,
+        "efficiency": 100,
+        "consistency": 67.91338582677166,
+        "capacity": 80.70866141732283,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 25,
+      "address": "0x932bdd2d5e21475e62d2fea8158fc5974507cb1a",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 809507.778498,
+      "monthRoiPct": 194.68081536,
+      "monthPnl": 671087.356812,
+      "monthVlm": 155002607.47,
+      "score": 0.7961023622047244,
+      "factorPct": {
+        "roi": 99.60629921259843,
+        "alpha": 59.4488188976378,
+        "efficiency": 96.45669291338582,
+        "consistency": 87.79527559055119,
+        "capacity": 19.291338582677163,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 26,
+      "address": "0x795cfd1b03eafc11c4ec958b8a94cfc9aa64a242",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 3023110.982638,
+      "monthRoiPct": 89.81819297,
+      "monthPnl": 2022507.560125,
+      "monthVlm": 171945974.42,
+      "score": 0.7894881889763781,
+      "factorPct": {
+        "roi": 81.10236220472441,
+        "alpha": 74.80314960629921,
+        "efficiency": 86.22047244094489,
+        "consistency": 87.79527559055119,
+        "capacity": 51.181102362204726,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 27,
+      "address": "0xa65ce1d604fa901c13aa29f2126a57d9032e412b",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "高频做市"
+      },
+      "accountValue": 11028145.096879,
+      "monthRoiPct": 25.811390360000004,
+      "monthPnl": 2262548.234493,
+      "monthVlm": 70475122.87,
+      "score": 0.7864173228346457,
+      "factorPct": {
+        "roi": 68.11023622047244,
+        "alpha": 75.98425196850394,
+        "efficiency": 95.2755905511811,
+        "consistency": 87.79527559055119,
+        "capacity": 63.77952755905512,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/高频做市",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 28,
+      "address": "0x985f02b19dbc062e565c981aac5614baf2cf501f",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 9872402.195583,
+      "monthRoiPct": 12.35648694,
+      "monthPnl": 2735360.648186,
+      "monthVlm": 113115855.86,
+      "score": 0.7860236220472441,
+      "factorPct": {
+        "roi": 60.23622047244095,
+        "alpha": 85.8267716535433,
+        "efficiency": 92.51968503937007,
+        "consistency": 87.79527559055119,
+        "capacity": 69.29133858267717,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 29,
+      "address": "0x023a3d058020fb76cca98f01b3c48c8938a22355",
+      "displayName": "Auros",
+      "style": {
+        "primary": "高频做市",
+        "secondary": "反转"
+      },
+      "accountValue": 40464614.89379799,
+      "monthRoiPct": -0.08856044,
+      "monthPnl": -36272.116789,
+      "monthVlm": 2188526467.27,
+      "score": 0.7707480314960631,
+      "factorPct": {
+        "roi": 84.64566929133859,
+        "alpha": 96.8503937007874,
+        "efficiency": 50.39370078740157,
+        "consistency": 59.84251968503938,
+        "capacity": 96.45669291338582,
+        "drawdown": 67.32283464566929
+      },
+      "ruleBook": {
+        "riskProfile": "稳健",
+        "style": "高频做市/反转",
+        "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+        "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+        "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
+      }
+    },
+    {
+      "rank": 30,
+      "address": "0xd6ef5649200101eb44ce8949f4cfb167b0c5a07a",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 4268389.001932,
+      "monthRoiPct": 8.62995923,
+      "monthPnl": 404240.137419,
+      "monthVlm": 93657983.28,
+      "score": 0.7613779527559056,
+      "factorPct": {
+        "roi": 71.25984251968504,
+        "alpha": 81.88976377952756,
+        "efficiency": 79.52755905511812,
+        "consistency": 87.79527559055119,
+        "capacity": 48.4251968503937,
+        "drawdown": 85.03937007874016
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    }
+  ]
+}
