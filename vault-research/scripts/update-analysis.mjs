@@ -10,7 +10,7 @@ const WEB_OUTPUT_FILE = path.resolve("vault-research/web/latest-analysis.js");
 const JSON_OUTPUT_FILE = path.resolve("vault-research/data/latest-analysis.json");
 
 const CONCURRENCY = Number(process.env.VAULT_CONCURRENCY ?? 20);
-const MIN_TVL_USD = Number(process.env.MIN_TVL_USD ?? 250_000);
+const MIN_TVL_USD = Number(process.env.MIN_TVL_USD ?? 50_000);
 const MIN_TRACK_DAYS = Number(process.env.MIN_TRACK_DAYS ?? 60);
 const MIN_OBSERVATIONS = Number(process.env.MIN_OBSERVATIONS ?? 18);
 const MIN_DEPOSITOR_DAYS = Number(process.env.MIN_DEPOSITOR_DAYS ?? 30);
@@ -443,6 +443,10 @@ async function main() {
     if (risk.elapsedDays < MIN_TRACK_DAYS || risk.observations < MIN_OBSERVATIONS) {
       continue;
     }
+    // User preference: annualized proxy only needs to be positive.
+    if (risk.annualizedReturn <= 0) {
+      continue;
+    }
 
     const daySeries = extractPeriodPortfolio(details, "day");
     const weekSeries = extractPeriodPortfolio(details, "week");
@@ -457,6 +461,11 @@ async function main() {
     const positiveSignals = consistencySignals.filter((value) => value > 0).length;
     const consistencyScore =
       consistencySignals.length > 0 ? positiveSignals / consistencySignals.length : 0.5;
+    const consistencyReturnMean =
+      consistencySignals.length > 0 ? mean(consistencySignals) : 0;
+
+    // User-specified rule: exclude strategies with negative consistency.
+    if (consistencyReturnMean < 0) continue;
 
     const commission = toNumber(details.leaderCommission);
     const depositorStats = calcDepositorMetrics(details.followers);
@@ -476,6 +485,7 @@ async function main() {
       weekReturn,
       monthReturn,
       consistencyScore,
+      consistencyReturnMean,
       depositorEligibleFollowers: depositorStats.eligibleFollowers,
       depositorPositivePnlRatio: depositorStats.positivePnlRatio,
       depositorEquityWeightedPositiveRatio:
@@ -498,8 +508,6 @@ async function main() {
     sharpeForScore: clamp(item.sharpeProxy, -2, 5),
     sortinoForScore: clamp(item.sortinoProxy, -2, 8),
     calmarForScore: clamp(item.calmarRatio, -2, 10),
-    annualizedForScore: clamp(item.annualizedReturn, -0.8, 3),
-    volatilityControl: 1 - clamp(item.annualizedVolatility / 2.5, 0, 1),
     depositorPositiveForScore:
       item.depositorPositivePnlRatio === null
         ? 0
@@ -522,7 +530,6 @@ async function main() {
     sharpe: percentileRankMap(scoringBase, "sharpeForScore"),
     sortino: percentileRankMap(scoringBase, "sortinoForScore"),
     calmar: percentileRankMap(scoringBase, "calmarForScore"),
-    annualizedReturn: percentileRankMap(scoringBase, "annualizedForScore"),
     drawdownInverse: percentileRankMap(
       scoringBase.map((item) => ({
         ...item,
@@ -530,7 +537,6 @@ async function main() {
       })),
       "drawdownInverse",
     ),
-    volatilityControl: percentileRankMap(scoringBase, "volatilityControl"),
     tvl: percentileRankMap(
       scoringBase.map((item) => ({
         ...item,
@@ -562,26 +568,18 @@ async function main() {
       0.1 * percentileMaps.depositorCoverage.get(vault.vaultAddress);
 
     const score =
-      0.19 * percentileMaps.sharpe.get(vault.vaultAddress) +
-      0.08 * percentileMaps.sortino.get(vault.vaultAddress) +
-      0.12 * percentileMaps.calmar.get(vault.vaultAddress) +
-      0.13 * percentileMaps.annualizedReturn.get(vault.vaultAddress) +
-      0.12 * percentileMaps.drawdownInverse.get(vault.vaultAddress) +
-      0.07 * percentileMaps.volatilityControl.get(vault.vaultAddress) +
-      0.07 * percentileMaps.tvl.get(vault.vaultAddress) +
-      0.03 * percentileMaps.age.get(vault.vaultAddress) +
-      0.03 * percentileMaps.consistency.get(vault.vaultAddress) +
-      0.16 * depositorComposite;
+      0.06 * percentileMaps.sharpe.get(vault.vaultAddress) +
+      0.04 * percentileMaps.sortino.get(vault.vaultAddress) +
+      0.06 * percentileMaps.calmar.get(vault.vaultAddress) +
+      0.18 * percentileMaps.drawdownInverse.get(vault.vaultAddress) +
+      0.03 * percentileMaps.tvl.get(vault.vaultAddress) +
+      0.02 * percentileMaps.age.get(vault.vaultAddress) +
+      0.01 * percentileMaps.consistency.get(vault.vaultAddress) +
+      0.6 * depositorComposite;
 
     let penalty = 1;
     if (vault.maxDrawdown > 0.45) penalty *= 0.7;
     if (vault.maxDrawdown > 0.3) penalty *= 0.85;
-    if (vault.annualizedVolatility > 2.5) penalty *= 0.85;
-    if (vault.annualizedVolatility > 5) penalty *= 0.75;
-    if (vault.annualizedReturn < 0) penalty *= 0.5;
-    if (vault.totalReturn < 0) penalty *= 0.7;
-    if (vault.apr < 0) penalty *= 0.9;
-    if (vault.leaderCommission > 0.2) penalty *= 0.9;
     if (vault.ageDays < 120) penalty *= 0.9;
     if (vault.depositorEligibleFollowers < 10) penalty *= 0.9;
     if (
@@ -705,16 +703,14 @@ async function main() {
       methodology: {
         style: "quant multi-factor ranking",
         factors: [
-          "Sharpe proxy percentile (19%)",
-          "Sortino proxy percentile (8%)",
-          "Calmar percentile (12%)",
-          "Annualized return percentile (13%, winsorized)",
-          "Drawdown control percentile (12%)",
-          "Volatility control percentile (7%)",
-          "TVL robustness percentile (7%)",
-          "Track record age percentile (3%)",
-          "Recent consistency percentile (3%)",
-          "Depositor quality composite (16%)",
+          "Depositor quality composite (60%)",
+          "Drawdown control percentile (18%)",
+          "Sharpe proxy percentile (6%)",
+          "Sortino proxy percentile (4%)",
+          "Calmar percentile (6%)",
+          "TVL robustness percentile (3%)",
+          "Track record age percentile (2%)",
+          "Recent consistency percentile (1%)",
         ],
         depositorComposite: [
           `Depositor 正收益占比（>=${MIN_DEPOSITOR_DAYS}天）`,
@@ -724,18 +720,14 @@ async function main() {
           "Depositor 有效样本覆盖度",
         ],
         normalization: [
-          "Sharpe/Sortino/Calmar/Annualized return 因子均做区间封顶，避免异常值主导",
-          "年化波动单独作为负向控制因子",
+          "Sharpe/Sortino/Calmar 因子做区间封顶，避免异常值主导",
+          "年化收益代理不参与打分，仅保留“需为正”门槛",
+          "一致性仅做轻权重辅助，且负一致性策略直接排除",
           "Depositor 日收益代理做区间裁剪（-1%~+1%/日）",
         ],
         penalties: [
           "Max drawdown > 45%",
           "Max drawdown > 30%",
-          "Annualized volatility > 250% / 500%",
-          "Negative annualized return",
-          "Negative all-time return",
-          "Negative APR",
-          "Leader commission > 20%",
           "Track record age < 120 days",
           "Depositor 有效样本偏少（<10）",
           "Depositor 正收益占比偏低",
