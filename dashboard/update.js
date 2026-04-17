@@ -2,21 +2,20 @@
 
 /**
  * Hyperliquid dashboard data updater
- * Pulls latest Mainnet leaderboard + vaults,
+ * Pulls latest Mainnet leaderboard + per-address portfolio curves,
  * computes rankings, styles, rules, and writes data/latest.json.
  */
 
 const fs = require("fs");
 const path = require("path");
 
-const LEADERBOARD_URL =
-  "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard";
-const VAULTS_URL = "https://stats-data.hyperliquid.xyz/Mainnet/vaults";
+const LEADERBOARD_URL = "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard";
+const INFO_URL = "https://api.hyperliquid.xyz/info";
 
 const OUTPUT_DIR = path.join(__dirname, "data");
 const OUTPUT_FILE = path.join(OUTPUT_DIR, "latest.json");
 
-const TREASURY_ADDRESSES = new Set(
+const EXCLUDED_ADDRESSES = new Set(
   [
     "0x1f6093d33db935b2ebd81d23312da5f11759973e",
     "0x24de6b77e8bc31c40aa452926daa6bbab7a71b0f",
@@ -35,22 +34,27 @@ const TREASURY_ADDRESSES = new Set(
     "0x010461c14e146ac35fe42271bdc1134ee31c703a",
     "0x31ca8395cf837de08b24da3f660e77761dfb974b",
     "0xffffffffffffffffffffffffffffffffffffffff",
-  ].map((x) => x.toLowerCase()),
+  ].map((x) => x.toLowerCase())
 );
-
-const EXCLUDE_VAULT_NAMES = new Set([
-  "Liquidator",
-  "Hyperliquidity Provider (HLP)",
-]);
 
 const TRACKING_FLOOR = {
   accountValue: 500_000,
   monthVlm: 50_000_000,
 };
 
+const CURVE_CONFIG = {
+  maxPoints: 140,
+  windows: ["month", "week", "day", "allTime"],
+  concurrency: 4,
+};
+
 function toNum(v) {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
+}
+
+function normalizeAddress(v) {
+  return String(v || "").toLowerCase();
 }
 
 function parseWindowPerformance(windowPerformances) {
@@ -148,46 +152,110 @@ function buildRules(row) {
   };
 }
 
+function downsamplePoints(points, maxPoints) {
+  if (points.length <= maxPoints) return points;
+  const stride = (points.length - 1) / (maxPoints - 1);
+  const out = [];
+  for (let i = 0; i < maxPoints; i += 1) {
+    const idx = Math.round(i * stride);
+    out.push(points[idx]);
+  }
+  return out;
+}
+
+function parsePortfolioCurve(portfolioRaw) {
+  const map = new Map(Array.isArray(portfolioRaw) ? portfolioRaw : []);
+  let chosenWindow = null;
+  let series = [];
+  for (const w of CURVE_CONFIG.windows) {
+    const hist = map.get(w)?.accountValueHistory || [];
+    if (hist.length > 1) {
+      chosenWindow = w;
+      series = hist;
+      break;
+    }
+  }
+  if (!chosenWindow) return null;
+
+  const points = series
+    .map((x) => ({ t: toNum(x[0]), v: toNum(x[1]) }))
+    .filter((x) => Number.isFinite(x.t) && Number.isFinite(x.v))
+    .sort((a, b) => a.t - b.t);
+  if (points.length < 2) return null;
+
+  const sampled = downsamplePoints(points, CURVE_CONFIG.maxPoints);
+  const first = sampled[0].v;
+  const last = sampled[sampled.length - 1].v;
+  const changePct = first === 0 ? 0 : (last - first) / first;
+
+  return { window: chosenWindow, points: sampled, first, last, changePct };
+}
+
 async function pullJson(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Request failed: ${url} (${res.status})`);
   return res.json();
 }
 
-async function main() {
-  const [lbRaw, vaults] = await Promise.all([
-    pullJson(LEADERBOARD_URL),
-    pullJson(VAULTS_URL),
-  ]);
+async function pullPortfolio(address) {
+  const res = await fetch(INFO_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: "portfolio", user: address }),
+  });
+  if (!res.ok) throw new Error(`Request failed: portfolio ${address} (${res.status})`);
+  return res.json();
+}
 
-  const exclude = new Set(TREASURY_ADDRESSES);
+async function fetchCurvesForRows(rows) {
+  const curves = {};
+  let success = 0;
+  let failed = 0;
+  const queue = [...rows];
 
-  for (const v of vaults) {
-    const s = v.summary || {};
-    const relType = (s.relationship || {}).type;
-    const name = s.name;
-    if (relType === "child" || EXCLUDE_VAULT_NAMES.has(name)) {
-      const addr = String(s.vaultAddress || "").toLowerCase();
-      if (addr) exclude.add(addr);
+  const workers = Array.from({ length: Math.min(CURVE_CONFIG.concurrency, queue.length) }).map(
+    async () => {
+      while (queue.length) {
+        const row = queue.shift();
+        try {
+          const raw = await pullPortfolio(row.address);
+          const curve = parsePortfolioCurve(raw);
+          if (curve) {
+            curves[row.address] = curve;
+            success += 1;
+          } else {
+            failed += 1;
+          }
+        } catch (err) {
+          failed += 1;
+        }
+      }
     }
-  }
+  );
+
+  await Promise.all(workers);
+  return { curves, success, failed };
+}
+
+async function main() {
+  const lbRaw = await pullJson(LEADERBOARD_URL);
 
   const rows = (lbRaw.leaderboardRows || [])
     .map((r) => {
       const w = parseWindowPerformance(r.windowPerformances);
       return {
-        address: String(r.ethAddress || "").toLowerCase(),
+        address: normalizeAddress(r.ethAddress),
         displayName: r.displayName || "",
         accountValue: toNum(r.accountValue),
         ...w,
       };
     })
-    .filter((r) => r.address && !exclude.has(r.address));
+    .filter((r) => r.address && !EXCLUDED_ADDRESSES.has(r.address));
 
   const eligible = rows.filter(
     (r) =>
       r.accountValue >= TRACKING_FLOOR.accountValue &&
-      r.vlm_m >= TRACKING_FLOOR.monthVlm,
+      r.vlm_m >= TRACKING_FLOOR.monthVlm
   );
 
   for (const r of eligible) {
@@ -205,10 +273,8 @@ async function main() {
       0.4 * (posRoi / 4) -
       0.35 * Math.max(0, -r.roi_m) -
       0.2 * Math.max(0, -r.roi_w);
-    r.capacity_raw =
-      0.55 * Math.log10(r.accountValue + 1) + 0.45 * Math.log10(r.vlm_m + 1);
-    r.drawdown_raw =
-      Math.min(r.pnl_d, r.pnl_w, r.pnl_m, 0) / Math.max(r.accountValue, 1);
+    r.capacity_raw = 0.55 * Math.log10(r.accountValue + 1) + 0.45 * Math.log10(r.vlm_m + 1);
+    r.drawdown_raw = Math.min(r.pnl_d, r.pnl_w, r.pnl_m, 0) / Math.max(r.accountValue, 1);
     r.pnls = [r.pnl_d, r.pnl_w, r.pnl_m, r.pnl_a];
   }
 
@@ -254,19 +320,25 @@ async function main() {
     ruleBook: r.ruleBook,
   }));
 
+  const curveResult = await fetchCurvesForRows(top30);
   const top10 = top30.slice(0, 10);
 
   const output = {
     generatedAt: new Date().toISOString(),
     source: {
       leaderboard: LEADERBOARD_URL,
-      vaults: VAULTS_URL,
+      infoPortfolio: INFO_URL,
     },
     summary: {
       totalRowsRaw: (lbRaw.leaderboardRows || []).length,
       totalRowsFiltered: rows.length,
       totalEligible: eligible.length,
       floor: TRACKING_FLOOR,
+      curves: {
+        requested: top30.length,
+        success: curveResult.success,
+        failed: curveResult.failed,
+      },
     },
     top10,
     tiers: {
@@ -275,13 +347,17 @@ async function main() {
       drop: top30.slice(20, 30),
     },
     top30,
+    curves: curveResult.curves,
   };
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2), "utf8");
   console.log(`Updated dashboard data: ${OUTPUT_FILE}`);
   console.log(
-    `Rows(raw/filtered/eligible): ${output.summary.totalRowsRaw}/${output.summary.totalRowsFiltered}/${output.summary.totalEligible}`,
+    `Rows(raw/filtered/eligible): ${output.summary.totalRowsRaw}/${output.summary.totalRowsFiltered}/${output.summary.totalEligible}`
+  );
+  console.log(
+    `Curves(requested/success/failed): ${output.summary.curves.requested}/${output.summary.curves.success}/${output.summary.curves.failed}`
   );
 }
 

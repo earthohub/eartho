@@ -1,12 +1,16 @@
 const DATA_URLS = {
   leaderboard: "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard",
-  vaults: "https://stats-data.hyperliquid.xyz/Mainnet/vaults",
 };
+
+const INFO_URL = "https://api.hyperliquid.xyz/info";
 
 const CONFIG = {
   minAccountValue: 500_000,
   minMonthVolume: 50_000_000,
   topN: 30,
+  portfolioConcurrency: 4,
+  curveMaxPoints: 140,
+  curveWindows: ["month", "week", "day", "allTime"],
   weights: {
     roi: 0.28,
     alpha: 0.22,
@@ -39,13 +43,14 @@ const EXCLUDED_ADDRESSES = new Set(
   ].map((x) => x.toLowerCase())
 );
 
-const EXCLUDED_VAULT_NAMES = new Set(["Liquidator", "Hyperliquidity Provider (HLP)"]);
-
 const state = {
   lastUpdatedAt: null,
   top10: [],
   top30: [],
   summary: null,
+  curves: {},
+  curveLoading: false,
+  curveProgress: { done: 0, total: 0, success: 0, failed: 0 },
 };
 
 const els = {
@@ -58,6 +63,8 @@ const els = {
   corePool: document.getElementById("corePool"),
   watchPool: document.getElementById("watchPool"),
   dropPool: document.getElementById("dropPool"),
+  curveStatus: document.getElementById("curveStatus"),
+  curveGrid: document.getElementById("curveGrid"),
 };
 
 function fmtMoney(v) {
@@ -65,15 +72,15 @@ function fmtMoney(v) {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(v);
+  }).format(v || 0);
 }
 
 function fmtPct(v) {
-  return `${(v * 100).toFixed(2)}%`;
+  return `${(Number(v || 0) * 100).toFixed(2)}%`;
 }
 
 function fmtScore(v) {
-  return v.toFixed(4);
+  return Number(v || 0).toFixed(4);
 }
 
 function styleClass(style) {
@@ -86,6 +93,10 @@ function styleClass(style) {
 
 function normalizeAddress(addr) {
   return String(addr || "").toLowerCase();
+}
+
+function addrShort(addr) {
+  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
 function toWindowMap(windowPerformances) {
@@ -115,6 +126,17 @@ function percentileRanks(values) {
   return out;
 }
 
+function downsamplePoints(points, maxPoints) {
+  if (points.length <= maxPoints) return points;
+  const stride = (points.length - 1) / (maxPoints - 1);
+  const out = [];
+  for (let i = 0; i < maxPoints; i += 1) {
+    const idx = Math.round(i * stride);
+    out.push(points[idx]);
+  }
+  return out;
+}
+
 function classifyStyle(row) {
   const eff = row.efficiencyRaw;
   const roiM = row.roiM;
@@ -129,19 +151,15 @@ function classifyStyle(row) {
   if (eff > 180 && volM > 150_000_000) {
     return { primary: "高频做市", secondary: "反转" };
   }
-
   if (roiM > 0.25 && pnlM > 400_000 && roiW > 0) {
     return { primary: "趋势", secondary: "事件驱动" };
   }
-
   if (pnlD < 0 && pnlW > 0 && pnlM > 0 && Math.abs(roiD) > 0.01) {
     return { primary: "反转", secondary: "趋势" };
   }
-
   if (account > 10_000_000 && (roiD > 0.02 || roiW > 0.04)) {
     return { primary: "事件驱动", secondary: "趋势" };
   }
-
   return { primary: "趋势", secondary: "高频做市" };
 }
 
@@ -175,8 +193,8 @@ function buildChecklistByStyle(row) {
   };
 }
 
-function scoreRows(filteredRows) {
-  for (const row of filteredRows) {
+function scoreRows(rows) {
+  for (const row of rows) {
     row.profitRoiRaw = 0.45 * row.roiM + 0.2 * row.roiW + 0.2 * row.roiA + 0.15 * row.roiD;
     row.alphaRaw = 0.4 * row.pnlM + 0.3 * row.pnlA + 0.2 * row.pnlW + 0.1 * row.pnlD;
     row.efficiencyRaw =
@@ -205,13 +223,13 @@ function scoreRows(filteredRows) {
   ];
 
   for (const [rawKey, pctKey] of facMap) {
-    const pcts = percentileRanks(filteredRows.map((r) => r[rawKey]));
-    filteredRows.forEach((row, i) => {
+    const pcts = percentileRanks(rows.map((r) => r[rawKey]));
+    rows.forEach((row, i) => {
       row[pctKey] = pcts[i];
     });
   }
 
-  for (const row of filteredRows) {
+  for (const row of rows) {
     row.score =
       CONFIG.weights.roi * row.profitRoiPct +
       CONFIG.weights.alpha * row.alphaPct +
@@ -220,6 +238,27 @@ function scoreRows(filteredRows) {
       CONFIG.weights.capacity * row.capacityPct +
       CONFIG.weights.drawdown * row.drawdownPct;
   }
+}
+
+function toRow(raw) {
+  const wm = toWindowMap(raw.windowPerformances);
+  return {
+    address: normalizeAddress(raw.ethAddress),
+    displayName: raw.displayName || "",
+    accountValue: Number(raw.accountValue || 0),
+    pnlD: wm.day?.pnl || 0,
+    pnlW: wm.week?.pnl || 0,
+    pnlM: wm.month?.pnl || 0,
+    pnlA: wm.allTime?.pnl || 0,
+    roiD: wm.day?.roi || 0,
+    roiW: wm.week?.roi || 0,
+    roiM: wm.month?.roi || 0,
+    roiA: wm.allTime?.roi || 0,
+    vlmD: wm.day?.vlm || 0,
+    vlmW: wm.week?.vlm || 0,
+    vlmM: wm.month?.vlm || 0,
+    vlmA: wm.allTime?.vlm || 0,
+  };
 }
 
 function renderSummary() {
@@ -261,7 +300,7 @@ function renderChecklist() {
       const c = row.checklist;
       return `
       <article class="check-item">
-        <h4>#${idx + 1} ${row.displayName || row.address.slice(0, 8) + "..."}</h4>
+        <h4>#${idx + 1} ${row.displayName || addrShort(row.address)}</h4>
         <div class="style-line">${row.style.primary} / ${row.style.secondary}</div>
         <ul>
           <li><strong>入场：</strong>${c.entry}</li>
@@ -276,7 +315,7 @@ function renderChecklist() {
 function renderTierList(listEl, rows) {
   listEl.innerHTML = rows
     .map(
-      (row, i) =>
+      (row) =>
         `<li><span>#${row.rank}</span><span class="mono">${row.address.slice(
           0,
           10
@@ -286,12 +325,92 @@ function renderTierList(listEl, rows) {
 }
 
 function renderTop30Pools() {
-  const core = state.top30.slice(0, 10);
-  const watch = state.top30.slice(10, 20);
-  const drop = state.top30.slice(20, 30);
-  renderTierList(els.corePool, core);
-  renderTierList(els.watchPool, watch);
-  renderTierList(els.dropPool, drop);
+  renderTierList(els.corePool, state.top30.slice(0, 10));
+  renderTierList(els.watchPool, state.top30.slice(10, 20));
+  renderTierList(els.dropPool, state.top30.slice(20, 30));
+}
+
+function drawSparkline(canvas, points, positive) {
+  if (!canvas || points.length < 2) return;
+  const ratio = window.devicePixelRatio || 1;
+  const width = Math.max(220, Math.floor(canvas.clientWidth));
+  const height = Math.max(100, Math.floor(canvas.clientHeight));
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(ratio, ratio);
+  ctx.clearRect(0, 0, width, height);
+
+  const values = points.map((p) => p.v);
+  const minV = Math.min(...values);
+  const maxV = Math.max(...values);
+  const span = Math.max(maxV - minV, 1e-9);
+  const pad = 10;
+  const plotW = width - pad * 2;
+  const plotH = height - pad * 2;
+
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(140, 151, 172, 0.35)";
+  ctx.beginPath();
+  ctx.moveTo(pad, height - pad);
+  ctx.lineTo(width - pad, height - pad);
+  ctx.stroke();
+
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = positive ? "#39d98a" : "#ff6b7a";
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    const x = pad + (i / (points.length - 1)) * plotW;
+    const y = pad + ((maxV - p.v) / span) * plotH;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+function renderCurves() {
+  const cards = state.top30
+    .map((row) => {
+      const curve = state.curves[row.address];
+      const has = !!curve && curve.points.length > 1;
+      const change = has ? curve.changePct : null;
+      const meta = has
+        ? `${curve.window} / ${fmtPct(change)}`
+        : state.curveLoading
+        ? "加载中..."
+        : "无可用资金曲线";
+      return `
+      <article class="curve-card">
+        <div class="curve-head">
+          <div class="curve-title">#${row.rank} ${row.displayName || addrShort(row.address)}</div>
+          <div class="curve-meta ${has ? (change >= 0 ? "pos" : "neg") : ""}">${meta}</div>
+        </div>
+        <canvas class="curve-canvas" data-addr="${row.address}"></canvas>
+      </article>`;
+    })
+    .join("");
+  els.curveGrid.innerHTML = cards;
+
+  const canvases = els.curveGrid.querySelectorAll("canvas[data-addr]");
+  canvases.forEach((canvas) => {
+    const addr = canvas.getAttribute("data-addr");
+    const curve = state.curves[addr];
+    if (!curve || curve.points.length < 2) return;
+    drawSparkline(canvas, curve.points, curve.changePct >= 0);
+  });
+}
+
+function renderCurveStatus() {
+  const p = state.curveProgress;
+  if (!state.curveLoading && p.total === 0) {
+    els.curveStatus.textContent = "等待加载...";
+    return;
+  }
+  if (state.curveLoading) {
+    els.curveStatus.textContent = `资金曲线加载中：${p.done}/${p.total}，成功 ${p.success}，失败 ${p.failed}`;
+  } else {
+    els.curveStatus.textContent = `资金曲线加载完成：成功 ${p.success}，失败 ${p.failed}`;
+  }
 }
 
 function renderAll() {
@@ -299,61 +418,106 @@ function renderAll() {
   renderTop10();
   renderChecklist();
   renderTop30Pools();
+  renderCurveStatus();
+  renderCurves();
 }
 
-function deriveExcludedSet(vaultRows) {
-  const set = new Set(EXCLUDED_ADDRESSES);
-  for (const row of vaultRows) {
-    const summary = row.summary || {};
-    const relationshipType = summary.relationship?.type;
-    const vaultName = summary.name;
-    if (relationshipType === "child" || EXCLUDED_VAULT_NAMES.has(vaultName)) {
-      set.add(normalizeAddress(summary.vaultAddress));
+async function fetchJson(url, options = {}, timeoutMs = 15_000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const resp = await fetch(url, { ...options, signal: ctrl.signal, cache: "no-store" });
+    if (!resp.ok) throw new Error(`拉取失败：${url} (${resp.status})`);
+    return await resp.json();
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function fetchPortfolio(address) {
+  return fetchJson(
+    INFO_URL,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "portfolio", user: address }),
+    },
+    20_000
+  );
+}
+
+function parsePortfolioCurve(portfolioRaw) {
+  const map = new Map(Array.isArray(portfolioRaw) ? portfolioRaw : []);
+  let chosenWindow = null;
+  let series = [];
+  for (const w of CONFIG.curveWindows) {
+    const hist = map.get(w)?.accountValueHistory || [];
+    if (hist.length > 1) {
+      chosenWindow = w;
+      series = hist;
+      break;
     }
   }
-  return set;
+  if (!chosenWindow) return null;
+
+  const points = series
+    .map((x) => ({ t: Number(x[0]), v: Number(x[1]) }))
+    .filter((x) => Number.isFinite(x.t) && Number.isFinite(x.v))
+    .sort((a, b) => a.t - b.t);
+
+  if (points.length < 2) return null;
+  const sampled = downsamplePoints(points, CONFIG.curveMaxPoints);
+  const first = sampled[0].v;
+  const last = sampled[sampled.length - 1].v;
+  const changePct = first === 0 ? 0 : (last - first) / first;
+  return { window: chosenWindow, points: sampled, first, last, changePct };
 }
 
-function toRow(raw) {
-  const wm = toWindowMap(raw.windowPerformances);
-  return {
-    address: normalizeAddress(raw.ethAddress),
-    displayName: raw.displayName || "",
-    accountValue: Number(raw.accountValue || 0),
-    pnlD: wm.day?.pnl || 0,
-    pnlW: wm.week?.pnl || 0,
-    pnlM: wm.month?.pnl || 0,
-    pnlA: wm.allTime?.pnl || 0,
-    roiD: wm.day?.roi || 0,
-    roiW: wm.week?.roi || 0,
-    roiM: wm.month?.roi || 0,
-    roiA: wm.allTime?.roi || 0,
-    vlmD: wm.day?.vlm || 0,
-    vlmW: wm.week?.vlm || 0,
-    vlmM: wm.month?.vlm || 0,
-    vlmA: wm.allTime?.vlm || 0,
-  };
-}
+async function loadCurvesForTop30() {
+  state.curves = {};
+  state.curveLoading = true;
+  state.curveProgress = { done: 0, total: state.top30.length, success: 0, failed: 0 };
+  renderCurveStatus();
+  renderCurves();
 
-async function fetchJson(url) {
-  const resp = await fetch(url, { cache: "no-store" });
-  if (!resp.ok) {
-    throw new Error(`拉取失败：${url} (${resp.status})`);
-  }
-  return resp.json();
+  const queue = [...state.top30];
+  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
+    async () => {
+      while (queue.length) {
+        const row = queue.shift();
+        try {
+          const raw = await fetchPortfolio(row.address);
+          const curve = parsePortfolioCurve(raw);
+          if (curve) {
+            state.curves[row.address] = curve;
+            state.curveProgress.success += 1;
+          } else {
+            state.curveProgress.failed += 1;
+          }
+        } catch (err) {
+          console.warn(`资金曲线获取失败: ${row.address}`, err);
+          state.curveProgress.failed += 1;
+        } finally {
+          state.curveProgress.done += 1;
+          renderCurveStatus();
+          renderCurves();
+        }
+      }
+    }
+  );
+
+  await Promise.all(workers);
+  state.curveLoading = false;
+  renderCurveStatus();
 }
 
 async function recompute() {
   els.refreshBtn.disabled = true;
   els.statusText.textContent = "正在更新数据，请稍候...";
   try {
-    const [leaderboardRaw, vaultsRaw] = await Promise.all([
-      fetchJson(DATA_URLS.leaderboard),
-      fetchJson(DATA_URLS.vaults),
-    ]);
+    const leaderboardRaw = await fetchJson(DATA_URLS.leaderboard);
     const rowsAll = (leaderboardRaw.leaderboardRows || []).map(toRow);
-    const excludedSet = deriveExcludedSet(vaultsRaw || []);
-    const filtered = rowsAll.filter((r) => !excludedSet.has(r.address));
+    const filtered = rowsAll.filter((r) => r.address && !EXCLUDED_ADDRESSES.has(r.address));
     const eligible = filtered.filter(
       (r) => r.accountValue >= CONFIG.minAccountValue && r.vlmM >= CONFIG.minMonthVolume
     );
@@ -375,7 +539,9 @@ async function recompute() {
       eligibleCount: eligible.length,
       top30TotalAccount: state.top30.reduce((acc, r) => acc + r.accountValue, 0),
     };
+
     renderAll();
+    await loadCurvesForTop30();
   } catch (err) {
     console.error(err);
     els.statusText.textContent = `更新失败：${err.message}`;
@@ -391,10 +557,9 @@ function exportJson() {
     summary: state.summary,
     top10: state.top10,
     top30: state.top30,
+    curves: state.curves,
   };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {
-    type: "application/json",
-  });
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -404,6 +569,14 @@ function exportJson() {
   a.remove();
   URL.revokeObjectURL(url);
 }
+
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    renderCurves();
+  }, 120);
+});
 
 els.refreshBtn.addEventListener("click", recompute);
 els.exportBtn.addEventListener("click", exportJson);

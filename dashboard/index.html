@@ -77,10 +77,17 @@
       </section>
 
       <section class="card">
+        <h2>每个地址资金曲线（Top30）</h2>
+        <p class="hint">从 Hyperliquid Info Portfolio 实时拉取账户净值历史并绘制。</p>
+        <div id="curveStatus" class="hint">等待加载...</div>
+        <div id="curveGrid" class="curve-grid"></div>
+      </section>
+
+      <section class="card">
         <h2>方法与说明</h2>
         <ul class="method-list">
-          <li>数据源：Mainnet leaderboard + vaults（实时拉取）。</li>
-          <li>过滤：剔除子Vault、HLP/Liquidator、treasury等非目标地址。</li>
+          <li>数据源：Mainnet leaderboard + Info portfolio（实时拉取）。</li>
+          <li>过滤：剔除treasury等非目标地址（不再依赖 vaults 数据源）。</li>
           <li>
             可跟踪门槛：账户净值 ≥ 500k USDC，月成交额 ≥ 50m USDC（可在代码中调参）。
           </li>
