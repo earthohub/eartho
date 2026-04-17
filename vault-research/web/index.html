@@ -206,6 +206,8 @@
 
     <script src="./latest-analysis.js"></script>
     <script>
+      const INFO_API_URL = "https://api.hyperliquid.xyz/info";
+
       function pct(value, opts = {}) {
         if (value === null || value === undefined || Number.isNaN(value)) return "N/A";
         if (opts.capLarge) {
@@ -239,13 +241,133 @@
         return "";
       }
 
-      function render() {
+      function toNumber(value, fallback = 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : fallback;
+      }
+
+      function median(values) {
+        if (!values.length) return null;
+        const sorted = [...values].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        if (sorted.length % 2 === 0) {
+          return (sorted[mid - 1] + sorted[mid]) / 2;
+        }
+        return sorted[mid];
+      }
+
+      function hasDepositorMetrics(metrics) {
+        if (!metrics) return false;
+        return (
+          metrics.depositorPositivePnlRatio !== undefined ||
+          metrics.depositorPositiveRatio30 !== undefined ||
+          metrics.depositorEquityWeightedPositiveRatio !== undefined ||
+          metrics.depositorPositiveCapitalRatio30 !== undefined ||
+          metrics.depositorLongTenureCapitalShare !== undefined ||
+          metrics.depositorLongTenureCapitalRatio90 !== undefined ||
+          metrics.depositorMedianDailyPnlUsd !== undefined ||
+          metrics.depositorMedianDailyPnl30 !== undefined
+        );
+      }
+
+      function calcDepositorMetricsFromFollowers(
+        followers,
+        minDepositorDays = 30,
+        longDepositorDays = 90,
+      ) {
+        const list = Array.isArray(followers) ? followers : [];
+        let eligibleFollowers = 0;
+        let positiveFollowers = 0;
+        let eligibleEquity = 0;
+        let positiveEquity = 0;
+        let longTenureEquity = 0;
+        let deepLossFollowers = 0;
+        const dailyPnls = [];
+
+        for (const follower of list) {
+          const days = toNumber(follower.daysFollowing, 0);
+          if (days < minDepositorDays) continue;
+          const pnl = toNumber(follower.allTimePnl, 0);
+          const equity = Math.max(0, toNumber(follower.vaultEquity, 0));
+          const initialCapitalApprox = equity - pnl;
+
+          eligibleFollowers += 1;
+          dailyPnls.push(pnl / Math.max(days, 1));
+          if (pnl > 0) positiveFollowers += 1;
+          if (days >= longDepositorDays) longTenureEquity += equity;
+
+          eligibleEquity += equity;
+          if (pnl > 0) positiveEquity += equity;
+          if (initialCapitalApprox > 1e-9 && pnl / initialCapitalApprox < -0.3) {
+            deepLossFollowers += 1;
+          }
+        }
+
+        return {
+          depositorEligibleFollowers: eligibleFollowers,
+          depositorPositivePnlRatio:
+            eligibleFollowers > 0 ? positiveFollowers / eligibleFollowers : null,
+          depositorEquityWeightedPositiveRatio:
+            eligibleEquity > 0 ? positiveEquity / eligibleEquity : null,
+          depositorLongTenureCapitalShare:
+            eligibleEquity > 0 ? longTenureEquity / eligibleEquity : null,
+          depositorMedianDailyPnlUsd: median(dailyPnls),
+          depositorDeepLossRatio:
+            eligibleFollowers > 0 ? deepLossFollowers / eligibleFollowers : null,
+        };
+      }
+
+      async function hydrateDepositorMetricsIfMissing(analysis) {
+        if (!analysis || analysis.__depositorHydrationAttempted) return;
+        analysis.__depositorHydrationAttempted = true;
+        const minDepositorDays = toNumber(analysis.meta?.filters?.minDepositorDays, 30);
+        const longDepositorDays = toNumber(analysis.meta?.filters?.longDepositorDays, 90);
+        const missingStrategies = (analysis.topStrategies ?? []).filter(
+          (strategy) => !hasDepositorMetrics(strategy.metrics),
+        );
+        if (!missingStrategies.length) return;
+
+        await Promise.all(
+          missingStrategies.map(async (strategy) => {
+            try {
+              const response = await fetch(INFO_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  type: "vaultDetails",
+                  vaultAddress: strategy.vaultAddress,
+                }),
+              });
+              if (!response.ok) return;
+              const details = await response.json();
+              const patched = calcDepositorMetricsFromFollowers(
+                details.followers,
+                minDepositorDays,
+                longDepositorDays,
+              );
+              Object.assign(strategy.metrics, patched, {
+                depositorPositiveRatio30: patched.depositorPositivePnlRatio,
+                depositorPositiveCapitalRatio30:
+                  patched.depositorEquityWeightedPositiveRatio,
+                depositorLongTenureCapitalRatio90:
+                  patched.depositorLongTenureCapitalShare,
+                depositorMedianDailyPnl30: patched.depositorMedianDailyPnlUsd,
+              });
+            } catch (error) {
+              // ignore and keep existing metrics as-is
+            }
+          }),
+        );
+      }
+
+      async function render() {
         const analysis = window.VAULT_ANALYSIS;
         if (!analysis || !analysis.meta) {
           document.body.innerHTML =
             "<p style='padding:20px'>未找到分析数据，请先运行更新脚本。</p>";
           return;
         }
+        await hydrateDepositorMetricsIfMissing(analysis);
 
         const meta = analysis.meta;
         const metaDiv = document.getElementById("meta");
