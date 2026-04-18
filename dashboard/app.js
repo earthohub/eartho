@@ -60,11 +60,12 @@ const els = {
   summaryMetrics: document.getElementById("summaryMetrics"),
   top10TemplateGrid:
     document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
-  watchTemplateGrid: document.getElementById("watchTemplateGrid"),
+  watchTemplateGrid:
+    document.getElementById("watchTemplateGrid") || document.getElementById("watchCardGrid"),
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-17-hotfix-null-guard-2";
+const APP_BUILD = "2026-04-18-watch-card-grid-fix";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
