@@ -58,14 +58,12 @@ const els = {
   exportBtn: document.getElementById("exportBtn"),
   statusText: document.getElementById("statusText"),
   summaryMetrics: document.getElementById("summaryMetrics"),
-  top10TemplateGrid:
-    document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
   watchTemplateGrid:
     document.getElementById("watchTemplateGrid") || document.getElementById("watchCardGrid"),
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-18-watch-card-grid-fix";
+const APP_BUILD = "2026-04-18-watch-only-top11-20";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -296,13 +294,6 @@ function renderSummary() {
   );
 }
 
-function renderTop10TemplateCards() {
-  safeSetHTML(
-    els.top10TemplateGrid,
-    renderStrategyCards(state.top10)
-  );
-}
-
 function renderStrategyCards(rows) {
   return rows
     .map((row, idx) => {
@@ -433,7 +424,6 @@ function renderCurveStatus() {
 
 function renderAll() {
   renderSummary();
-  renderTop10TemplateCards();
   renderWatchDropTemplateCards();
   renderCurveStatus();
   renderCurves();
@@ -548,7 +538,6 @@ async function recompute() {
     });
 
     state.top20 = eligible.slice(0, CONFIG.topN);
-    state.top10 = state.top20.slice(0, 10);
     state.lastUpdatedAt = Date.now();
     state.summary = {
       totalRows: rowsAll.length,
@@ -572,7 +561,6 @@ function exportJson() {
     updatedAt: new Date(state.lastUpdatedAt).toISOString(),
     config: CONFIG,
     summary: state.summary,
-    top10: state.top10,
     top20: state.top20,
     curves: state.curves,
   };
