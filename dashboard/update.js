@@ -40,7 +40,13 @@ const EXCLUDED_ADDRESSES = new Set(
 const TRACKING_FLOOR = {
   accountValue: 100_000,
   monthVlm: 10_000_000,
-  topN: 10,
+  topN: 18,
+};
+
+const MID_ACCOUNT_BAND = {
+  min: 100_000,
+  max: 2_000_000,
+  minCountInTopN: 8,
 };
 
 const RISK_REDLINE = {
@@ -252,6 +258,26 @@ async function fetchCurvesForRows(rows) {
   return { curves, success, failed };
 }
 
+function pickTopWithMidBandQuota(rows, limit, bandConfig) {
+  const sorted = [...rows].sort((a, b) => b.score - a.score);
+  const inBand = sorted.filter(
+    (r) => r.accountValue >= bandConfig.min && r.accountValue <= bandConfig.max
+  );
+  const mustTake = Math.min(bandConfig.minCountInTopN, limit, inBand.length);
+  const selected = inBand.slice(0, mustTake);
+  const used = new Set(selected.map((r) => r.address));
+
+  for (const row of sorted) {
+    if (selected.length >= limit) break;
+    if (used.has(row.address)) continue;
+    selected.push(row);
+    used.add(row.address);
+  }
+
+  selected.sort((a, b) => b.score - a.score);
+  return selected;
+}
+
 async function main() {
   const lbRaw = await pullJson(LEADERBOARD_URL);
 
@@ -327,9 +353,9 @@ async function main() {
   }
 
   const coreCandidates = eligible.filter((r) => r.is_core_eligible);
-  coreCandidates.sort((a, b) => b.score - a.score);
+  const selected = pickTopWithMidBandQuota(coreCandidates, TRACKING_FLOOR.topN, MID_ACCOUNT_BAND);
 
-  const topNRows = coreCandidates.slice(0, TRACKING_FLOOR.topN).map((r, i) => ({
+  const topNRows = selected.map((r, i) => ({
     rank: i + 1,
     address: r.address,
     displayName: r.displayName,
@@ -357,7 +383,6 @@ async function main() {
   }));
 
   const curveResult = await fetchCurvesForRows(topNRows);
-  const top10 = topNRows.slice(0, 10);
 
   const output = {
     generatedAt: new Date().toISOString(),
@@ -370,7 +395,11 @@ async function main() {
       totalRowsFiltered: rows.length,
       totalEligible: eligible.length,
       totalCoreEligible: coreCandidates.length,
+      midBandCount: topNRows.filter(
+        (r) => r.accountValue >= MID_ACCOUNT_BAND.min && r.accountValue <= MID_ACCOUNT_BAND.max
+      ).length,
       floor: TRACKING_FLOOR,
+      midAccountBand: MID_ACCOUNT_BAND,
       redline: RISK_REDLINE,
       scoreWeights: SCORE_WEIGHTS,
       curves: {
@@ -379,8 +408,8 @@ async function main() {
         failed: curveResult.failed,
       },
     },
-    top10,
-    top20: topNRows,
+    top18: topNRows,
+    top10: topNRows.slice(0, 10),
     curves: curveResult.curves,
   };
 

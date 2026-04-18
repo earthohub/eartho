@@ -7,7 +7,12 @@ const INFO_URL = "https://api.hyperliquid.xyz/info";
 const CONFIG = {
   minAccountValue: 100_000,
   minMonthVolume: 10_000_000,
-  topN: 10,
+  topN: 18,
+  midAccountBand: {
+    min: 100_000,
+    max: 2_000_000,
+    minCountInTopN: 8,
+  },
   portfolioConcurrency: 4,
   curveMaxPoints: 140,
   curveWindows: ["month", "week", "day", "allTime"],
@@ -49,7 +54,7 @@ const EXCLUDED_ADDRESSES = new Set(
 
 const state = {
   lastUpdatedAt: null,
-  top10: [],
+  topList: [],
   summary: null,
   curves: {},
   curveLoading: false,
@@ -61,12 +66,12 @@ const els = {
   exportBtn: document.getElementById("exportBtn"),
   statusText: document.getElementById("statusText"),
   summaryMetrics: document.getElementById("summaryMetrics"),
-  top10TemplateGrid:
+  topListTemplateGrid:
     document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-18-top10-only";
+const APP_BUILD = "2026-04-18-top18-mid-band-quota";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -337,7 +342,8 @@ function renderSummary() {
     <div class="metric-pill">过滤后：<strong>${s.filteredRows}</strong></div>
     <div class="metric-pill">可跟踪样本：<strong>${s.eligibleCount}</strong></div>
     <div class="metric-pill">核心池候选：<strong>${s.coreCount}</strong></div>
-    <div class="metric-pill">Top10覆盖净值：<strong>${fmtMoney(s.top10TotalAccount)}</strong></div>
+    <div class="metric-pill">Top${CONFIG.topN}覆盖净值：<strong>${fmtMoney(s.topNTotalAccount)}</strong></div>
+    <div class="metric-pill">10万-200万占比：<strong>${s.midBandCount}/${CONFIG.topN}</strong></div>
   `
   );
 }
@@ -393,7 +399,7 @@ function renderStrategyCards(rows) {
               <div class="curve-title">资金曲线</div>
               <div class="curve-meta ${hasCurve ? (curve.changePct >= 0 ? "pos" : "neg") : ""}">${curveMeta}</div>
             </div>
-            <canvas class="curve-canvas top10-curve" data-addr="${row.address}"></canvas>
+            <canvas class="curve-canvas top-list-curve" data-addr="${row.address}"></canvas>
           </div>
         </div>
       </article>`;
@@ -401,8 +407,32 @@ function renderStrategyCards(rows) {
     .join("");
 }
 
-function renderTop10TemplateCards() {
-  safeSetHTML(els.top10TemplateGrid, renderStrategyCards(state.top10));
+function pickTopWithMidBandQuota(rows, limit, bandConfig) {
+  const sorted = [...rows].sort((a, b) => b.score - a.score);
+  const inBand = sorted.filter(
+    (r) => r.accountValue >= bandConfig.min && r.accountValue <= bandConfig.max
+  );
+  const outBand = sorted.filter(
+    (r) => !(r.accountValue >= bandConfig.min && r.accountValue <= bandConfig.max)
+  );
+
+  const mustTake = Math.min(bandConfig.minCountInTopN, limit, inBand.length);
+  const selected = inBand.slice(0, mustTake);
+  const used = new Set(selected.map((r) => r.address));
+
+  for (const row of sorted) {
+    if (selected.length >= limit) break;
+    if (used.has(row.address)) continue;
+    selected.push(row);
+    used.add(row.address);
+  }
+
+  selected.sort((a, b) => b.score - a.score);
+  return selected;
+}
+
+function renderTopListTemplateCards() {
+  safeSetHTML(els.topListTemplateGrid, renderStrategyCards(state.topList));
 }
 
 function drawSparkline(canvas, points, positive) {
@@ -604,7 +634,7 @@ function renderCurveStatus() {
 
 function renderAll() {
   renderSummary();
-  renderTop10TemplateCards();
+  renderTopListTemplateCards();
   renderCurveStatus();
   renderCurves();
 }
@@ -660,14 +690,14 @@ function parsePortfolioCurve(portfolioRaw) {
   return { window: chosenWindow, points: sampled, first, last, changePct };
 }
 
-async function loadCurvesForTop10() {
+async function loadCurvesForTopList() {
   state.curves = {};
   state.curveLoading = true;
-  state.curveProgress = { done: 0, total: state.top10.length, success: 0, failed: 0 };
+  state.curveProgress = { done: 0, total: state.topList.length, success: 0, failed: 0 };
   renderCurveStatus();
   renderCurves();
 
-  const queue = [...state.top10];
+  const queue = [...state.topList];
   const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
     async () => {
       while (queue.length) {
@@ -711,25 +741,28 @@ async function recompute() {
 
     scoreRows(eligible);
     const coreCandidates = eligible.filter((r) => r.isCoreEligible);
-    coreCandidates.sort((a, b) => b.score - a.score);
-    coreCandidates.forEach((row, i) => {
+    const topList = pickTopWithMidBandQuota(coreCandidates, CONFIG.topN, CONFIG.midAccountBand);
+    topList.forEach((row, i) => {
       row.rank = i + 1;
       row.style = classifyStyle(row);
       row.checklist = buildChecklistByStyle(row);
     });
 
-    state.top10 = coreCandidates.slice(0, CONFIG.topN);
+    state.topList = topList;
     state.lastUpdatedAt = Date.now();
     state.summary = {
       totalRows: rowsAll.length,
       filteredRows: filtered.length,
       eligibleCount: eligible.length,
       coreCount: coreCandidates.length,
-      top10TotalAccount: state.top10.reduce((acc, r) => acc + r.accountValue, 0),
+      topNTotalAccount: state.topList.reduce((acc, r) => acc + r.accountValue, 0),
+      midBandCount: state.topList.filter(
+        (r) => r.accountValue >= CONFIG.midAccountBand.min && r.accountValue <= CONFIG.midAccountBand.max
+      ).length,
     };
 
     renderAll();
-    await loadCurvesForTop10();
+    await loadCurvesForTopList();
   } catch (err) {
     console.error(err);
     safeSetText(els.statusText, `更新失败：${err.message}`);
@@ -743,7 +776,7 @@ function exportJson() {
     updatedAt: new Date(state.lastUpdatedAt).toISOString(),
     config: CONFIG,
     summary: state.summary,
-    top10: state.top10,
+    top18: state.topList,
     curves: state.curves,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
