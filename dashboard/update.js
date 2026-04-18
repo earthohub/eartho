@@ -38,9 +38,23 @@ const EXCLUDED_ADDRESSES = new Set(
 );
 
 const TRACKING_FLOOR = {
-  accountValue: 500_000,
-  monthVlm: 50_000_000,
-  topN: 20,
+  accountValue: 100_000,
+  monthVlm: 10_000_000,
+  topN: 10,
+};
+
+const RISK_REDLINE = {
+  maxDrawdownProxy: 0.25,
+  maxDailyLoss: 0.08,
+  maxWhipsaw: 4,
+};
+
+const SCORE_WEIGHTS = {
+  stableReturn: 0.35,
+  riskControl: 0.3,
+  replicability: 0.2,
+  capacity: 0.1,
+  alpha: 0.05,
 };
 
 const CURVE_CONFIG = {
@@ -254,13 +268,10 @@ async function main() {
     .filter((r) => r.address && !EXCLUDED_ADDRESSES.has(r.address));
 
   const eligible = rows.filter(
-    (r) =>
-      r.accountValue >= TRACKING_FLOOR.accountValue &&
-      r.vlm_m >= TRACKING_FLOOR.monthVlm
+    (r) => r.accountValue >= TRACKING_FLOOR.accountValue && r.vlm_m >= TRACKING_FLOOR.monthVlm
   );
 
   for (const r of eligible) {
-    r.profit_roi_raw = 0.45 * r.roi_m + 0.2 * r.roi_w + 0.2 * r.roi_a + 0.15 * r.roi_d;
     r.alpha_pnl_raw = 0.4 * r.pnl_m + 0.3 * r.pnl_a + 0.2 * r.pnl_w + 0.1 * r.pnl_d;
     r.eff_raw =
       10000 *
@@ -275,32 +286,50 @@ async function main() {
       0.35 * Math.max(0, -r.roi_m) -
       0.2 * Math.max(0, -r.roi_w);
     r.capacity_raw = 0.55 * Math.log10(r.accountValue + 1) + 0.45 * Math.log10(r.vlm_m + 1);
-    r.drawdown_raw = Math.min(r.pnl_d, r.pnl_w, r.pnl_m, 0) / Math.max(r.accountValue, 1);
     r.pnls = [r.pnl_d, r.pnl_w, r.pnl_m, r.pnl_a];
+
+    // Balanced profile factors: stability + risk control + replicability
+    const account = Math.max(r.accountValue, 1);
+    r.drawdown_proxy = Math.max(0, -Math.min(r.pnl_d, r.pnl_w, r.pnl_m, 0) / account);
+    r.daily_loss_proxy = Math.max(0, -r.pnl_d / account);
+    r.whipsaw_proxy =
+      (Math.abs(r.roi_d) + Math.abs(r.roi_w) + Math.abs(r.roi_m)) / Math.max(Math.abs(r.roi_m), 0.01);
+    r.positive_roi_share = [r.roi_d, r.roi_w, r.roi_m].filter((x) => x > 0).length / 3;
+
+    r.stable_return_raw = 0.6 * r.roi_m + 0.3 * r.roi_w + 0.1 * r.roi_d + 0.1 * r.positive_roi_share;
+    r.risk_control_raw =
+      -0.55 * r.drawdown_proxy - 0.3 * r.daily_loss_proxy - 0.15 * Math.max(0, r.whipsaw_proxy - 1);
+    r.replicability_raw = 0.65 * r.eff_raw + 0.35 * r.cons_raw * 100;
+
+    const breaches = [];
+    if (r.drawdown_proxy > RISK_REDLINE.maxDrawdownProxy) breaches.push("mdd30");
+    if (r.daily_loss_proxy > RISK_REDLINE.maxDailyLoss) breaches.push("dailyShock");
+    if (r.whipsaw_proxy > RISK_REDLINE.maxWhipsaw) breaches.push("whipsaw");
+    r.redline_breaches = breaches;
+    r.is_core_eligible = breaches.length === 0;
   }
 
-  percentileRanks(eligible, "profit_roi_raw", "profit_roi_pct");
+  percentileRanks(eligible, "stable_return_raw", "stable_return_pct");
+  percentileRanks(eligible, "risk_control_raw", "risk_control_pct");
+  percentileRanks(eligible, "replicability_raw", "replicability_pct");
   percentileRanks(eligible, "alpha_pnl_raw", "alpha_pnl_pct");
-  percentileRanks(eligible, "eff_raw", "eff_pct");
-  percentileRanks(eligible, "cons_raw", "cons_pct");
   percentileRanks(eligible, "capacity_raw", "capacity_pct");
-  percentileRanks(eligible, "drawdown_raw", "drawdown_pct");
 
   for (const r of eligible) {
     r.score =
-      0.28 * r.profit_roi_pct +
-      0.22 * r.alpha_pnl_pct +
-      0.2 * r.eff_pct +
-      0.15 * r.cons_pct +
-      0.1 * r.capacity_pct +
-      0.05 * r.drawdown_pct;
+      SCORE_WEIGHTS.stableReturn * r.stable_return_pct +
+      SCORE_WEIGHTS.riskControl * r.risk_control_pct +
+      SCORE_WEIGHTS.replicability * r.replicability_pct +
+      SCORE_WEIGHTS.capacity * r.capacity_pct +
+      SCORE_WEIGHTS.alpha * r.alpha_pnl_pct;
     r.style = classifyStyle(r);
     r.ruleBook = buildRules(r);
   }
 
-  eligible.sort((a, b) => b.score - a.score);
+  const coreCandidates = eligible.filter((r) => r.is_core_eligible);
+  coreCandidates.sort((a, b) => b.score - a.score);
 
-  const topNRows = eligible.slice(0, TRACKING_FLOOR.topN).map((r, i) => ({
+  const topNRows = coreCandidates.slice(0, TRACKING_FLOOR.topN).map((r, i) => ({
     rank: i + 1,
     address: r.address,
     displayName: r.displayName,
@@ -311,12 +340,18 @@ async function main() {
     monthVlm: r.vlm_m,
     score: r.score,
     factorPct: {
-      roi: r.profit_roi_pct * 100,
+      stableReturn: r.stable_return_pct * 100,
+      riskControl: r.risk_control_pct * 100,
+      replicability: r.replicability_pct * 100,
       alpha: r.alpha_pnl_pct * 100,
-      efficiency: r.eff_pct * 100,
-      consistency: r.cons_pct * 100,
       capacity: r.capacity_pct * 100,
-      drawdown: r.drawdown_pct * 100,
+    },
+    riskGate: {
+      passed: r.is_core_eligible,
+      breaches: r.redline_breaches,
+      drawdownProxy: r.drawdown_proxy,
+      dailyLossProxy: r.daily_loss_proxy,
+      whipsawProxy: r.whipsaw_proxy,
     },
     ruleBook: r.ruleBook,
   }));
@@ -334,7 +369,10 @@ async function main() {
       totalRowsRaw: (lbRaw.leaderboardRows || []).length,
       totalRowsFiltered: rows.length,
       totalEligible: eligible.length,
+      totalCoreEligible: coreCandidates.length,
       floor: TRACKING_FLOOR,
+      redline: RISK_REDLINE,
+      scoreWeights: SCORE_WEIGHTS,
       curves: {
         requested: topNRows.length,
         success: curveResult.success,

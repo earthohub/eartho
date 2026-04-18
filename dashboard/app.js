@@ -5,19 +5,23 @@ const DATA_URLS = {
 const INFO_URL = "https://api.hyperliquid.xyz/info";
 
 const CONFIG = {
-  minAccountValue: 500_000,
-  minMonthVolume: 50_000_000,
+  minAccountValue: 100_000,
+  minMonthVolume: 10_000_000,
   topN: 10,
   portfolioConcurrency: 4,
   curveMaxPoints: 140,
   curveWindows: ["month", "week", "day", "allTime"],
+  redline: {
+    maxDrawdownProxy: 0.25,
+    maxDailyLoss: 0.08,
+    maxWhipsaw: 4,
+  },
   weights: {
-    roi: 0.28,
-    alpha: 0.22,
-    efficiency: 0.2,
-    consistency: 0.15,
+    stableReturn: 0.35,
+    riskControl: 0.3,
+    replicability: 0.2,
     capacity: 0.1,
-    drawdown: 0.05,
+    alpha: 0.05,
   },
 };
 
@@ -251,15 +255,33 @@ function scoreRows(rows) {
       0.2 * Math.max(0, -row.roiW);
     row.capacityRaw = 0.55 * Math.log10(row.accountValue + 1) + 0.45 * Math.log10(row.vlmM + 1);
     row.drawdownRaw = Math.min(row.pnlD, row.pnlW, row.pnlM, 0) / Math.max(row.accountValue, 1);
+
+    const account = Math.max(row.accountValue, 1);
+    row.drawdownProxy = Math.max(0, -Math.min(row.pnlD, row.pnlW, row.pnlM, 0) / account);
+    row.dailyLossProxy = Math.max(0, -row.pnlD / account);
+    row.whipsawProxy =
+      (Math.abs(row.roiD) + Math.abs(row.roiW) + Math.abs(row.roiM)) / Math.max(Math.abs(row.roiM), 0.01);
+    row.positiveRoiShare = [row.roiD, row.roiW, row.roiM].filter((x) => x > 0).length / 3;
+
+    row.stableReturnRaw = 0.6 * row.roiM + 0.3 * row.roiW + 0.1 * row.roiD + 0.1 * row.positiveRoiShare;
+    row.riskControlRaw =
+      -0.55 * row.drawdownProxy - 0.3 * row.dailyLossProxy - 0.15 * Math.max(0, row.whipsawProxy - 1);
+    row.replicabilityRaw = 0.65 * row.efficiencyRaw + 0.35 * row.consistencyRaw * 100;
+
+    const breaches = [];
+    if (row.drawdownProxy > CONFIG.redline.maxDrawdownProxy) breaches.push("mdd30");
+    if (row.dailyLossProxy > CONFIG.redline.maxDailyLoss) breaches.push("dailyShock");
+    if (row.whipsawProxy > CONFIG.redline.maxWhipsaw) breaches.push("whipsaw");
+    row.redlineBreaches = breaches;
+    row.isCoreEligible = breaches.length === 0;
   }
 
   const facMap = [
-    ["profitRoiRaw", "profitRoiPct"],
+    ["stableReturnRaw", "stableReturnPct"],
+    ["riskControlRaw", "riskControlPct"],
+    ["replicabilityRaw", "replicabilityPct"],
     ["alphaRaw", "alphaPct"],
-    ["efficiencyRaw", "efficiencyPct"],
-    ["consistencyRaw", "consistencyPct"],
     ["capacityRaw", "capacityPct"],
-    ["drawdownRaw", "drawdownPct"],
   ];
 
   for (const [rawKey, pctKey] of facMap) {
@@ -271,12 +293,12 @@ function scoreRows(rows) {
 
   for (const row of rows) {
     row.score =
-      CONFIG.weights.roi * row.profitRoiPct +
-      CONFIG.weights.alpha * row.alphaPct +
-      CONFIG.weights.efficiency * row.efficiencyPct +
-      CONFIG.weights.consistency * row.consistencyPct +
+      CONFIG.weights.stableReturn * row.stableReturnPct +
+      CONFIG.weights.riskControl * row.riskControlPct +
+      CONFIG.weights.replicability * row.replicabilityPct +
       CONFIG.weights.capacity * row.capacityPct +
-      CONFIG.weights.drawdown * row.drawdownPct;
+      CONFIG.weights.alpha * row.alphaPct +
+      0;
   }
 }
 
@@ -306,7 +328,7 @@ function renderSummary() {
   if (!s) return;
   safeSetText(
     els.statusText,
-    `最近更新时间：${new Date(state.lastUpdatedAt).toLocaleString()}，候选地址 ${s.eligibleCount} 个。`
+    `最近更新时间：${new Date(state.lastUpdatedAt).toLocaleString()}，核心候选 ${s.coreCount} / ${s.eligibleCount} 个。`
   );
   safeSetHTML(
     els.summaryMetrics,
@@ -314,6 +336,7 @@ function renderSummary() {
     <div class="metric-pill">全量地址：<strong>${s.totalRows}</strong></div>
     <div class="metric-pill">过滤后：<strong>${s.filteredRows}</strong></div>
     <div class="metric-pill">可跟踪样本：<strong>${s.eligibleCount}</strong></div>
+    <div class="metric-pill">核心池候选：<strong>${s.coreCount}</strong></div>
     <div class="metric-pill">Top10覆盖净值：<strong>${fmtMoney(s.top10TotalAccount)}</strong></div>
   `
   );
@@ -687,19 +710,21 @@ async function recompute() {
     );
 
     scoreRows(eligible);
-    eligible.sort((a, b) => b.score - a.score);
-    eligible.forEach((row, i) => {
+    const coreCandidates = eligible.filter((r) => r.isCoreEligible);
+    coreCandidates.sort((a, b) => b.score - a.score);
+    coreCandidates.forEach((row, i) => {
       row.rank = i + 1;
       row.style = classifyStyle(row);
       row.checklist = buildChecklistByStyle(row);
     });
 
-    state.top10 = eligible.slice(0, CONFIG.topN);
+    state.top10 = coreCandidates.slice(0, CONFIG.topN);
     state.lastUpdatedAt = Date.now();
     state.summary = {
       totalRows: rowsAll.length,
       filteredRows: filtered.length,
       eligibleCount: eligible.length,
+      coreCount: coreCandidates.length,
       top10TotalAccount: state.top10.reduce((acc, r) => acc + r.accountValue, 0),
     };
 
