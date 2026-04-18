@@ -30,31 +30,10 @@
 
     <main class="layout">
       <section class="card">
-        <h2>Top10 地址：交易风格画像</h2>
-        <p class="hint">按多因子综合分排序，标签为主风格/次风格。</p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>地址</th>
-                <th>风格画像</th>
-                <th>账户净值</th>
-                <th>月ROI</th>
-                <th>月PnL</th>
-                <th>月成交额</th>
-                <th>综合分</th>
-              </tr>
-            </thead>
-            <tbody id="top10Body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>可执行跟踪清单（入场/跟随/止损）</h2>
-        <p class="hint">规则按地址风格自动生成，可直接执行或二次微调。</p>
-        <div id="checklistGrid" class="grid"></div>
+        <h2>推荐地址模板（Top10）</h2>
+        <p class="hint">每张卡片整合：风格画像 + 交易策略 + 跟踪清单 + 资金曲线。</p>
+        <div id="curveStatus" class="hint">等待加载...</div>
+        <div id="strategyCardGrid" class="strategy-grid"></div>
       </section>
 
       <section class="card">
@@ -74,13 +53,6 @@
             <ul id="dropPool" class="rank-list"></ul>
           </div>
         </div>
-      </section>
-
-      <section class="card">
-        <h2>每个地址资金曲线（Top30）</h2>
-        <p class="hint">从 Hyperliquid Info Portfolio 实时拉取账户净值历史并绘制。</p>
-        <div id="curveStatus" class="hint">等待加载...</div>
-        <div id="curveGrid" class="curve-grid"></div>
       </section>
 
       <section class="card">

@@ -127,6 +127,10 @@ h3 {
   font-size: 14px;
 }
 
+.hint.tight {
+  margin-bottom: 4px;
+}
+
 .table-wrap {
   overflow: auto;
 }
@@ -206,6 +210,106 @@ tr:hover td {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 12px;
+}
+
+.top10-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(540px, 1fr));
+  gap: 12px;
+}
+
+.strategy-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--panel-2);
+}
+
+.strategy-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.strategy-title {
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.strategy-score {
+  font-size: 13px;
+  color: #99d7ff;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.strategy-style {
+  margin-bottom: 8px;
+}
+
+.strategy-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.strategy-metrics > div {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: #161b27;
+}
+
+.strategy-metrics span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.strategy-metrics strong {
+  font-size: 13px;
+}
+
+.strategy-body {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 10px;
+}
+
+.strategy-rules {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  background: #161b27;
+}
+
+.strategy-rules h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.strategy-rules ul {
+  margin: 0;
+  padding-left: 17px;
+}
+
+.strategy-rules li {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.strategy-curve {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  background: #161b27;
 }
 
 .check-item {
@@ -299,6 +403,10 @@ tr:hover td {
   background: #121722;
 }
 
+.curve-canvas.top10-curve {
+  height: 150px;
+}
+
 .rank-list {
   list-style: none;
   margin: 0;
@@ -352,6 +460,18 @@ tr:hover td {
   }
 
   .tier-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .top10-template-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .strategy-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .strategy-body {
     grid-template-columns: 1fr;
   }
 }

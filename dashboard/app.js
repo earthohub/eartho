@@ -58,13 +58,11 @@ const els = {
   exportBtn: document.getElementById("exportBtn"),
   statusText: document.getElementById("statusText"),
   summaryMetrics: document.getElementById("summaryMetrics"),
-  top10Body: document.getElementById("top10Body"),
-  checklistGrid: document.getElementById("checklistGrid"),
+  top10TemplateGrid: document.getElementById("top10TemplateGrid"),
   corePool: document.getElementById("corePool"),
   watchPool: document.getElementById("watchPool"),
   dropPool: document.getElementById("dropPool"),
   curveStatus: document.getElementById("curveStatus"),
-  curveGrid: document.getElementById("curveGrid"),
 };
 
 function fmtMoney(v) {
@@ -274,39 +272,58 @@ function renderSummary() {
   `;
 }
 
-function renderTop10() {
-  els.top10Body.innerHTML = state.top10
-    .map(
-      (row, idx) => `
-    <tr>
-      <td>${idx + 1}</td>
-      <td class="mono">${row.address}</td>
-      <td><span class="tag ${styleClass(row.style.primary)}">${row.style.primary}</span> / <span class="tag ${styleClass(
-        row.style.secondary
-      )}">${row.style.secondary}</span></td>
-      <td>${fmtMoney(row.accountValue)}</td>
-      <td>${fmtPct(row.roiM)}</td>
-      <td>${fmtMoney(row.pnlM)}</td>
-      <td>${fmtMoney(row.vlmM)}</td>
-      <td>${fmtScore(row.score)}</td>
-    </tr>`
-    )
-    .join("");
-}
-
-function renderChecklist() {
-  els.checklistGrid.innerHTML = state.top10
+function renderTop10TemplateCards() {
+  els.top10TemplateGrid.innerHTML = state.top10
     .map((row, idx) => {
       const c = row.checklist;
+      const curve = state.curves[row.address];
+      const hasCurve = !!curve && curve.points.length > 1;
+      const curveMeta = hasCurve
+        ? `${curve.window} / ${fmtPct(curve.changePct)}`
+        : state.curveLoading
+        ? "资金曲线加载中..."
+        : "无可用资金曲线";
+
       return `
-      <article class="check-item">
-        <h4>#${idx + 1} ${row.displayName || addrShort(row.address)}</h4>
-        <div class="style-line">${row.style.primary} / ${row.style.secondary}</div>
-        <ul>
-          <li><strong>入场：</strong>${c.entry}</li>
-          <li><strong>跟随：</strong>${c.follow}</li>
-          <li><strong>止损：</strong>${c.stop}</li>
-        </ul>
+      <article class="strategy-card">
+        <div class="strategy-head">
+          <div>
+            <div class="strategy-title">#${idx + 1} ${row.displayName || addrShort(row.address)}</div>
+            <div class="mono muted">${row.address}</div>
+          </div>
+          <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
+        </div>
+
+        <div class="strategy-style">
+          <span class="tag ${styleClass(row.style.primary)}">${row.style.primary}</span>
+          <span class="tag ${styleClass(row.style.secondary)}">${row.style.secondary}</span>
+        </div>
+
+        <div class="strategy-metrics">
+          <div><span>账户净值</span><strong>${fmtMoney(row.accountValue)}</strong></div>
+          <div><span>月ROI</span><strong>${fmtPct(row.roiM)}</strong></div>
+          <div><span>月PnL</span><strong>${fmtMoney(row.pnlM)}</strong></div>
+          <div><span>月成交额</span><strong>${fmtMoney(row.vlmM)}</strong></div>
+        </div>
+
+        <div class="strategy-body">
+          <div class="strategy-rules">
+            <h4>跟踪清单</h4>
+            <ul>
+              <li><strong>入场：</strong>${c.entry}</li>
+              <li><strong>跟随：</strong>${c.follow}</li>
+              <li><strong>止损：</strong>${c.stop}</li>
+            </ul>
+          </div>
+
+          <div class="strategy-curve">
+            <div class="curve-head">
+              <div class="curve-title">资金曲线</div>
+              <div class="curve-meta ${hasCurve ? (curve.changePct >= 0 ? "pos" : "neg") : ""}">${curveMeta}</div>
+            </div>
+            <canvas class="curve-canvas top10-curve" data-addr="${row.address}"></canvas>
+          </div>
+        </div>
       </article>`;
     })
     .join("");
@@ -369,29 +386,7 @@ function drawSparkline(canvas, points, positive) {
 }
 
 function renderCurves() {
-  const cards = state.top30
-    .map((row) => {
-      const curve = state.curves[row.address];
-      const has = !!curve && curve.points.length > 1;
-      const change = has ? curve.changePct : null;
-      const meta = has
-        ? `${curve.window} / ${fmtPct(change)}`
-        : state.curveLoading
-        ? "加载中..."
-        : "无可用资金曲线";
-      return `
-      <article class="curve-card">
-        <div class="curve-head">
-          <div class="curve-title">#${row.rank} ${row.displayName || addrShort(row.address)}</div>
-          <div class="curve-meta ${has ? (change >= 0 ? "pos" : "neg") : ""}">${meta}</div>
-        </div>
-        <canvas class="curve-canvas" data-addr="${row.address}"></canvas>
-      </article>`;
-    })
-    .join("");
-  els.curveGrid.innerHTML = cards;
-
-  const canvases = els.curveGrid.querySelectorAll("canvas[data-addr]");
+  const canvases = document.querySelectorAll("canvas[data-addr]");
   canvases.forEach((canvas) => {
     const addr = canvas.getAttribute("data-addr");
     const curve = state.curves[addr];
@@ -415,8 +410,7 @@ function renderCurveStatus() {
 
 function renderAll() {
   renderSummary();
-  renderTop10();
-  renderChecklist();
+  renderTop10TemplateCards();
   renderTop30Pools();
   renderCurveStatus();
   renderCurves();
