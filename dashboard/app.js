@@ -58,7 +58,8 @@ const els = {
   exportBtn: document.getElementById("exportBtn"),
   statusText: document.getElementById("statusText"),
   summaryMetrics: document.getElementById("summaryMetrics"),
-  top10TemplateGrid: document.getElementById("top10TemplateGrid"),
+  top10TemplateGrid:
+    document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
   corePool: document.getElementById("corePool"),
   watchPool: document.getElementById("watchPool"),
   dropPool: document.getElementById("dropPool"),
@@ -261,6 +262,7 @@ function toRow(raw) {
 
 function renderSummary() {
   const s = state.summary;
+  if (!els.statusText || !els.summaryMetrics || !s) return;
   els.statusText.textContent = `最近更新时间：${new Date(state.lastUpdatedAt).toLocaleString()}，候选地址 ${
     s.eligibleCount
   } 个。`;
@@ -273,6 +275,7 @@ function renderSummary() {
 }
 
 function renderTop10TemplateCards() {
+  if (!els.top10TemplateGrid) return;
   els.top10TemplateGrid.innerHTML = state.top10
     .map((row, idx) => {
       const c = row.checklist;
@@ -330,6 +333,7 @@ function renderTop10TemplateCards() {
 }
 
 function renderTierList(listEl, rows) {
+  if (!listEl) return;
   listEl.innerHTML = rows
     .map(
       (row) =>
@@ -397,6 +401,7 @@ function renderCurves() {
 
 function renderCurveStatus() {
   const p = state.curveProgress;
+  if (!els.curveStatus) return;
   if (!state.curveLoading && p.total === 0) {
     els.curveStatus.textContent = "等待加载...";
     return;
