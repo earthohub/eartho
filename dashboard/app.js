@@ -97,6 +97,32 @@ function fmtScore(v) {
   return Number(v || 0).toFixed(4);
 }
 
+function fmtAxisMoney(v) {
+  const num = Number(v || 0);
+  const abs = Math.abs(num);
+  if (abs >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`;
+  if (abs >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
+  if (abs >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
+  return `${Math.round(num)}`;
+}
+
+function normalizeEpochMs(ts) {
+  const n = Number(ts);
+  if (!Number.isFinite(n)) return null;
+  return n < 1e12 ? n * 1000 : n;
+}
+
+function fmtAxisTime(ts, spanMs) {
+  const ms = normalizeEpochMs(ts);
+  if (!ms) return "";
+  const d = new Date(ms);
+  if (Number.isNaN(d.getTime())) return "";
+  if (spanMs <= 2 * 24 * 60 * 60 * 1000) {
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  }
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
 function styleClass(style) {
   if (style === "趋势") return "trend";
   if (style === "反转") return "reversal";
@@ -364,6 +390,7 @@ function drawSparkline(canvas, points, positive) {
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   const ctx = canvas.getContext("2d");
+  if (!ctx) return;
   ctx.scale(ratio, ratio);
   ctx.clearRect(0, 0, width, height);
 
@@ -371,23 +398,63 @@ function drawSparkline(canvas, points, positive) {
   const minV = Math.min(...values);
   const maxV = Math.max(...values);
   const span = Math.max(maxV - minV, 1e-9);
-  const pad = 10;
-  const plotW = width - pad * 2;
-  const plotH = height - pad * 2;
+  const leftPad = 56;
+  const rightPad = 10;
+  const topPad = 12;
+  const bottomPad = 24;
+  const plotW = width - leftPad - rightPad;
+  const plotH = height - topPad - bottomPad;
+  if (plotW <= 0 || plotH <= 0) return;
+  const bottomY = topPad + plotH;
 
+  const toX = (i) => leftPad + (i / (points.length - 1)) * plotW;
+  const toY = (v) => topPad + ((maxV - v) / span) * plotH;
+
+  const yTicks = [maxV, (maxV + minV) / 2, minV];
   ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(140, 151, 172, 0.35)";
+  ctx.font = '11px "Inter", "Segoe UI", sans-serif';
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  yTicks.forEach((tick) => {
+    const y = toY(tick);
+    ctx.strokeStyle = "rgba(140, 151, 172, 0.2)";
+    ctx.beginPath();
+    ctx.moveTo(leftPad, y);
+    ctx.lineTo(width - rightPad, y);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(174, 183, 199, 0.95)";
+    ctx.fillText(fmtAxisMoney(tick), leftPad - 6, y);
+  });
+
+  ctx.strokeStyle = "rgba(140, 151, 172, 0.5)";
   ctx.beginPath();
-  ctx.moveTo(pad, height - pad);
-  ctx.lineTo(width - pad, height - pad);
+  ctx.moveTo(leftPad, topPad);
+  ctx.lineTo(leftPad, bottomY);
+  ctx.lineTo(width - rightPad, bottomY);
   ctx.stroke();
+
+  const firstT = points[0].t;
+  const midT = points[Math.floor((points.length - 1) / 2)].t;
+  const lastT = points[points.length - 1].t;
+  const firstMs = normalizeEpochMs(firstT);
+  const lastMs = normalizeEpochMs(lastT);
+  const spanMs = firstMs && lastMs ? Math.max(lastMs - firstMs, 0) : 0;
+
+  ctx.textBaseline = "top";
+  ctx.fillStyle = "rgba(174, 183, 199, 0.95)";
+  ctx.textAlign = "left";
+  ctx.fillText(fmtAxisTime(firstT, spanMs), leftPad, bottomY + 6);
+  ctx.textAlign = "center";
+  ctx.fillText(fmtAxisTime(midT, spanMs), leftPad + plotW / 2, bottomY + 6);
+  ctx.textAlign = "right";
+  ctx.fillText(fmtAxisTime(lastT, spanMs), width - rightPad, bottomY + 6);
 
   ctx.lineWidth = 2;
   ctx.strokeStyle = positive ? "#39d98a" : "#ff6b7a";
   ctx.beginPath();
   points.forEach((p, i) => {
-    const x = pad + (i / (points.length - 1)) * plotW;
-    const y = pad + ((maxV - p.v) / span) * plotH;
+    const x = toX(i);
+    const y = toY(p.v);
     if (i === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   });
