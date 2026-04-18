@@ -66,6 +66,25 @@ const els = {
   curveStatus: document.getElementById("curveStatus"),
 };
 
+const APP_BUILD = "2026-04-17-hotfix-null-guard-2";
+window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
+
+function safeSetText(el, text) {
+  if (!el) {
+    console.warn("[dashboard] missing element for text update");
+    return;
+  }
+  el.textContent = text;
+}
+
+function safeSetHTML(el, html) {
+  if (!el) {
+    console.warn("[dashboard] missing element for html update");
+    return;
+  }
+  el.innerHTML = html;
+}
+
 function fmtMoney(v) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -262,21 +281,26 @@ function toRow(raw) {
 
 function renderSummary() {
   const s = state.summary;
-  if (!els.statusText || !els.summaryMetrics || !s) return;
-  els.statusText.textContent = `最近更新时间：${new Date(state.lastUpdatedAt).toLocaleString()}，候选地址 ${
-    s.eligibleCount
-  } 个。`;
-  els.summaryMetrics.innerHTML = `
+  if (!s) return;
+  safeSetText(
+    els.statusText,
+    `最近更新时间：${new Date(state.lastUpdatedAt).toLocaleString()}，候选地址 ${s.eligibleCount} 个。`
+  );
+  safeSetHTML(
+    els.summaryMetrics,
+    `
     <div class="metric-pill">全量地址：<strong>${s.totalRows}</strong></div>
     <div class="metric-pill">过滤后：<strong>${s.filteredRows}</strong></div>
     <div class="metric-pill">可跟踪样本：<strong>${s.eligibleCount}</strong></div>
     <div class="metric-pill">Top30覆盖净值：<strong>${fmtMoney(s.top30TotalAccount)}</strong></div>
-  `;
+  `
+  );
 }
 
 function renderTop10TemplateCards() {
-  if (!els.top10TemplateGrid) return;
-  els.top10TemplateGrid.innerHTML = state.top10
+  safeSetHTML(
+    els.top10TemplateGrid,
+    state.top10
     .map((row, idx) => {
       const c = row.checklist;
       const curve = state.curves[row.address];
@@ -329,12 +353,14 @@ function renderTop10TemplateCards() {
         </div>
       </article>`;
     })
-    .join("");
+    .join("")
+  );
 }
 
 function renderTierList(listEl, rows) {
-  if (!listEl) return;
-  listEl.innerHTML = rows
+  safeSetHTML(
+    listEl,
+    rows
     .map(
       (row) =>
         `<li><span>#${row.rank}</span><span class="mono">${row.address.slice(
@@ -342,7 +368,8 @@ function renderTierList(listEl, rows) {
           10
         )}...</span><span>${row.style.primary}</span><span>${fmtScore(row.score)}</span></li>`
     )
-    .join("");
+    .join("")
+  );
 }
 
 function renderTop30Pools() {
@@ -401,15 +428,17 @@ function renderCurves() {
 
 function renderCurveStatus() {
   const p = state.curveProgress;
-  if (!els.curveStatus) return;
   if (!state.curveLoading && p.total === 0) {
-    els.curveStatus.textContent = "等待加载...";
+    safeSetText(els.curveStatus, "等待加载...");
     return;
   }
   if (state.curveLoading) {
-    els.curveStatus.textContent = `资金曲线加载中：${p.done}/${p.total}，成功 ${p.success}，失败 ${p.failed}`;
+    safeSetText(
+      els.curveStatus,
+      `资金曲线加载中：${p.done}/${p.total}，成功 ${p.success}，失败 ${p.failed}`
+    );
   } else {
-    els.curveStatus.textContent = `资金曲线加载完成：成功 ${p.success}，失败 ${p.failed}`;
+    safeSetText(els.curveStatus, `资金曲线加载完成：成功 ${p.success}，失败 ${p.failed}`);
   }
 }
 
@@ -511,8 +540,8 @@ async function loadCurvesForTop30() {
 }
 
 async function recompute() {
-  els.refreshBtn.disabled = true;
-  els.statusText.textContent = "正在更新数据，请稍候...";
+  if (els.refreshBtn) els.refreshBtn.disabled = true;
+  safeSetText(els.statusText, "正在更新数据，请稍候...");
   try {
     const leaderboardRaw = await fetchJson(DATA_URLS.leaderboard);
     const rowsAll = (leaderboardRaw.leaderboardRows || []).map(toRow);
@@ -543,9 +572,9 @@ async function recompute() {
     await loadCurvesForTop30();
   } catch (err) {
     console.error(err);
-    els.statusText.textContent = `更新失败：${err.message}`;
+    safeSetText(els.statusText, `更新失败：${err.message}`);
   } finally {
-    els.refreshBtn.disabled = false;
+    if (els.refreshBtn) els.refreshBtn.disabled = false;
   }
 }
 
@@ -577,7 +606,7 @@ window.addEventListener("resize", () => {
   }, 120);
 });
 
-els.refreshBtn.addEventListener("click", recompute);
-els.exportBtn.addEventListener("click", exportJson);
+if (els.refreshBtn) els.refreshBtn.addEventListener("click", recompute);
+if (els.exportBtn) els.exportBtn.addEventListener("click", exportJson);
 
 recompute();
