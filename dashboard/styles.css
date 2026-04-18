@@ -218,6 +218,14 @@ tr:hover td {
   gap: 12px;
 }
 
+.section-header {
+  margin-top: 14px;
+}
+
+.section-header:first-child {
+  margin-top: 0;
+}
+
 .strategy-card {
   border: 1px solid var(--border);
   border-radius: 12px;

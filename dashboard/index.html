@@ -37,22 +37,15 @@
       </section>
 
       <section class="card">
-        <h2>Top30 分层名单</h2>
-        <p class="hint">核心池=优先实盘跟踪；观察池=候选；淘汰池=暂不跟踪。</p>
-        <div class="tier-layout">
-          <div>
-            <h3>核心池（Top1-10）</h3>
-            <ul id="corePool" class="rank-list"></ul>
-          </div>
-          <div>
-            <h3>观察池（Top11-20）</h3>
-            <ul id="watchPool" class="rank-list"></ul>
-          </div>
-          <div>
-            <h3>淘汰池（Top21-30）</h3>
-            <ul id="dropPool" class="rank-list"></ul>
-          </div>
-        </div>
+        <h2>观察池模板（Top11-20）</h2>
+        <p class="hint tight">与Top10同模板展示，便于横向比较与候选跟踪。</p>
+        <div id="watchCardGrid" class="top10-template-grid"></div>
+      </section>
+
+      <section class="card">
+        <h2>淘汰池模板（Top21-30）</h2>
+        <p class="hint tight">与Top10同模板展示，便于观察是否重新入池。</p>
+        <div id="dropCardGrid" class="top10-template-grid"></div>
       </section>
 
       <section class="card">

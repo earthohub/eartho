@@ -60,6 +60,8 @@ const els = {
   summaryMetrics: document.getElementById("summaryMetrics"),
   top10TemplateGrid:
     document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
+  watchTemplateGrid: document.getElementById("watchTemplateGrid"),
+  dropTemplateGrid: document.getElementById("dropTemplateGrid"),
   corePool: document.getElementById("corePool"),
   watchPool: document.getElementById("watchPool"),
   dropPool: document.getElementById("dropPool"),
@@ -300,7 +302,12 @@ function renderSummary() {
 function renderTop10TemplateCards() {
   safeSetHTML(
     els.top10TemplateGrid,
-    state.top10
+    renderStrategyCards(state.top10)
+  );
+}
+
+function renderStrategyCards(rows) {
+  return rows
     .map((row, idx) => {
       const c = row.checklist;
       const curve = state.curves[row.address];
@@ -315,7 +322,9 @@ function renderTop10TemplateCards() {
       <article class="strategy-card">
         <div class="strategy-head">
           <div>
-            <div class="strategy-title">#${idx + 1} ${row.displayName || addrShort(row.address)}</div>
+            <div class="strategy-title">#${row.rank || idx + 1} ${
+              row.displayName || addrShort(row.address)
+            }</div>
             <div class="mono muted">${row.address}</div>
           </div>
           <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
@@ -353,8 +362,14 @@ function renderTop10TemplateCards() {
         </div>
       </article>`;
     })
-    .join("")
-  );
+    .join("");
+}
+
+function renderWatchDropTemplateCards() {
+  const watchRows = state.top30.slice(10, 20);
+  const dropRows = state.top30.slice(20, 30);
+  safeSetHTML(els.watchTemplateGrid, renderStrategyCards(watchRows));
+  safeSetHTML(els.dropTemplateGrid, renderStrategyCards(dropRows));
 }
 
 function renderTierList(listEl, rows) {
@@ -373,7 +388,6 @@ function renderTierList(listEl, rows) {
 }
 
 function renderTop30Pools() {
-  renderTierList(els.corePool, state.top30.slice(0, 10));
   renderTierList(els.watchPool, state.top30.slice(10, 20));
   renderTierList(els.dropPool, state.top30.slice(20, 30));
 }
@@ -445,6 +459,7 @@ function renderCurveStatus() {
 function renderAll() {
   renderSummary();
   renderTop10TemplateCards();
+  renderWatchDropTemplateCards();
   renderTop30Pools();
   renderCurveStatus();
   renderCurves();
