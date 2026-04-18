@@ -477,12 +477,88 @@ function drawSparkline(canvas, points, positive) {
   ctx.stroke();
 }
 
+function drawEmptyAxes(canvas) {
+  if (!canvas) return;
+  const ratio = window.devicePixelRatio || 1;
+  const width = Math.max(240, Math.floor(canvas.clientWidth));
+  const height = Math.max(120, Math.floor(canvas.clientHeight));
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.scale(ratio, ratio);
+  ctx.clearRect(0, 0, width, height);
+
+  const leftPad = 64;
+  const rightPad = 12;
+  const topPad = 14;
+  const bottomPad = 28;
+  const plotW = width - leftPad - rightPad;
+  const plotH = height - topPad - bottomPad;
+  if (plotW <= 0 || plotH <= 0) return;
+  const bottomY = topPad + plotH;
+
+  const axisGridColor = "rgba(171, 187, 216, 0.38)";
+  const axisTextColor = "rgba(236, 242, 255, 0.98)";
+  const axisLineColor = "rgba(204, 215, 236, 0.72)";
+
+  const yTicks = [topPad, topPad + plotH / 2, bottomY];
+  const yLabels = ["$--", "$--", "$--"];
+  ctx.lineWidth = 1.3;
+  ctx.font = '12px "Inter", "Segoe UI", sans-serif';
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  yTicks.forEach((y, idx) => {
+    ctx.strokeStyle = axisGridColor;
+    ctx.beginPath();
+    ctx.moveTo(leftPad, y);
+    ctx.lineTo(width - rightPad, y);
+    ctx.stroke();
+    ctx.fillStyle = axisTextColor;
+    ctx.fillText(yLabels[idx], leftPad - 8, y);
+  });
+
+  ctx.lineWidth = 1.6;
+  ctx.strokeStyle = axisLineColor;
+  ctx.beginPath();
+  ctx.moveTo(leftPad, topPad);
+  ctx.lineTo(leftPad, bottomY);
+  ctx.lineTo(width - rightPad, bottomY);
+  ctx.stroke();
+
+  const xTicks = [
+    { x: leftPad, label: "--/--", align: "left" },
+    { x: leftPad + plotW / 2, label: "--/--", align: "center" },
+    { x: width - rightPad, label: "--/--", align: "right" },
+  ];
+  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = axisLineColor;
+  ctx.fillStyle = axisTextColor;
+  ctx.textBaseline = "top";
+  xTicks.forEach((tick) => {
+    ctx.beginPath();
+    ctx.moveTo(tick.x, bottomY);
+    ctx.lineTo(tick.x, bottomY + 5);
+    ctx.stroke();
+    ctx.textAlign = tick.align;
+    ctx.fillText(tick.label, tick.x, bottomY + 7);
+  });
+
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillStyle = "rgba(255, 215, 122, 0.96)";
+  ctx.fillText("无可用资金曲线数据", leftPad + 8, topPad + 6);
+}
+
 function renderCurves() {
   const canvases = document.querySelectorAll("canvas[data-addr]");
   canvases.forEach((canvas) => {
     const addr = canvas.getAttribute("data-addr");
     const curve = state.curves[addr];
-    if (!curve || curve.points.length < 2) return;
+    if (!curve || curve.points.length < 2) {
+      drawEmptyAxes(canvas);
+      return;
+    }
     drawSparkline(canvas, curve.points, curve.changePct >= 0);
   });
 }
