@@ -40,6 +40,7 @@ const EXCLUDED_ADDRESSES = new Set(
 const TRACKING_FLOOR = {
   accountValue: 500_000,
   monthVlm: 50_000_000,
+  topN: 20,
 };
 
 const CURVE_CONFIG = {
@@ -299,7 +300,7 @@ async function main() {
 
   eligible.sort((a, b) => b.score - a.score);
 
-  const top30 = eligible.slice(0, 30).map((r, i) => ({
+  const topNRows = eligible.slice(0, TRACKING_FLOOR.topN).map((r, i) => ({
     rank: i + 1,
     address: r.address,
     displayName: r.displayName,
@@ -320,8 +321,8 @@ async function main() {
     ruleBook: r.ruleBook,
   }));
 
-  const curveResult = await fetchCurvesForRows(top30);
-  const top10 = top30.slice(0, 10);
+  const curveResult = await fetchCurvesForRows(topNRows);
+  const top10 = topNRows.slice(0, 10);
 
   const output = {
     generatedAt: new Date().toISOString(),
@@ -335,18 +336,13 @@ async function main() {
       totalEligible: eligible.length,
       floor: TRACKING_FLOOR,
       curves: {
-        requested: top30.length,
+        requested: topNRows.length,
         success: curveResult.success,
         failed: curveResult.failed,
       },
     },
     top10,
-    tiers: {
-      core: top30.slice(0, 10),
-      watch: top30.slice(10, 20),
-      drop: top30.slice(20, 30),
-    },
-    top30,
+    top20: topNRows,
     curves: curveResult.curves,
   };
 

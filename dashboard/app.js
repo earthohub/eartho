@@ -7,7 +7,7 @@ const INFO_URL = "https://api.hyperliquid.xyz/info";
 const CONFIG = {
   minAccountValue: 500_000,
   minMonthVolume: 50_000_000,
-  topN: 30,
+  topN: 20,
   portfolioConcurrency: 4,
   curveMaxPoints: 140,
   curveWindows: ["month", "week", "day", "allTime"],
@@ -46,7 +46,7 @@ const EXCLUDED_ADDRESSES = new Set(
 const state = {
   lastUpdatedAt: null,
   top10: [],
-  top30: [],
+  top20: [],
   summary: null,
   curves: {},
   curveLoading: false,
@@ -61,10 +61,6 @@ const els = {
   top10TemplateGrid:
     document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
   watchTemplateGrid: document.getElementById("watchTemplateGrid"),
-  dropTemplateGrid: document.getElementById("dropTemplateGrid"),
-  corePool: document.getElementById("corePool"),
-  watchPool: document.getElementById("watchPool"),
-  dropPool: document.getElementById("dropPool"),
   curveStatus: document.getElementById("curveStatus"),
 };
 
@@ -294,7 +290,7 @@ function renderSummary() {
     <div class="metric-pill">全量地址：<strong>${s.totalRows}</strong></div>
     <div class="metric-pill">过滤后：<strong>${s.filteredRows}</strong></div>
     <div class="metric-pill">可跟踪样本：<strong>${s.eligibleCount}</strong></div>
-    <div class="metric-pill">Top30覆盖净值：<strong>${fmtMoney(s.top30TotalAccount)}</strong></div>
+    <div class="metric-pill">Top20覆盖净值：<strong>${fmtMoney(s.top20TotalAccount)}</strong></div>
   `
   );
 }
@@ -366,30 +362,8 @@ function renderStrategyCards(rows) {
 }
 
 function renderWatchDropTemplateCards() {
-  const watchRows = state.top30.slice(10, 20);
-  const dropRows = state.top30.slice(20, 30);
+  const watchRows = state.top20.slice(10, 20);
   safeSetHTML(els.watchTemplateGrid, renderStrategyCards(watchRows));
-  safeSetHTML(els.dropTemplateGrid, renderStrategyCards(dropRows));
-}
-
-function renderTierList(listEl, rows) {
-  safeSetHTML(
-    listEl,
-    rows
-    .map(
-      (row) =>
-        `<li><span>#${row.rank}</span><span class="mono">${row.address.slice(
-          0,
-          10
-        )}...</span><span>${row.style.primary}</span><span>${fmtScore(row.score)}</span></li>`
-    )
-    .join("")
-  );
-}
-
-function renderTop30Pools() {
-  renderTierList(els.watchPool, state.top30.slice(10, 20));
-  renderTierList(els.dropPool, state.top30.slice(20, 30));
 }
 
 function drawSparkline(canvas, points, positive) {
@@ -460,7 +434,6 @@ function renderAll() {
   renderSummary();
   renderTop10TemplateCards();
   renderWatchDropTemplateCards();
-  renderTop30Pools();
   renderCurveStatus();
   renderCurves();
 }
@@ -519,11 +492,11 @@ function parsePortfolioCurve(portfolioRaw) {
 async function loadCurvesForTop30() {
   state.curves = {};
   state.curveLoading = true;
-  state.curveProgress = { done: 0, total: state.top30.length, success: 0, failed: 0 };
+  state.curveProgress = { done: 0, total: state.top20.length, success: 0, failed: 0 };
   renderCurveStatus();
   renderCurves();
 
-  const queue = [...state.top30];
+  const queue = [...state.top20];
   const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
     async () => {
       while (queue.length) {
@@ -573,14 +546,14 @@ async function recompute() {
       row.checklist = buildChecklistByStyle(row);
     });
 
-    state.top30 = eligible.slice(0, CONFIG.topN);
-    state.top10 = state.top30.slice(0, 10);
+    state.top20 = eligible.slice(0, CONFIG.topN);
+    state.top10 = state.top20.slice(0, 10);
     state.lastUpdatedAt = Date.now();
     state.summary = {
       totalRows: rowsAll.length,
       filteredRows: filtered.length,
       eligibleCount: eligible.length,
-      top30TotalAccount: state.top30.reduce((acc, r) => acc + r.accountValue, 0),
+      top20TotalAccount: state.top20.reduce((acc, r) => acc + r.accountValue, 0),
     };
 
     renderAll();
@@ -599,7 +572,7 @@ function exportJson() {
     config: CONFIG,
     summary: state.summary,
     top10: state.top10,
-    top30: state.top30,
+    top20: state.top20,
     curves: state.curves,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
