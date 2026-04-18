@@ -100,10 +100,10 @@ function fmtScore(v) {
 function fmtAxisMoney(v) {
   const num = Number(v || 0);
   const abs = Math.abs(num);
-  if (abs >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`;
-  if (abs >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
-  return `${Math.round(num)}`;
+  if (abs >= 1_000_000_000) return `$${(num / 1_000_000_000).toFixed(1)}B`;
+  if (abs >= 1_000_000) return `$${(num / 1_000_000).toFixed(1)}M`;
+  if (abs >= 1_000) return `$${(num / 1_000).toFixed(1)}K`;
+  return `$${Math.round(num)}`;
 }
 
 function normalizeEpochMs(ts) {
@@ -386,7 +386,7 @@ function drawSparkline(canvas, points, positive) {
   if (!canvas || points.length < 2) return;
   const ratio = window.devicePixelRatio || 1;
   const width = Math.max(220, Math.floor(canvas.clientWidth));
-  const height = Math.max(100, Math.floor(canvas.clientHeight));
+  const height = Math.max(120, Math.floor(canvas.clientHeight));
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   const ctx = canvas.getContext("2d");
@@ -398,10 +398,10 @@ function drawSparkline(canvas, points, positive) {
   const minV = Math.min(...values);
   const maxV = Math.max(...values);
   const span = Math.max(maxV - minV, 1e-9);
-  const leftPad = 56;
-  const rightPad = 10;
+  const leftPad = 64;
+  const rightPad = 14;
   const topPad = 12;
-  const bottomPad = 24;
+  const bottomPad = 34;
   const plotW = width - leftPad - rightPad;
   const plotH = height - topPad - bottomPad;
   if (plotW <= 0 || plotH <= 0) return;
@@ -411,22 +411,28 @@ function drawSparkline(canvas, points, positive) {
   const toY = (v) => topPad + ((maxV - v) / span) * plotH;
 
   const yTicks = [maxV, (maxV + minV) / 2, minV];
-  ctx.lineWidth = 1;
-  ctx.font = '11px "Inter", "Segoe UI", sans-serif';
+  ctx.lineWidth = 1.2;
+  ctx.font = '12px "Inter", "Segoe UI", sans-serif';
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
   yTicks.forEach((tick) => {
     const y = toY(tick);
-    ctx.strokeStyle = "rgba(140, 151, 172, 0.2)";
+    ctx.strokeStyle = "rgba(184, 196, 216, 0.34)";
     ctx.beginPath();
     ctx.moveTo(leftPad, y);
     ctx.lineTo(width - rightPad, y);
     ctx.stroke();
-    ctx.fillStyle = "rgba(174, 183, 199, 0.95)";
+    ctx.strokeStyle = "rgba(220, 229, 243, 0.95)";
+    ctx.beginPath();
+    ctx.moveTo(leftPad - 4, y);
+    ctx.lineTo(leftPad, y);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(237, 242, 251, 0.98)";
     ctx.fillText(fmtAxisMoney(tick), leftPad - 6, y);
   });
 
-  ctx.strokeStyle = "rgba(140, 151, 172, 0.5)";
+  ctx.strokeStyle = "rgba(219, 228, 242, 0.92)";
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(leftPad, topPad);
   ctx.lineTo(leftPad, bottomY);
@@ -440,14 +446,24 @@ function drawSparkline(canvas, points, positive) {
   const lastMs = normalizeEpochMs(lastT);
   const spanMs = firstMs && lastMs ? Math.max(lastMs - firstMs, 0) : 0;
 
+  const xTicks = [
+    { x: leftPad, label: fmtAxisTime(firstT, spanMs), align: "left" },
+    { x: leftPad + plotW / 2, label: fmtAxisTime(midT, spanMs), align: "center" },
+    { x: width - rightPad, label: fmtAxisTime(lastT, spanMs), align: "right" },
+  ];
+
+  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = "rgba(220, 229, 243, 0.95)";
+  ctx.fillStyle = "rgba(237, 242, 251, 0.98)";
   ctx.textBaseline = "top";
-  ctx.fillStyle = "rgba(174, 183, 199, 0.95)";
-  ctx.textAlign = "left";
-  ctx.fillText(fmtAxisTime(firstT, spanMs), leftPad, bottomY + 6);
-  ctx.textAlign = "center";
-  ctx.fillText(fmtAxisTime(midT, spanMs), leftPad + plotW / 2, bottomY + 6);
-  ctx.textAlign = "right";
-  ctx.fillText(fmtAxisTime(lastT, spanMs), width - rightPad, bottomY + 6);
+  xTicks.forEach((tick) => {
+    ctx.beginPath();
+    ctx.moveTo(tick.x, bottomY);
+    ctx.lineTo(tick.x, bottomY + 4);
+    ctx.stroke();
+    ctx.textAlign = tick.align;
+    ctx.fillText(tick.label, tick.x, bottomY + 7);
+  });
 
   ctx.lineWidth = 2;
   ctx.strokeStyle = positive ? "#39d98a" : "#ff6b7a";
