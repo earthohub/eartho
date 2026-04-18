@@ -7,7 +7,7 @@ const INFO_URL = "https://api.hyperliquid.xyz/info";
 const CONFIG = {
   minAccountValue: 500_000,
   minMonthVolume: 50_000_000,
-  topN: 20,
+  topN: 10,
   portfolioConcurrency: 4,
   curveMaxPoints: 140,
   curveWindows: ["month", "week", "day", "allTime"],
@@ -46,7 +46,6 @@ const EXCLUDED_ADDRESSES = new Set(
 const state = {
   lastUpdatedAt: null,
   top10: [],
-  top20: [],
   summary: null,
   curves: {},
   curveLoading: false,
@@ -58,12 +57,12 @@ const els = {
   exportBtn: document.getElementById("exportBtn"),
   statusText: document.getElementById("statusText"),
   summaryMetrics: document.getElementById("summaryMetrics"),
-  watchTemplateGrid:
-    document.getElementById("watchTemplateGrid") || document.getElementById("watchCardGrid"),
+  top10TemplateGrid:
+    document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-18-watch-only-top11-20";
+const APP_BUILD = "2026-04-18-top10-only";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -289,7 +288,7 @@ function renderSummary() {
     <div class="metric-pill">全量地址：<strong>${s.totalRows}</strong></div>
     <div class="metric-pill">过滤后：<strong>${s.filteredRows}</strong></div>
     <div class="metric-pill">可跟踪样本：<strong>${s.eligibleCount}</strong></div>
-    <div class="metric-pill">Top20覆盖净值：<strong>${fmtMoney(s.top20TotalAccount)}</strong></div>
+    <div class="metric-pill">Top10覆盖净值：<strong>${fmtMoney(s.top10TotalAccount)}</strong></div>
   `
   );
 }
@@ -353,9 +352,8 @@ function renderStrategyCards(rows) {
     .join("");
 }
 
-function renderWatchDropTemplateCards() {
-  const watchRows = state.top20.slice(10, 20);
-  safeSetHTML(els.watchTemplateGrid, renderStrategyCards(watchRows));
+function renderTop10TemplateCards() {
+  safeSetHTML(els.top10TemplateGrid, renderStrategyCards(state.top10));
 }
 
 function drawSparkline(canvas, points, positive) {
@@ -424,7 +422,7 @@ function renderCurveStatus() {
 
 function renderAll() {
   renderSummary();
-  renderWatchDropTemplateCards();
+  renderTop10TemplateCards();
   renderCurveStatus();
   renderCurves();
 }
@@ -480,14 +478,14 @@ function parsePortfolioCurve(portfolioRaw) {
   return { window: chosenWindow, points: sampled, first, last, changePct };
 }
 
-async function loadCurvesForTop30() {
+async function loadCurvesForTop10() {
   state.curves = {};
   state.curveLoading = true;
-  state.curveProgress = { done: 0, total: state.top20.length, success: 0, failed: 0 };
+  state.curveProgress = { done: 0, total: state.top10.length, success: 0, failed: 0 };
   renderCurveStatus();
   renderCurves();
 
-  const queue = [...state.top20];
+  const queue = [...state.top10];
   const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
     async () => {
       while (queue.length) {
@@ -537,17 +535,17 @@ async function recompute() {
       row.checklist = buildChecklistByStyle(row);
     });
 
-    state.top20 = eligible.slice(0, CONFIG.topN);
+    state.top10 = eligible.slice(0, CONFIG.topN);
     state.lastUpdatedAt = Date.now();
     state.summary = {
       totalRows: rowsAll.length,
       filteredRows: filtered.length,
       eligibleCount: eligible.length,
-      top20TotalAccount: state.top20.reduce((acc, r) => acc + r.accountValue, 0),
+      top10TotalAccount: state.top10.reduce((acc, r) => acc + r.accountValue, 0),
     };
 
     renderAll();
-    await loadCurvesForTop30();
+    await loadCurvesForTop10();
   } catch (err) {
     console.error(err);
     safeSetText(els.statusText, `更新失败：${err.message}`);
@@ -561,7 +559,7 @@ function exportJson() {
     updatedAt: new Date(state.lastUpdatedAt).toISOString(),
     config: CONFIG,
     summary: state.summary,
-    top20: state.top20,
+    top10: state.top10,
     curves: state.curves,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
