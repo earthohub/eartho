@@ -71,7 +71,7 @@ const els = {
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-18-top18-mid-band-quota";
+const APP_BUILD = "2026-04-19-top18-fallback-snapshot";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -326,6 +326,70 @@ function toRow(raw) {
     vlmM: wm.month?.vlm || 0,
     vlmA: wm.allTime?.vlm || 0,
   };
+}
+
+function checklistFromSnapshotRow(row) {
+  if (row?.checklist?.entry && row?.checklist?.follow && row?.checklist?.stop) {
+    return row.checklist;
+  }
+  if (
+    row?.ruleBook?.entryCondition &&
+    row?.ruleBook?.followThreshold &&
+    row?.ruleBook?.stopRule
+  ) {
+    return {
+      entry: row.ruleBook.entryCondition,
+      follow: row.ruleBook.followThreshold,
+      stop: row.ruleBook.stopRule,
+    };
+  }
+  return null;
+}
+
+function hydrateStateFromSnapshot(snapshot) {
+  const listRaw = snapshot?.top18 || snapshot?.top10 || snapshot?.top20;
+  if (!Array.isArray(listRaw) || listRaw.length === 0) return false;
+
+  const list = listRaw.slice(0, CONFIG.topN).map((row, i) => {
+    const normalized = {
+      address: normalizeAddress(row.address),
+      displayName: row.displayName || "",
+      accountValue: Number(row.accountValue || 0),
+      roiM:
+        row.roiM != null
+          ? Number(row.roiM || 0)
+          : row.monthRoiPct != null
+          ? Number(row.monthRoiPct || 0) / 100
+          : 0,
+      pnlM: row.pnlM != null ? Number(row.pnlM || 0) : Number(row.monthPnl || 0),
+      vlmM: row.vlmM != null ? Number(row.vlmM || 0) : Number(row.monthVlm || 0),
+      score: Number(row.score || 0),
+      rank: Number(row.rank || i + 1),
+      style: row.style || { primary: "趋势", secondary: "高频做市" },
+      checklist: checklistFromSnapshotRow(row),
+    };
+    if (!normalized.checklist) {
+      normalized.checklist = buildChecklistByStyle({
+        ...normalized,
+        style: normalized.style,
+      });
+    }
+    return normalized;
+  });
+
+  state.topList = list;
+  state.lastUpdatedAt = snapshot?.generatedAt ? Date.parse(snapshot.generatedAt) || Date.now() : Date.now();
+  state.summary = {
+    totalRows: Number(snapshot?.summary?.totalRowsRaw || list.length),
+    filteredRows: Number(snapshot?.summary?.totalRowsFiltered || list.length),
+    eligibleCount: Number(snapshot?.summary?.totalEligible || list.length),
+    coreCount: Number(snapshot?.summary?.totalCoreEligible || list.length),
+    topNTotalAccount: list.reduce((acc, r) => acc + Number(r.accountValue || 0), 0),
+    midBandCount: list.filter(
+      (r) => r.accountValue >= CONFIG.midAccountBand.min && r.accountValue <= CONFIG.midAccountBand.max
+    ).length,
+  };
+  return true;
 }
 
 function renderSummary() {
@@ -785,6 +849,20 @@ async function recompute() {
     await loadCurvesForTopList();
   } catch (err) {
     console.error(err);
+    try {
+      const snapshot = await fetchJson("./data/latest.json", {}, 8_000);
+      if (hydrateStateFromSnapshot(snapshot)) {
+        safeSetText(
+          els.statusText,
+          `实时数据拉取失败，已回退到本地快照（${new Date(state.lastUpdatedAt).toLocaleString()}）`
+        );
+        renderAll();
+        await loadCurvesForTopList();
+        return;
+      }
+    } catch (fallbackErr) {
+      console.warn("fallback snapshot load failed", fallbackErr);
+    }
     safeSetText(els.statusText, `更新失败：${err.message}`);
   } finally {
     if (els.refreshBtn) els.refreshBtn.disabled = false;
