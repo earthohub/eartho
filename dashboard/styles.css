@@ -229,6 +229,17 @@ tr:hover td {
   background: var(--panel-2);
 }
 
+.strategy-card.has-open-position {
+  border-color: rgba(255, 214, 102, 0.9);
+  background: linear-gradient(180deg, rgba(255, 214, 102, 0.08), rgba(255, 214, 102, 0.02));
+  box-shadow: 0 0 0 1px rgba(255, 214, 102, 0.2), 0 8px 26px rgba(255, 214, 102, 0.12);
+}
+
+.strategy-card.has-open-position .strategy-rules {
+  border-color: rgba(255, 214, 102, 0.9);
+  background: rgba(255, 214, 102, 0.08);
+}
+
 .strategy-head {
   display: flex;
   justify-content: space-between;

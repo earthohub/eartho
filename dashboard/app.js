@@ -57,6 +57,7 @@ const state = {
   topList: [],
   summary: null,
   curves: {},
+  livePositionByAddr: {},
   curveLoading: false,
   curveProgress: { done: 0, total: 0, success: 0, failed: 0 },
 };
@@ -418,6 +419,7 @@ function renderStrategyCards(rows) {
       const c = row.checklist;
       const curve = state.curves[row.address];
       const hasCurve = !!curve && curve.points.length > 1;
+      const hasLivePosition = state.livePositionByAddr[row.address] === true;
       const curveMeta = hasCurve
         ? `${curve.window} / ${fmtPct(curve.changePct)}`
         : state.curveLoading
@@ -425,7 +427,7 @@ function renderStrategyCards(rows) {
         : "无可用资金曲线";
 
       return `
-      <article class="strategy-card">
+      <article class="strategy-card ${hasLivePosition ? "has-live-position" : ""}">
         <div class="strategy-head">
           <div>
             <div class="strategy-title">#${row.rank || idx + 1} ${
@@ -434,6 +436,7 @@ function renderStrategyCards(rows) {
             <div class="mono muted">${row.address}</div>
           </div>
           <div class="strategy-head-right">
+            ${hasLivePosition ? '<div class="live-position-pill">持仓中</div>' : ""}
             <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
             <a class="strategy-link local" href="./strategy.html?addr=${encodeURIComponent(
               row.address
@@ -749,6 +752,29 @@ async function fetchPortfolio(address) {
   );
 }
 
+async function fetchClearinghouseState(address) {
+  return fetchJson(
+    INFO_URL,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "clearinghouseState", user: address }),
+    },
+    20_000
+  );
+}
+
+function hasOpenPosition(chState) {
+  const positions = chState?.assetPositions || [];
+  return positions.some((item) => {
+    const p = item?.position;
+    if (!p) return false;
+    const szi = Number(p.szi || 0);
+    const value = Number(p.positionValue || 0);
+    return Math.abs(szi) > 0 || Math.abs(value) > 0;
+  });
+}
+
 function parsePortfolioCurve(portfolioRaw) {
   const map = new Map(Array.isArray(portfolioRaw) ? portfolioRaw : []);
   let chosenWindow = null;
@@ -814,6 +840,31 @@ async function loadCurvesForTopList() {
   renderCurveStatus();
 }
 
+async function loadLivePositionFlagsForTopList() {
+  state.livePositionByAddr = {};
+  renderAll();
+
+  const queue = [...state.topList];
+  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
+    async () => {
+      while (queue.length) {
+        const row = queue.shift();
+        try {
+          const chState = await fetchClearinghouseState(row.address);
+          state.livePositionByAddr[row.address] = hasOpenPosition(chState);
+        } catch (err) {
+          // Best-effort signal; network failure should not block rendering.
+          state.livePositionByAddr[row.address] = false;
+        } finally {
+          renderAll();
+        }
+      }
+    }
+  );
+
+  await Promise.all(workers);
+}
+
 async function recompute() {
   if (els.refreshBtn) els.refreshBtn.disabled = true;
   safeSetText(els.statusText, "正在更新数据，请稍候...");
@@ -848,7 +899,7 @@ async function recompute() {
     };
 
     renderAll();
-    await loadCurvesForTopList();
+    await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
   } catch (err) {
     console.error(err);
     try {
@@ -859,7 +910,7 @@ async function recompute() {
           `实时数据拉取失败，已回退到本地快照（${new Date(state.lastUpdatedAt).toLocaleString()}）`
         );
         renderAll();
-        await loadCurvesForTopList();
+        await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
         return;
       }
     } catch (fallbackErr) {
