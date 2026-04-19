@@ -371,7 +371,7 @@ function renderStrategyCards(rows) {
           </div>
           <div class="strategy-head-right">
             <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
-            <a class="strategy-link" href="https://app.hyperliquid.xyz/leaderboard/${row.address}" target="_blank" rel="noopener noreferrer">策略链接</a>
+            <a class="strategy-link" href="https://app.hyperliquid.xyz/trader/${row.address}" target="_blank" rel="noopener noreferrer">策略链接</a>
           </div>
         </div>
 
@@ -643,15 +643,32 @@ function renderAll() {
 }
 
 async function fetchJson(url, options = {}, timeoutMs = 15_000) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const resp = await fetch(url, { ...options, signal: ctrl.signal, cache: "no-store" });
-    if (!resp.ok) throw new Error(`拉取失败：${url} (${resp.status})`);
-    return await resp.json();
-  } finally {
-    clearTimeout(t);
+  const maxRetries = 2;
+  let lastErr = null;
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const resp = await fetch(url, { ...options, signal: ctrl.signal, cache: "no-store" });
+      if (!resp.ok) throw new Error(`拉取失败：${url} (${resp.status})`);
+      return await resp.json();
+    } catch (err) {
+      if (err?.name === "AbortError") {
+        lastErr = new Error(`请求超时：${url}`);
+      } else {
+        lastErr = err instanceof Error ? err : new Error(String(err));
+      }
+      const retryable =
+        attempt < maxRetries &&
+        (err?.name === "AbortError" ||
+          /failed to fetch|network|aborted|load failed/i.test(String(lastErr.message || "")));
+      if (!retryable) throw lastErr;
+      await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+    } finally {
+      clearTimeout(t);
+    }
   }
+  throw lastErr || new Error(`拉取失败：${url}`);
 }
 
 async function fetchPortfolio(address) {
@@ -662,7 +679,7 @@ async function fetchPortfolio(address) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "portfolio", user: address }),
     },
-    20_000
+    25_000
   );
 }
 
