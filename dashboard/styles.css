@@ -258,6 +258,10 @@ tr:hover td {
   color: #9fd7ff;
 }
 
+.strategy-link.external {
+  display: none;
+}
+
 .strategy-title {
   font-size: 15px;
   font-weight: 650;

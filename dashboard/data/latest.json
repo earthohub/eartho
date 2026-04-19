@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-04-19T11:38:12.182Z",
+  "generatedAt": "2026-04-19T12:28:52.775Z",
   "source": {
     "leaderboard": "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard",
     "infoPortfolio": "https://api.hyperliquid.xyz/info"
   },
   "summary": {
-    "totalRowsRaw": 34489,
-    "totalRowsFiltered": 34484,
-    "totalEligible": 1158,
-    "totalCoreEligible": 722,
+    "totalRowsRaw": 34496,
+    "totalRowsFiltered": 34491,
+    "totalEligible": 1157,
+    "totalCoreEligible": 761,
     "midBandCount": 8,
     "floor": {
       "accountValue": 100000,
@@ -47,24 +47,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 4910121.706857,
-      "monthRoiPct": 108.77785191,
-      "monthPnl": 1847758.193429,
+      "accountValue": 4908474.628929,
+      "monthRoiPct": 108.69209956000002,
+      "monthPnl": 1846301.558721,
       "monthVlm": 69948252.29,
-      "score": 0.9438202247191011,
+      "score": 0.9427335640138407,
       "factorPct": {
-        "stableReturn": 96.71564390665515,
-        "riskControl": 94.64131374243733,
-        "replicability": 93.77700950734659,
-        "alpha": 94.46845289541919,
-        "capacity": 86.60328435609334
+        "stableReturn": 96.7128027681661,
+        "riskControl": 94.37716262975778,
+        "replicability": 93.59861591695503,
+        "alpha": 94.63667820069203,
+        "capacity": 86.5916955017301
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
-        "drawdownProxy": 0.007669981714996379,
-        "dailyLossProxy": 0.007669981714996379,
-        "whipsawProxy": 1.1187803722277054
+        "drawdownProxy": 0.007969314578393805,
+        "dailyLossProxy": 0.007969314578393805,
+        "whipsawProxy": 1.1190573496361302
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -82,24 +82,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 4699823.706173,
-      "monthRoiPct": 44.54969182,
-      "monthPnl": 6687807.246397,
+      "accountValue": 4697882.216061,
+      "monthRoiPct": 44.53675891,
+      "monthPnl": 6685865.756285,
       "monthVlm": 256826828.43,
-      "score": 0.9265773552290406,
+      "score": 0.9256487889273355,
       "factorPct": {
-        "stableReturn": 90.31979256698358,
-        "riskControl": 94.90060501296456,
-        "replicability": 92.56698357821953,
-        "alpha": 96.28349178910976,
-        "capacity": 92.48055315471045
+        "stableReturn": 90.3114186851211,
+        "riskControl": 94.80968858131487,
+        "replicability": 92.30103806228374,
+        "alpha": 96.280276816609,
+        "capacity": 92.38754325259517
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.1478686318777773
+        "whipsawProxy": 1.146410516157607
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -117,24 +117,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 1677177.874825,
-      "monthRoiPct": 94.23326499,
-      "monthPnl": 1541424.145917,
+      "accountValue": 1677177.87438,
+      "monthRoiPct": 94.23326496,
+      "monthPnl": 1541424.145472,
       "monthVlm": 59722098.79,
-      "score": 0.9178046672428695,
+      "score": 0.915181660899654,
       "factorPct": {
-        "stableReturn": 96.54278305963699,
-        "riskControl": 91.18409680207434,
-        "replicability": 92.73984442523768,
-        "alpha": 92.56698357821953,
-        "capacity": 74.5894554883319
+        "stableReturn": 96.53979238754326,
+        "riskControl": 90.57093425605537,
+        "replicability": 92.38754325259517,
+        "alpha": 92.47404844290658,
+        "capacity": 74.5674740484429
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.2804773095021675
+        "whipsawProxy": 1.2804773093792208
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -156,13 +156,13 @@
       "monthRoiPct": 65.25043884,
       "monthPnl": 11402176.319789,
       "monthVlm": 118653033.16,
-      "score": 0.9113656006914433,
+      "score": 0.9099913494809688,
       "factorPct": {
-        "stableReturn": 95.0734658599827,
-        "riskControl": 79.94814174589455,
-        "replicability": 96.54278305963699,
-        "alpha": 98.2713915298185,
-        "capacity": 96.54278305963699
+        "stableReturn": 95.06920415224913,
+        "riskControl": 79.67128027681662,
+        "replicability": 96.280276816609,
+        "alpha": 98.26989619377161,
+        "capacity": 96.53979238754326
       },
       "riskGate": {
         "passed": true,
@@ -187,24 +187,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 3033250.497038,
-      "monthRoiPct": 39.17204376,
-      "monthPnl": 1149291.645247,
+      "accountValue": 3030845.528928,
+      "monthRoiPct": 39.09007369,
+      "monthPnl": 1146886.677137,
       "monthVlm": 26002994.19,
-      "score": 0.9085566119273984,
+      "score": 0.9086505190311419,
       "factorPct": {
-        "stableReturn": 88.93690579083837,
-        "riskControl": 97.23422644770959,
-        "replicability": 94.20916162489196,
-        "alpha": 87.55401901469317,
-        "capacity": 73.37942955920485
+        "stableReturn": 89.01384083044984,
+        "riskControl": 97.40484429065745,
+        "replicability": 93.9446366782007,
+        "alpha": 87.4567474048443,
+        "capacity": 73.26989619377161
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.041864686970318
+        "whipsawProxy": 1.0326313350063168
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -222,24 +222,24 @@
         "primary": "高频做市",
         "secondary": "反转"
       },
-      "accountValue": 4626445.746908,
-      "monthRoiPct": 111.18643656,
-      "monthPnl": 8484846.226905,
+      "accountValue": 4608821.135248,
+      "monthRoiPct": 110.95548154999999,
+      "monthPnl": 8467221.615245,
       "monthVlm": 3916439242.57,
-      "score": 0.9001728608470181,
+      "score": 0.8988754325259516,
       "factorPct": {
-        "stableReturn": 97.75280898876404,
-        "riskControl": 88.33189282627485,
-        "replicability": 73.37942955920485,
-        "alpha": 97.06136560069145,
-        "capacity": 97.75280898876404
+        "stableReturn": 97.75086505190312,
+        "riskControl": 87.80276816608996,
+        "replicability": 73.52941176470588,
+        "alpha": 97.05882352941177,
+        "capacity": 97.75086505190312
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.3785490563616278
+        "whipsawProxy": 1.3704619811097563
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -261,13 +261,13 @@
       "monthRoiPct": 51.795565079999996,
       "monthPnl": 19756454.702435,
       "monthVlm": 219668804.86,
-      "score": 0.8987035436473638,
+      "score": 0.8953719723183391,
       "factorPct": {
-        "stableReturn": 93.3448573898012,
-        "riskControl": 77.44165946413138,
-        "replicability": 96.28349178910976,
-        "alpha": 99.04926534140017,
-        "capacity": 97.5799481417459
+        "stableReturn": 92.90657439446368,
+        "riskControl": 77.07612456747405,
+        "replicability": 95.93425605536332,
+        "alpha": 99.0484429065744,
+        "capacity": 97.57785467128028
       },
       "riskGate": {
         "passed": true,
@@ -292,24 +292,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 10786492.813366,
-      "monthRoiPct": 21.03922524,
-      "monthPnl": 1874942.237317,
+      "accountValue": 10793024.223182,
+      "monthRoiPct": 21.11251593,
+      "monthPnl": 1881473.647133,
       "monthVlm": 70475122.87,
-      "score": 0.8936905790838375,
+      "score": 0.8898356401384083,
       "factorPct": {
-        "stableReturn": 79.60242005185826,
-        "riskControl": 92.9991356957649,
-        "replicability": 99.3085566119274,
-        "alpha": 91.52981849611062,
-        "capacity": 91.70267934312878
+        "stableReturn": 78.80622837370242,
+        "riskControl": 92.64705882352942,
+        "replicability": 99.39446366782006,
+        "alpha": 91.52249134948097,
+        "capacity": 91.52249134948097
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
-        "drawdownProxy": 0.003833973698453227,
-        "dailyLossProxy": 0.003833973698453227,
-        "whipsawProxy": 1.2032869775959487
+        "drawdownProxy": 0.003229136494305475,
+        "dailyLossProxy": 0.003229136494305475,
+        "whipsawProxy": 1.2074331180859885
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -327,24 +327,24 @@
         "primary": "趋势",
         "secondary": "事件驱动"
       },
-      "accountValue": 2482938.495389,
-      "monthRoiPct": 91.91658832,
-      "monthPnl": 2165455.91684,
+      "accountValue": 2479446.171792,
+      "monthRoiPct": 91.76830918,
+      "monthPnl": 2161962.619935,
       "monthVlm": 39413427.95,
-      "score": 0.8908815903197926,
+      "score": 0.8846453287197232,
       "factorPct": {
-        "stableReturn": 94.98703543647365,
-        "riskControl": 82.45462402765773,
-        "replicability": 94.03630077787382,
-        "alpha": 94.90060501296456,
-        "capacity": 75.54019014693172
+        "stableReturn": 94.80968858131487,
+        "riskControl": 80.70934256055364,
+        "replicability": 93.85813148788927,
+        "alpha": 94.8961937716263,
+        "capacity": 75.51903114186851
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
-        "drawdownProxy": 0.06649665661538377,
-        "dailyLossProxy": 0.05042611937448907,
-        "whipsawProxy": 1.1826186694567256
+        "drawdownProxy": 0.07062372160491079,
+        "dailyLossProxy": 0.05190604713954502,
+        "whipsawProxy": 1.1890230553989596
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -362,24 +362,24 @@
         "primary": "高频做市",
         "secondary": "反转"
       },
-      "accountValue": 1264764.155383,
-      "monthRoiPct": 62.78493814,
-      "monthPnl": 487810.114162,
-      "monthVlm": 166414486.16,
-      "score": 0.881114952463267,
+      "accountValue": 1266303.705147,
+      "monthRoiPct": 62.98309010999999,
+      "monthPnl": 489349.663926,
+      "monthVlm": 167033071.37,
+      "score": 0.8802768166089965,
       "factorPct": {
-        "stableReturn": 93.51771823681936,
-        "riskControl": 96.02420051858253,
-        "replicability": 72.8608470181504,
-        "alpha": 78.56525496974936,
-        "capacity": 80.72601555747623
+        "stableReturn": 93.07958477508652,
+        "riskControl": 96.36678200692042,
+        "replicability": 72.75086505190312,
+        "alpha": 78.37370242214533,
+        "capacity": 80.70934256055364
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.088093225602404
+        "whipsawProxy": 1.0783148159511604
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -391,30 +391,30 @@
     },
     {
       "rank": 11,
-      "address": "0xa9b95f2a2e7ef219021efc5c04c32761b8553bbd",
+      "address": "0x932bdd2d5e21475e62d2fea8158fc5974507cb1a",
       "displayName": "",
       "style": {
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 8255227.049399,
-      "monthRoiPct": 49.0611198,
-      "monthPnl": 2164862.071598,
-      "monthVlm": 50177856.14,
-      "score": 0.8757130509939498,
+      "accountValue": 746207.938627,
+      "monthRoiPct": 176.31985625,
+      "monthPnl": 607790.225259,
+      "monthVlm": 155002607.47,
+      "score": 0.877378892733564,
       "factorPct": {
-        "stableReturn": 89.8876404494382,
-        "riskControl": 78.82454624027659,
-        "replicability": 95.76490924805532,
-        "alpha": 89.36905790838375,
-        "capacity": 88.41832324978392
+        "stableReturn": 98.6159169550173,
+        "riskControl": 73.87543252595155,
+        "replicability": 97.40484429065745,
+        "alpha": 82.95847750865052,
+        "capacity": 74.30795847750865
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
-        "drawdownProxy": 0.05400298274236513,
-        "dailyLossProxy": 0.05400298274236513,
-        "whipsawProxy": 1.3047742560902573
+        "drawdownProxy": 0.069742579586806,
+        "dailyLossProxy": 0.069742579586806,
+        "whipsawProxy": 1.3312344630498756
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -432,24 +432,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 4104006.861609,
-      "monthRoiPct": 26.460910900000002,
-      "monthPnl": 858729.856609,
-      "monthVlm": 16690015.99,
-      "score": 0.8740276577355228,
+      "accountValue": 4102703.748848,
+      "monthRoiPct": 26.420756769999997,
+      "monthPnl": 857426.743848,
+      "monthVlm": 16713513.03,
+      "score": 0.873356401384083,
       "factorPct": {
-        "stableReturn": 85.91184096802074,
-        "riskControl": 88.67761452031115,
-        "replicability": 94.98703543647365,
-        "alpha": 89.80121002592912,
-        "capacity": 72.42869490060502
+        "stableReturn": 86.159169550173,
+        "riskControl": 88.23529411764706,
+        "replicability": 94.8961937716263,
+        "alpha": 89.79238754325259,
+        "capacity": 72.40484429065745
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.3682727373531196
+        "whipsawProxy": 1.3627416199100795
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -467,24 +467,24 @@
         "primary": "高频做市",
         "secondary": "反转"
       },
-      "accountValue": 250713.739486,
-      "monthRoiPct": 195.01071391,
-      "monthPnl": 301240.115987,
+      "accountValue": 250477.971672,
+      "monthRoiPct": 194.85808733000002,
+      "monthPnl": 301004.348173,
       "monthVlm": 52694027.51,
-      "score": 0.873725151253241,
+      "score": 0.8717128027681661,
       "factorPct": {
-        "stableReturn": 98.87640449438202,
-        "riskControl": 97.5799481417459,
-        "replicability": 79.94814174589455,
-        "alpha": 70.35436473638721,
-        "capacity": 39.844425237683666
+        "stableReturn": 98.70242214532871,
+        "riskControl": 97.75086505190312,
+        "replicability": 79.23875432525952,
+        "alpha": 69.80968858131487,
+        "capacity": 39.61937716262976
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.0340296754826643
+        "whipsawProxy": 1.0281015363284691
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -496,65 +496,65 @@
     },
     {
       "rank": 14,
+      "address": "0xdd7a372377fc633f74ab6e20963803d52f448830",
+      "displayName": "",
+      "style": {
+        "primary": "趋势",
+        "secondary": "事件驱动"
+      },
+      "accountValue": 1157295.873837,
+      "monthRoiPct": 92.84445735,
+      "monthPnl": 557177.058007,
+      "monthVlm": 20774549.71,
+      "score": 0.8687716262975779,
+      "factorPct": {
+        "stableReturn": 94.98269896193771,
+        "riskControl": 87.11072664359861,
+        "replicability": 89.27335640138409,
+        "alpha": 78.719723183391,
+        "capacity": 57.09342560553633
+      },
+      "riskGate": {
+        "passed": true,
+        "breaches": [],
+        "drawdownProxy": 0.05699808223138164,
+        "dailyLossProxy": 0.0382762037923234,
+        "whipsawProxy": 1.0977868127956698
+      },
+      "ruleBook": {
+        "riskProfile": "进取",
+        "style": "趋势/事件驱动",
+        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
+        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
+        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+      }
+    },
+    {
+      "rank": 15,
       "address": "0x873e1c729a12658e4e3f39e927687e424967ccbf",
       "displayName": "",
       "style": {
         "primary": "高频做市",
         "secondary": "反转"
       },
-      "accountValue": 684119.093066,
-      "monthRoiPct": 139.95912559,
-      "monthPnl": 399020.904582,
+      "accountValue": 683707.18953,
+      "monthRoiPct": 139.8146478,
+      "monthPnl": 398609.001046,
       "monthVlm": 265605471.88,
-      "score": 0.8658167675021607,
+      "score": 0.8682093425605535,
       "factorPct": {
-        "stableReturn": 98.18496110630942,
-        "riskControl": 87.8133102852204,
-        "replicability": 71.91011235955057,
-        "alpha": 72.68798617113224,
-        "capacity": 78.56525496974936
+        "stableReturn": 98.1833910034602,
+        "riskControl": 88.75432525951558,
+        "replicability": 71.79930795847751,
+        "alpha": 72.31833910034602,
+        "capacity": 78.54671280276817
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.3920050550381549
-      },
-      "ruleBook": {
-        "riskProfile": "进取",
-        "style": "高频做市/反转",
-        "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
-        "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
-        "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
-      }
-    },
-    {
-      "rank": 15,
-      "address": "0x06e0139cb5cce32d0343936dc2e8048987544e1b",
-      "displayName": "",
-      "style": {
-        "primary": "高频做市",
-        "secondary": "反转"
-      },
-      "accountValue": 527539.143885,
-      "monthRoiPct": 89.59610458,
-      "monthPnl": 249295.482153,
-      "monthVlm": 37492229.67,
-      "score": 0.8654710458081244,
-      "factorPct": {
-        "stableReturn": 96.36992221261885,
-        "riskControl": 93.6905790838375,
-        "replicability": 81.67675021607606,
-        "alpha": 64.8228176318064,
-        "capacity": 51.33967156439066
-      },
-      "riskGate": {
-        "passed": true,
-        "breaches": [],
-        "drawdownProxy": 0,
-        "dailyLossProxy": 0,
-        "whipsawProxy": 1.1970069067482667
+        "whipsawProxy": 1.3382189665681081
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -566,30 +566,30 @@
     },
     {
       "rank": 16,
-      "address": "0xa8ad3b7407031091f27af3bfedf170edc77cf761",
-      "displayName": "Join app.propr.xyz",
+      "address": "0x06e0139cb5cce32d0343936dc2e8048987544e1b",
+      "displayName": "",
       "style": {
         "primary": "高频做市",
         "secondary": "反转"
       },
-      "accountValue": 246819.565897,
-      "monthRoiPct": 130.75200919,
-      "monthPnl": 139647.372128,
-      "monthVlm": 46399237.69,
-      "score": 0.862143474503025,
+      "accountValue": 528778.018024,
+      "monthRoiPct": 90.04135251,
+      "monthPnl": 250534.356292,
+      "monthVlm": 37492229.67,
+      "score": 0.8631055363321799,
       "factorPct": {
-        "stableReturn": 97.92566983578219,
-        "riskControl": 94.98703543647365,
-        "replicability": 78.13310285220398,
-        "alpha": 82.88677614520311,
-        "capacity": 36.732929991356954
+        "stableReturn": 96.280276816609,
+        "riskControl": 93.42560553633218,
+        "replicability": 80.96885813148789,
+        "alpha": 64.87889273356402,
+        "capacity": 51.470588235294116
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.1476157235331887
+        "whipsawProxy": 1.201701534947323
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -601,65 +601,65 @@
     },
     {
       "rank": 17,
-      "address": "0x68f1c65d362cdec95aaee727eeea2577c6bc3647",
-      "displayName": "",
+      "address": "0xa8ad3b7407031091f27af3bfedf170edc77cf761",
+      "displayName": "Join app.propr.xyz",
       "style": {
-        "primary": "趋势",
-        "secondary": "高频做市"
+        "primary": "高频做市",
+        "secondary": "反转"
       },
-      "accountValue": 414312.554424,
-      "monthRoiPct": 89.33668288,
-      "monthPnl": 195489.372285,
-      "monthVlm": 15088124.43,
-      "score": 0.8608902333621435,
+      "accountValue": 239675.082652,
+      "monthRoiPct": 124.06261937000001,
+      "monthPnl": 132502.88758,
+      "monthVlm": 46399237.69,
+      "score": 0.86280276816609,
       "factorPct": {
-        "stableReturn": 95.59204840103716,
-        "riskControl": 98.35782195332757,
-        "replicability": 85.30682800345721,
-        "alpha": 65.77355229040623,
-        "capacity": 27.744165946413133
+        "stableReturn": 97.57785467128028,
+        "riskControl": 97.14532871972318,
+        "replicability": 76.55709342560554,
+        "alpha": 82.35294117647058,
+        "capacity": 35.55363321799308
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.015820344839739
+        "whipsawProxy": 1.0519736716244055
       },
       "ruleBook": {
         "riskProfile": "进取",
-        "style": "趋势/高频做市",
-        "entryCondition": "连续2次同方向开仓且周ROI仍为正时入场；优先跟随主趋势币种。",
-        "followThreshold": "单笔跟随不超过该地址近7日均仓位的20%，分3笔进入。",
-        "stopRule": "单地址跟随组合回撤-4%减半，-7%清仓；若周ROI转负暂停3天。"
+        "style": "高频做市/反转",
+        "entryCondition": "仅在高流动币对与高活跃时段跟随，避免低流动时段滑点。",
+        "followThreshold": "使用低杠杆+小滑点限价，单日总跟随金额不超过账户的8%。",
+        "stopRule": "当日净值回撤-2.5%停止当日跟随；连续2日负收益降频50%。"
       }
     },
     {
       "rank": 18,
-      "address": "0x10eadac3c42b809de31eee8a23b45540d05e57e8",
+      "address": "0x985f02b19dbc062e565c981aac5614baf2cf501f",
       "displayName": "",
       "style": {
         "primary": "趋势",
         "secondary": "事件驱动"
       },
-      "accountValue": 1661381.461847,
-      "monthRoiPct": 33.95733019,
-      "monthPnl": 421149.621235,
-      "monthVlm": 28221364.48,
-      "score": 0.856828003457217,
+      "accountValue": 10248834.392581,
+      "monthRoiPct": 12.38402445,
+      "monthPnl": 2782265.397525,
+      "monthVlm": 118296361.5,
+      "score": 0.8607698961937716,
       "factorPct": {
-        "stableReturn": 82.80034572169403,
-        "riskControl": 98.09853068280034,
-        "replicability": 85.04753673293,
-        "alpha": 72.1694036300778,
-        "capacity": 66.5514261019879
+        "stableReturn": 76.29757785467129,
+        "riskControl": 88.92733564013841,
+        "replicability": 92.99307958477509,
+        "alpha": 95.24221453287197,
+        "capacity": 93.33910034602077
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
-        "drawdownProxy": 0.003488931479081236,
+        "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.0102387354381113
+        "whipsawProxy": 1.334060848854348
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -679,24 +679,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 4910121.706857,
-      "monthRoiPct": 108.77785191,
-      "monthPnl": 1847758.193429,
+      "accountValue": 4908474.628929,
+      "monthRoiPct": 108.69209956000002,
+      "monthPnl": 1846301.558721,
       "monthVlm": 69948252.29,
-      "score": 0.9438202247191011,
+      "score": 0.9427335640138407,
       "factorPct": {
-        "stableReturn": 96.71564390665515,
-        "riskControl": 94.64131374243733,
-        "replicability": 93.77700950734659,
-        "alpha": 94.46845289541919,
-        "capacity": 86.60328435609334
+        "stableReturn": 96.7128027681661,
+        "riskControl": 94.37716262975778,
+        "replicability": 93.59861591695503,
+        "alpha": 94.63667820069203,
+        "capacity": 86.5916955017301
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
-        "drawdownProxy": 0.007669981714996379,
-        "dailyLossProxy": 0.007669981714996379,
-        "whipsawProxy": 1.1187803722277054
+        "drawdownProxy": 0.007969314578393805,
+        "dailyLossProxy": 0.007969314578393805,
+        "whipsawProxy": 1.1190573496361302
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -714,24 +714,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 4699823.706173,
-      "monthRoiPct": 44.54969182,
-      "monthPnl": 6687807.246397,
+      "accountValue": 4697882.216061,
+      "monthRoiPct": 44.53675891,
+      "monthPnl": 6685865.756285,
       "monthVlm": 256826828.43,
-      "score": 0.9265773552290406,
+      "score": 0.9256487889273355,
       "factorPct": {
-        "stableReturn": 90.31979256698358,
-        "riskControl": 94.90060501296456,
-        "replicability": 92.56698357821953,
-        "alpha": 96.28349178910976,
-        "capacity": 92.48055315471045
+        "stableReturn": 90.3114186851211,
+        "riskControl": 94.80968858131487,
+        "replicability": 92.30103806228374,
+        "alpha": 96.280276816609,
+        "capacity": 92.38754325259517
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.1478686318777773
+        "whipsawProxy": 1.146410516157607
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -749,24 +749,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 1677177.874825,
-      "monthRoiPct": 94.23326499,
-      "monthPnl": 1541424.145917,
+      "accountValue": 1677177.87438,
+      "monthRoiPct": 94.23326496,
+      "monthPnl": 1541424.145472,
       "monthVlm": 59722098.79,
-      "score": 0.9178046672428695,
+      "score": 0.915181660899654,
       "factorPct": {
-        "stableReturn": 96.54278305963699,
-        "riskControl": 91.18409680207434,
-        "replicability": 92.73984442523768,
-        "alpha": 92.56698357821953,
-        "capacity": 74.5894554883319
+        "stableReturn": 96.53979238754326,
+        "riskControl": 90.57093425605537,
+        "replicability": 92.38754325259517,
+        "alpha": 92.47404844290658,
+        "capacity": 74.5674740484429
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.2804773095021675
+        "whipsawProxy": 1.2804773093792208
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -788,13 +788,13 @@
       "monthRoiPct": 65.25043884,
       "monthPnl": 11402176.319789,
       "monthVlm": 118653033.16,
-      "score": 0.9113656006914433,
+      "score": 0.9099913494809688,
       "factorPct": {
-        "stableReturn": 95.0734658599827,
-        "riskControl": 79.94814174589455,
-        "replicability": 96.54278305963699,
-        "alpha": 98.2713915298185,
-        "capacity": 96.54278305963699
+        "stableReturn": 95.06920415224913,
+        "riskControl": 79.67128027681662,
+        "replicability": 96.280276816609,
+        "alpha": 98.26989619377161,
+        "capacity": 96.53979238754326
       },
       "riskGate": {
         "passed": true,
@@ -819,24 +819,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 3033250.497038,
-      "monthRoiPct": 39.17204376,
-      "monthPnl": 1149291.645247,
+      "accountValue": 3030845.528928,
+      "monthRoiPct": 39.09007369,
+      "monthPnl": 1146886.677137,
       "monthVlm": 26002994.19,
-      "score": 0.9085566119273984,
+      "score": 0.9086505190311419,
       "factorPct": {
-        "stableReturn": 88.93690579083837,
-        "riskControl": 97.23422644770959,
-        "replicability": 94.20916162489196,
-        "alpha": 87.55401901469317,
-        "capacity": 73.37942955920485
+        "stableReturn": 89.01384083044984,
+        "riskControl": 97.40484429065745,
+        "replicability": 93.9446366782007,
+        "alpha": 87.4567474048443,
+        "capacity": 73.26989619377161
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.041864686970318
+        "whipsawProxy": 1.0326313350063168
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -854,24 +854,24 @@
         "primary": "高频做市",
         "secondary": "反转"
       },
-      "accountValue": 4626445.746908,
-      "monthRoiPct": 111.18643656,
-      "monthPnl": 8484846.226905,
+      "accountValue": 4608821.135248,
+      "monthRoiPct": 110.95548154999999,
+      "monthPnl": 8467221.615245,
       "monthVlm": 3916439242.57,
-      "score": 0.9001728608470181,
+      "score": 0.8988754325259516,
       "factorPct": {
-        "stableReturn": 97.75280898876404,
-        "riskControl": 88.33189282627485,
-        "replicability": 73.37942955920485,
-        "alpha": 97.06136560069145,
-        "capacity": 97.75280898876404
+        "stableReturn": 97.75086505190312,
+        "riskControl": 87.80276816608996,
+        "replicability": 73.52941176470588,
+        "alpha": 97.05882352941177,
+        "capacity": 97.75086505190312
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.3785490563616278
+        "whipsawProxy": 1.3704619811097563
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -893,13 +893,13 @@
       "monthRoiPct": 51.795565079999996,
       "monthPnl": 19756454.702435,
       "monthVlm": 219668804.86,
-      "score": 0.8987035436473638,
+      "score": 0.8953719723183391,
       "factorPct": {
-        "stableReturn": 93.3448573898012,
-        "riskControl": 77.44165946413138,
-        "replicability": 96.28349178910976,
-        "alpha": 99.04926534140017,
-        "capacity": 97.5799481417459
+        "stableReturn": 92.90657439446368,
+        "riskControl": 77.07612456747405,
+        "replicability": 95.93425605536332,
+        "alpha": 99.0484429065744,
+        "capacity": 97.57785467128028
       },
       "riskGate": {
         "passed": true,
@@ -924,24 +924,24 @@
         "primary": "趋势",
         "secondary": "高频做市"
       },
-      "accountValue": 10786492.813366,
-      "monthRoiPct": 21.03922524,
-      "monthPnl": 1874942.237317,
+      "accountValue": 10793024.223182,
+      "monthRoiPct": 21.11251593,
+      "monthPnl": 1881473.647133,
       "monthVlm": 70475122.87,
-      "score": 0.8936905790838375,
+      "score": 0.8898356401384083,
       "factorPct": {
-        "stableReturn": 79.60242005185826,
-        "riskControl": 92.9991356957649,
-        "replicability": 99.3085566119274,
-        "alpha": 91.52981849611062,
-        "capacity": 91.70267934312878
+        "stableReturn": 78.80622837370242,
+        "riskControl": 92.64705882352942,
+        "replicability": 99.39446366782006,
+        "alpha": 91.52249134948097,
+        "capacity": 91.52249134948097
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
-        "drawdownProxy": 0.003833973698453227,
-        "dailyLossProxy": 0.003833973698453227,
-        "whipsawProxy": 1.2032869775959487
+        "drawdownProxy": 0.003229136494305475,
+        "dailyLossProxy": 0.003229136494305475,
+        "whipsawProxy": 1.2074331180859885
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -959,24 +959,24 @@
         "primary": "趋势",
         "secondary": "事件驱动"
       },
-      "accountValue": 2482938.495389,
-      "monthRoiPct": 91.91658832,
-      "monthPnl": 2165455.91684,
+      "accountValue": 2479446.171792,
+      "monthRoiPct": 91.76830918,
+      "monthPnl": 2161962.619935,
       "monthVlm": 39413427.95,
-      "score": 0.8908815903197926,
+      "score": 0.8846453287197232,
       "factorPct": {
-        "stableReturn": 94.98703543647365,
-        "riskControl": 82.45462402765773,
-        "replicability": 94.03630077787382,
-        "alpha": 94.90060501296456,
-        "capacity": 75.54019014693172
+        "stableReturn": 94.80968858131487,
+        "riskControl": 80.70934256055364,
+        "replicability": 93.85813148788927,
+        "alpha": 94.8961937716263,
+        "capacity": 75.51903114186851
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
-        "drawdownProxy": 0.06649665661538377,
-        "dailyLossProxy": 0.05042611937448907,
-        "whipsawProxy": 1.1826186694567256
+        "drawdownProxy": 0.07062372160491079,
+        "dailyLossProxy": 0.05190604713954502,
+        "whipsawProxy": 1.1890230553989596
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -994,24 +994,24 @@
         "primary": "高频做市",
         "secondary": "反转"
       },
-      "accountValue": 1264764.155383,
-      "monthRoiPct": 62.78493814,
-      "monthPnl": 487810.114162,
-      "monthVlm": 166414486.16,
-      "score": 0.881114952463267,
+      "accountValue": 1266303.705147,
+      "monthRoiPct": 62.98309010999999,
+      "monthPnl": 489349.663926,
+      "monthVlm": 167033071.37,
+      "score": 0.8802768166089965,
       "factorPct": {
-        "stableReturn": 93.51771823681936,
-        "riskControl": 96.02420051858253,
-        "replicability": 72.8608470181504,
-        "alpha": 78.56525496974936,
-        "capacity": 80.72601555747623
+        "stableReturn": 93.07958477508652,
+        "riskControl": 96.36678200692042,
+        "replicability": 72.75086505190312,
+        "alpha": 78.37370242214533,
+        "capacity": 80.70934256055364
       },
       "riskGate": {
         "passed": true,
         "breaches": [],
         "drawdownProxy": 0,
         "dailyLossProxy": 0,
-        "whipsawProxy": 1.088093225602404
+        "whipsawProxy": 1.0783148159511604
       },
       "ruleBook": {
         "riskProfile": "进取",
@@ -1203,7 +1203,7 @@
           "v": 37003569.28189
         },
         {
-          "t": 1776598690529,
+          "t": 1776601731131,
           "v": 37003569.28189
         }
       ],
@@ -1391,13 +1391,13 @@
           "v": 4911287.938656
         },
         {
-          "t": 1776598690529,
-          "v": 4908338.52552
+          "t": 1776601731196,
+          "v": 4909325.228993
         }
       ],
       "first": 4362770.200589,
-      "last": 4908338.52552,
-      "changePct": 0.12505089652839024
+      "last": 4909325.228993,
+      "changePct": 0.12527706096695443
     },
     "0xa31441e058492bc7cfffda9aa7623c407ae83a81": {
       "window": "month",
@@ -1583,13 +1583,13 @@
           "v": 4695261.537076
         },
         {
-          "t": 1776598690529,
-          "v": 4697453.661613
+          "t": 1776601731196,
+          "v": 4698496.846027
         }
       ],
       "first": 2090370.459776,
-      "last": 4697453.661613,
-      "changePct": 1.2471871622776232
+      "last": 4698496.846027,
+      "changePct": 1.2476862051191069
     },
     "0x863b676e5e4fea0541062c32983dc8f84749ca6d": {
       "window": "month",
@@ -1771,13 +1771,13 @@
           "v": 1677177.874825
         },
         {
-          "t": 1776598690529,
-          "v": 1677177.87478
+          "t": 1776601731262,
+          "v": 1677177.874825
         }
       ],
       "first": 1635753.728908,
-      "last": 1677177.87478,
-      "changePct": 0.02532419467547473
+      "last": 1677177.874825,
+      "changePct": 0.02532419470298505
     },
     "0xd51b48fa7b9c4e408aa42eb7ad0b87ce73110d9e": {
       "window": "month",
@@ -1963,13 +1963,13 @@
           "v": 314051.788985
         },
         {
-          "t": 1776598690678,
-          "v": 313835.106657
+          "t": 1776601731470,
+          "v": 313354.600322
         }
       ],
       "first": 208497.033321,
-      "last": 313835.106657,
-      "changePct": 0.5052257658449392
+      "last": 313354.600322,
+      "changePct": 0.5029211463146447
     },
     "0x61ceef212ff4a86933c69fb6aca2fe35d8f2a62b": {
       "window": "month",
@@ -2155,13 +2155,13 @@
           "v": 4593313.384261
         },
         {
-          "t": 1776598690812,
-          "v": 4605605.446737
+          "t": 1776601731470,
+          "v": 4582401.535418
         }
       ],
       "first": 7631188.200003,
-      "last": 4605605.446737,
-      "changePct": -0.39647597123404854
+      "last": 4582401.535418,
+      "changePct": -0.39951663943811544
     },
     "0xa5b0edf6b55128e0ddae8e51ac538c3188401d41": {
       "window": "month",
@@ -2343,13 +2343,201 @@
           "v": 37899594.314163
         },
         {
-          "t": 1776598690880,
+          "t": 1776601731536,
           "v": 37899594.314163
         }
       ],
       "first": 31143139.611728,
       "last": 37899594.314163,
       "changePct": 0.21694841260932557
+    },
+    "0xa65ce1d604fa901c13aa29f2126a57d9032e412b": {
+      "window": "month",
+      "points": [
+        {
+          "t": 1773959520104,
+          "v": 5633000.776049
+        },
+        {
+          "t": 1774048320022,
+          "v": 7666810.265705
+        },
+        {
+          "t": 1774135920073,
+          "v": 7699480.194674
+        },
+        {
+          "t": 1774222320039,
+          "v": 7488824.890135
+        },
+        {
+          "t": 1774302720073,
+          "v": 8783948.72179
+        },
+        {
+          "t": 1774389120068,
+          "v": 8833139.2188
+        },
+        {
+          "t": 1774475520026,
+          "v": 9433653.95248
+        },
+        {
+          "t": 1774567920092,
+          "v": 9026578.104861
+        },
+        {
+          "t": 1774653120085,
+          "v": 7792081.503642
+        },
+        {
+          "t": 1774740720047,
+          "v": 7839698.227504
+        },
+        {
+          "t": 1774825920028,
+          "v": 7544626.081627
+        },
+        {
+          "t": 1774911120093,
+          "v": 7100937.746466
+        },
+        {
+          "t": 1774997520036,
+          "v": 7978002.37262
+        },
+        {
+          "t": 1775082720116,
+          "v": 9078017.707475
+        },
+        {
+          "t": 1775169120071,
+          "v": 7873854.917065
+        },
+        {
+          "t": 1775260320007,
+          "v": 7798363.467272
+        },
+        {
+          "t": 1775345520011,
+          "v": 7728319.117507
+        },
+        {
+          "t": 1775431920092,
+          "v": 7649224.709402
+        },
+        {
+          "t": 1775518320067,
+          "v": 7998556.803432
+        },
+        {
+          "t": 1775602320052,
+          "v": 9384368.90963
+        },
+        {
+          "t": 1775689920037,
+          "v": 9921032.531598
+        },
+        {
+          "t": 1775776320057,
+          "v": 10293937.475908
+        },
+        {
+          "t": 1775865120002,
+          "v": 10291033.61061
+        },
+        {
+          "t": 1775946720056,
+          "v": 10303184.060498
+        },
+        {
+          "t": 1775976720061,
+          "v": 10382114.433441
+        },
+        {
+          "t": 1776009120056,
+          "v": 10287219.248575
+        },
+        {
+          "t": 1776047520045,
+          "v": 10409616.261554
+        },
+        {
+          "t": 1776078720037,
+          "v": 10449032.974963
+        },
+        {
+          "t": 1776108720046,
+          "v": 10709113.903784
+        },
+        {
+          "t": 1776139920063,
+          "v": 10864411.765184
+        },
+        {
+          "t": 1776171120057,
+          "v": 10836478.862503
+        },
+        {
+          "t": 1776204720044,
+          "v": 10994908.241602
+        },
+        {
+          "t": 1776237120055,
+          "v": 10912349.3171
+        },
+        {
+          "t": 1776269520042,
+          "v": 10761069.330656
+        },
+        {
+          "t": 1776300720064,
+          "v": 10838264.515623
+        },
+        {
+          "t": 1776340320063,
+          "v": 10771429.642248
+        },
+        {
+          "t": 1776371520041,
+          "v": 10903758.565992
+        },
+        {
+          "t": 1776402720058,
+          "v": 10813201.428819
+        },
+        {
+          "t": 1776435120030,
+          "v": 10946282.435199
+        },
+        {
+          "t": 1776467520042,
+          "v": 10872765.290679
+        },
+        {
+          "t": 1776499920049,
+          "v": 10847522.334945
+        },
+        {
+          "t": 1776531120029,
+          "v": 10807835.863748
+        },
+        {
+          "t": 1776562320058,
+          "v": 10801501.031933
+        },
+        {
+          "t": 1776593520007,
+          "v": 10785007.858649
+        },
+        {
+          "t": 1776601731672,
+          "v": 10812571.170832
+        }
+      ],
+      "first": 5633000.776049,
+      "last": 10812571.170832,
+      "changePct": 0.9195046478257302
     },
     "0x45ab58a2034f03aa446baf3bb1d236706f866cbc": {
       "window": "month",
@@ -2539,385 +2727,201 @@
           "v": 2486015.797644
         },
         {
-          "t": 1776598691012,
-          "v": 2487997.934221
+          "t": 1776601731805,
+          "v": 2512050.926783
         }
       ],
       "first": 3540705.883289,
-      "last": 2487997.934221,
-      "changePct": -0.29731584146439416
+      "last": 2512050.926783,
+      "changePct": -0.2905225653903993
     },
-    "0xa65ce1d604fa901c13aa29f2126a57d9032e412b": {
+    "0x932bdd2d5e21475e62d2fea8158fc5974507cb1a": {
       "window": "month",
       "points": [
         {
-          "t": 1773959520104,
-          "v": 5633000.776049
+          "t": 1773957960025,
+          "v": 10062.363368
         },
         {
-          "t": 1774048320022,
-          "v": 7666810.265705
+          "t": 1774045560027,
+          "v": 11441.855812
         },
         {
-          "t": 1774135920073,
-          "v": 7699480.194674
+          "t": 1774131960086,
+          "v": 11441.768682
         },
         {
-          "t": 1774222320039,
-          "v": 7488824.890135
+          "t": 1774223160023,
+          "v": 11872.897846
         },
         {
-          "t": 1774302720073,
-          "v": 8783948.72179
+          "t": 1774302360071,
+          "v": 16424.087833
         },
         {
-          "t": 1774389120068,
-          "v": 8833139.2188
+          "t": 1774391160030,
+          "v": 14949.427139
         },
         {
-          "t": 1774475520026,
-          "v": 9433653.95248
+          "t": 1774475160080,
+          "v": 16625.355588
         },
         {
-          "t": 1774567920092,
-          "v": 9026578.104861
+          "t": 1774567560041,
+          "v": 50222.113363
         },
         {
-          "t": 1774653120085,
-          "v": 7792081.503642
+          "t": 1774649160083,
+          "v": 21720.768895
         },
         {
-          "t": 1774740720047,
-          "v": 7839698.227504
+          "t": 1774737960026,
+          "v": 26261.732293
         },
         {
-          "t": 1774825920028,
-          "v": 7544626.081627
+          "t": 1774825560031,
+          "v": 55015.211029
         },
         {
-          "t": 1774911120093,
-          "v": 7100937.746466
+          "t": 1774913160031,
+          "v": 70344.04983
         },
         {
-          "t": 1774997520036,
-          "v": 7978002.37262
+          "t": 1774998360053,
+          "v": 34059.66953
         },
         {
-          "t": 1775082720116,
-          "v": 9078017.707475
+          "t": 1775081160004,
+          "v": 182244.590756
         },
         {
-          "t": 1775169120071,
-          "v": 7873854.917065
+          "t": 1775172360020,
+          "v": 289956.015544
         },
         {
-          "t": 1775260320007,
-          "v": 7798363.467272
+          "t": 1775256360033,
+          "v": 194188.641008
         },
         {
-          "t": 1775345520011,
-          "v": 7728319.117507
+          "t": 1775340360051,
+          "v": 183595.685304
         },
         {
-          "t": 1775431920092,
-          "v": 7649224.709402
+          "t": 1775431560036,
+          "v": 523727.988291
         },
         {
-          "t": 1775518320067,
-          "v": 7998556.803432
+          "t": 1775516760029,
+          "v": 507919.807698
         },
         {
-          "t": 1775602320052,
-          "v": 9384368.90963
+          "t": 1775604360051,
+          "v": 781241.63257
         },
         {
-          "t": 1775689920037,
-          "v": 9921032.531598
+          "t": 1775685960064,
+          "v": 689879.144284
         },
         {
-          "t": 1775776320057,
-          "v": 10293937.475908
+          "t": 1775772360060,
+          "v": 669784.344912
         },
         {
-          "t": 1775865120002,
-          "v": 10291033.61061
+          "t": 1775862332144,
+          "v": 552598.586366
         },
         {
-          "t": 1775946720056,
-          "v": 10303184.060498
+          "t": 1775943960066,
+          "v": 619382.294622
         },
         {
-          "t": 1775976720061,
-          "v": 10382114.433441
+          "t": 1775972760062,
+          "v": 510865.129271
         },
         {
-          "t": 1776009120056,
-          "v": 10287219.248575
+          "t": 1776005160011,
+          "v": 453291.273009
         },
         {
-          "t": 1776047520045,
-          "v": 10409616.261554
+          "t": 1776037560050,
+          "v": 438856.622713
         },
         {
-          "t": 1776078720037,
-          "v": 10449032.974963
+          "t": 1776069960007,
+          "v": 475901.084103
         },
         {
-          "t": 1776108720046,
-          "v": 10709113.903784
+          "t": 1776097560005,
+          "v": 535995.225063
         },
         {
-          "t": 1776139920063,
-          "v": 10864411.765184
+          "t": 1776127560067,
+          "v": 659899.549877
         },
         {
-          "t": 1776171120057,
-          "v": 10836478.862503
+          "t": 1776167160047,
+          "v": 664279.717295
         },
         {
-          "t": 1776204720044,
-          "v": 10994908.241602
+          "t": 1776198360014,
+          "v": 648422.296218
         },
         {
-          "t": 1776237120055,
-          "v": 10912349.3171
+          "t": 1776231960071,
+          "v": 652059.159747
         },
         {
-          "t": 1776269520042,
-          "v": 10761069.330656
+          "t": 1776264360014,
+          "v": 677800.848862
         },
         {
-          "t": 1776300720064,
-          "v": 10838264.515623
+          "t": 1776296760013,
+          "v": 744733.002111
         },
         {
-          "t": 1776340320063,
-          "v": 10771429.642248
+          "t": 1776326760054,
+          "v": 754509.353934
         },
         {
-          "t": 1776371520041,
-          "v": 10903758.565992
+          "t": 1776355560022,
+          "v": 756593.857932
         },
         {
-          "t": 1776402720058,
-          "v": 10813201.428819
+          "t": 1776389160042,
+          "v": 761887.510278
         },
         {
-          "t": 1776435120030,
-          "v": 10946282.435199
+          "t": 1776421560048,
+          "v": 810847.608252
         },
         {
-          "t": 1776467520042,
-          "v": 10872765.290679
+          "t": 1776457560052,
+          "v": 875129.624702
         },
         {
-          "t": 1776499920049,
-          "v": 10847522.334945
+          "t": 1776487560060,
+          "v": 849720.962114
         },
         {
-          "t": 1776531120029,
-          "v": 10807835.863748
+          "t": 1776517560069,
+          "v": 799382.198738
         },
         {
-          "t": 1776562320058,
-          "v": 10801501.031933
+          "t": 1776548760070,
+          "v": 774244.310267
         },
         {
-          "t": 1776593520007,
-          "v": 10785007.858649
+          "t": 1776579960052,
+          "v": 753993.723504
         },
         {
-          "t": 1776598690880,
-          "v": 10791862.49716
+          "t": 1776601731805,
+          "v": 757849.206664
         }
       ],
-      "first": 5633000.776049,
-      "last": 10791862.49716,
-      "changePct": 0.9158283348807628
-    },
-    "0xa9b95f2a2e7ef219021efc5c04c32761b8553bbd": {
-      "window": "month",
-      "points": [
-        {
-          "t": 1773958560083,
-          "v": 1463186.82652
-        },
-        {
-          "t": 1774047360034,
-          "v": 1640810.671034
-        },
-        {
-          "t": 1774136160083,
-          "v": 3404371.118597
-        },
-        {
-          "t": 1774222560057,
-          "v": 4078083.500806
-        },
-        {
-          "t": 1774310160053,
-          "v": 3762206.546922
-        },
-        {
-          "t": 1774391760085,
-          "v": 4586063.458028
-        },
-        {
-          "t": 1774479360050,
-          "v": 4667889.331836
-        },
-        {
-          "t": 1774566960086,
-          "v": 4206999.891819
-        },
-        {
-          "t": 1774652160094,
-          "v": 3974165.570139
-        },
-        {
-          "t": 1774739760087,
-          "v": 4428222.501626
-        },
-        {
-          "t": 1774826160081,
-          "v": 3878861.427414
-        },
-        {
-          "t": 1774908965289,
-          "v": 5000672.155859
-        },
-        {
-          "t": 1774998960005,
-          "v": 5389148.903689
-        },
-        {
-          "t": 1775084160033,
-          "v": 5221377.283687
-        },
-        {
-          "t": 1775174160018,
-          "v": 5004464.118741
-        },
-        {
-          "t": 1775260560009,
-          "v": 4733557.945781
-        },
-        {
-          "t": 1775340960022,
-          "v": 4162383.588191
-        },
-        {
-          "t": 1775430960071,
-          "v": 4321610.004547
-        },
-        {
-          "t": 1775517360055,
-          "v": 4057583.078613
-        },
-        {
-          "t": 1775600160005,
-          "v": 4277474.721941
-        },
-        {
-          "t": 1775690160048,
-          "v": 4902587.033589
-        },
-        {
-          "t": 1775778960045,
-          "v": 5088394.932307
-        },
-        {
-          "t": 1775864160003,
-          "v": 5915892.150461
-        },
-        {
-          "t": 1775949360064,
-          "v": 6117114.550079
-        },
-        {
-          "t": 1775980560011,
-          "v": 5817121.24874
-        },
-        {
-          "t": 1776011760002,
-          "v": 6312181.301558
-        },
-        {
-          "t": 1776042960033,
-          "v": 6351565.189516
-        },
-        {
-          "t": 1776075360044,
-          "v": 6473822.206794
-        },
-        {
-          "t": 1776113760022,
-          "v": 6754948.094677
-        },
-        {
-          "t": 1776155760067,
-          "v": 6979732.914206
-        },
-        {
-          "t": 1776184560043,
-          "v": 6233985.914458
-        },
-        {
-          "t": 1776218160057,
-          "v": 6604775.687142
-        },
-        {
-          "t": 1776248160096,
-          "v": 6484360.563695
-        },
-        {
-          "t": 1776286560002,
-          "v": 6621225.610367
-        },
-        {
-          "t": 1776318960053,
-          "v": 7085899.007696
-        },
-        {
-          "t": 1776348960063,
-          "v": 7136119.376624
-        },
-        {
-          "t": 1776380160022,
-          "v": 6219473.313948
-        },
-        {
-          "t": 1776412560060,
-          "v": 6377117.994698
-        },
-        {
-          "t": 1776444960018,
-          "v": 5933430.051094
-        },
-        {
-          "t": 1776473760059,
-          "v": 5991343.675586
-        },
-        {
-          "t": 1776506160066,
-          "v": 6272634.871835
-        },
-        {
-          "t": 1776538560011,
-          "v": 6277549.754114
-        },
-        {
-          "t": 1776568560034,
-          "v": 5916976.013922
-        },
-        {
-          "t": 1776598691137,
-          "v": 5939017.689696
-        }
-      ],
-      "first": 1463186.82652,
-      "last": 5939017.689696,
-      "changePct": 3.0589606071161697
+      "first": 10062.363368,
+      "last": 757849.206664,
+      "changePct": 74.31522952888855
     },
     "0x58cbd807135f66e8c9b4f39eea92a612b477bf00": {
       "window": "month",
@@ -3099,13 +3103,13 @@
           "v": 1266077.93933
         },
         {
-          "t": 1776598691137,
-          "v": 1265494.958718
+          "t": 1776601731805,
+          "v": 1264185.56908
         }
       ],
       "first": 767432.861221,
-      "last": 1265494.958718,
-      "changePct": 0.648997616162245
+      "last": 1264185.56908,
+      "changePct": 0.6472914217781309
     },
     "0xa8b695817a4054dd278f04746585dea6487e775d": {
       "window": "month",
@@ -3283,13 +3287,13 @@
           "v": 4100127.547595
         },
         {
-          "t": 1776598691137,
-          "v": 4103454.13651
+          "t": 1776601731939,
+          "v": 4102889.756982
         }
       ],
       "first": 3245277.005,
-      "last": 4103454.13651,
-      "changePct": 0.2644387921856305
+      "last": 4102889.756982,
+      "changePct": 0.26426488421810396
     },
     "0xc6cd4f327ebda9a78cc52414aa5101c211b5e4d9": {
       "window": "month",
@@ -3475,205 +3479,205 @@
           "v": 245565.755261
         },
         {
-          "t": 1776598691216,
-          "v": 245394.684541
+          "t": 1776601732071,
+          "v": 242420.38899
         }
       ],
       "first": 149473.623499,
-      "last": 245394.684541,
-      "changePct": 0.6417256690284336
+      "last": 242420.38899,
+      "changePct": 0.6218272047952448
     },
-    "0x06e0139cb5cce32d0343936dc2e8048987544e1b": {
+    "0xdd7a372377fc633f74ab6e20963803d52f448830": {
       "window": "month",
       "points": [
         {
           "t": 1773962640053,
-          "v": 278243.661732
+          "v": 550119.01583
         },
         {
           "t": 1774049040006,
-          "v": 285937.082163
+          "v": 560660.90093
         },
         {
           "t": 1774135440028,
-          "v": 282114.598613
+          "v": 557907.50587
         },
         {
           "t": 1774221840026,
-          "v": 284577.458344
+          "v": 539940.566013
         },
         {
-          "t": 1774302240072,
-          "v": 337885.478366
+          "t": 1774309440035,
+          "v": 490977.776231
         },
         {
           "t": 1774394640076,
-          "v": 288446.429181
+          "v": 608193.53509
         },
         {
           "t": 1774481040069,
-          "v": 258893.27197
+          "v": 611622.682939
         },
         {
           "t": 1774568640050,
-          "v": 242314.064797
+          "v": 589659.460699
         },
         {
           "t": 1774655040065,
-          "v": 268438.161933
+          "v": 567516.80144
         },
         {
           "t": 1774740240012,
-          "v": 263869.280116
+          "v": 566713.704147
         },
         {
           "t": 1774825440072,
-          "v": 250196.489861
+          "v": 568543.256448
         },
         {
           "t": 1774910640064,
-          "v": 278456.439479
+          "v": 557187.293011
         },
         {
-          "t": 1775000640044,
-          "v": 323801.527165
+          "t": 1774994640059,
+          "v": 593007.527703
         },
         {
           "t": 1775081040010,
-          "v": 326973.667023
+          "v": 610510.451719
         },
         {
           "t": 1775173440056,
-          "v": 328111.008794
+          "v": 536268.743942
         },
         {
           "t": 1775259840064,
-          "v": 325459.004768
+          "v": 506932.374881
         },
         {
           "t": 1775346240064,
-          "v": 332778.401174
+          "v": 582149.131848
         },
         {
           "t": 1775431440000,
-          "v": 303664.830112
+          "v": 555265.634837
         },
         {
           "t": 1775516640067,
-          "v": 335707.05439
+          "v": 571403.625173
         },
         {
-          "t": 1775604240071,
-          "v": 404706.90885
+          "t": 1775603040023,
+          "v": 939108.993314
         },
         {
           "t": 1775689440046,
-          "v": 370142.322374
+          "v": 933139.970417
         },
         {
-          "t": 1775777040048,
-          "v": 389073.820921
+          "t": 1775774640027,
+          "v": 1258989.886808
         },
         {
-          "t": 1775859840006,
-          "v": 465438.852887
+          "t": 1775861040057,
+          "v": 1258628.4534
         },
         {
-          "t": 1775906640080,
-          "v": 454006.326864
+          "t": 1775915040034,
+          "v": 1282443.398864
         },
         {
-          "t": 1775939040002,
-          "v": 456740.910953
+          "t": 1775946240009,
+          "v": 1303173.751358
         },
         {
-          "t": 1775967840048,
-          "v": 480244.087599
+          "t": 1775976240006,
+          "v": 1173259.71922
         },
         {
-          "t": 1776000240062,
-          "v": 485290.151872
+          "t": 1776015840058,
+          "v": 1198097.081079
         },
         {
-          "t": 1776031440019,
-          "v": 482252.201957
+          "t": 1776047040045,
+          "v": 1205427.179483
         },
         {
-          "t": 1776062640011,
-          "v": 482893.289044
+          "t": 1776078240045,
+          "v": 1202707.107879
         },
         {
-          "t": 1776102240027,
-          "v": 481751.839307
+          "t": 1776109440049,
+          "v": 1313060.068339
         },
         {
-          "t": 1776133440011,
-          "v": 489800.486876
+          "t": 1776140640022,
+          "v": 1335854.290783
         },
         {
-          "t": 1776164640013,
-          "v": 501338.194126
+          "t": 1776171840061,
+          "v": 1432115.230568
         },
         {
-          "t": 1776195840012,
-          "v": 498245.783972
+          "t": 1776203040042,
+          "v": 1263330.88865
         },
         {
-          "t": 1776227040062,
-          "v": 485134.526356
+          "t": 1776242640030,
+          "v": 1294670.623828
         },
         {
-          "t": 1776258240063,
-          "v": 475763.363909
+          "t": 1776273840041,
+          "v": 1316505.131215
         },
         {
-          "t": 1776289440051,
-          "v": 458988.493331
+          "t": 1776305040057,
+          "v": 1250597.371663
         },
         {
-          "t": 1776327840049,
-          "v": 460694.336576
+          "t": 1776335040050,
+          "v": 1286958.974972
         },
         {
-          "t": 1776360240017,
-          "v": 494585.716196
+          "t": 1776367440024,
+          "v": 1218263.383581
         },
         {
-          "t": 1776390240060,
-          "v": 512924.920397
+          "t": 1776398640019,
+          "v": 1160115.871651
         },
         {
-          "t": 1776421440036,
-          "v": 499182.990487
+          "t": 1776428640080,
+          "v": 1177358.488275
         },
         {
-          "t": 1776452640063,
-          "v": 492393.650728
+          "t": 1776459840040,
+          "v": 1185587.155167
         },
         {
-          "t": 1776482640039,
-          "v": 468128.310142
+          "t": 1776489840039,
+          "v": 1244705.667656
         },
         {
-          "t": 1776513840084,
-          "v": 515041.286202
+          "t": 1776522240053,
+          "v": 1142158.433529
         },
         {
-          "t": 1776545040008,
-          "v": 518726.596916
+          "t": 1776552240043,
+          "v": 1135998.81769
         },
         {
-          "t": 1776576240041,
-          "v": 521590.918054
+          "t": 1776584640027,
+          "v": 1112923.858411
         },
         {
-          "t": 1776598691481,
-          "v": 527198.880795
+          "t": 1776601732137,
+          "v": 1159369.78473
         }
       ],
-      "first": 278243.661732,
-      "last": 527198.880795,
-      "changePct": 0.8947381496969725
+      "first": 550119.01583,
+      "last": 1159369.78473,
+      "changePct": 1.1074890185004493
     },
     "0x873e1c729a12658e4e3f39e927687e424967ccbf": {
       "window": "month",
@@ -3859,13 +3863,393 @@
           "v": 658905.420752
         },
         {
-          "t": 1776598691481,
-          "v": 641161.657431
+          "t": 1776601732137,
+          "v": 624185.474022
         }
       ],
       "first": 220098.188511,
-      "last": 641161.657431,
-      "changePct": 1.9130710332900185
+      "last": 624185.474022,
+      "changePct": 1.8359409872689827
+    },
+    "0x06e0139cb5cce32d0343936dc2e8048987544e1b": {
+      "window": "month",
+      "points": [
+        {
+          "t": 1773962640053,
+          "v": 278243.661732
+        },
+        {
+          "t": 1774049040006,
+          "v": 285937.082163
+        },
+        {
+          "t": 1774135440028,
+          "v": 282114.598613
+        },
+        {
+          "t": 1774221840026,
+          "v": 284577.458344
+        },
+        {
+          "t": 1774302240072,
+          "v": 337885.478366
+        },
+        {
+          "t": 1774394640076,
+          "v": 288446.429181
+        },
+        {
+          "t": 1774481040069,
+          "v": 258893.27197
+        },
+        {
+          "t": 1774568640050,
+          "v": 242314.064797
+        },
+        {
+          "t": 1774655040065,
+          "v": 268438.161933
+        },
+        {
+          "t": 1774740240012,
+          "v": 263869.280116
+        },
+        {
+          "t": 1774825440072,
+          "v": 250196.489861
+        },
+        {
+          "t": 1774910640064,
+          "v": 278456.439479
+        },
+        {
+          "t": 1775000640044,
+          "v": 323801.527165
+        },
+        {
+          "t": 1775081040010,
+          "v": 326973.667023
+        },
+        {
+          "t": 1775173440056,
+          "v": 328111.008794
+        },
+        {
+          "t": 1775259840064,
+          "v": 325459.004768
+        },
+        {
+          "t": 1775346240064,
+          "v": 332778.401174
+        },
+        {
+          "t": 1775431440000,
+          "v": 303664.830112
+        },
+        {
+          "t": 1775516640067,
+          "v": 335707.05439
+        },
+        {
+          "t": 1775604240071,
+          "v": 404706.90885
+        },
+        {
+          "t": 1775689440046,
+          "v": 370142.322374
+        },
+        {
+          "t": 1775777040048,
+          "v": 389073.820921
+        },
+        {
+          "t": 1775859840006,
+          "v": 465438.852887
+        },
+        {
+          "t": 1775906640080,
+          "v": 454006.326864
+        },
+        {
+          "t": 1775939040002,
+          "v": 456740.910953
+        },
+        {
+          "t": 1775967840048,
+          "v": 480244.087599
+        },
+        {
+          "t": 1776000240062,
+          "v": 485290.151872
+        },
+        {
+          "t": 1776031440019,
+          "v": 482252.201957
+        },
+        {
+          "t": 1776062640011,
+          "v": 482893.289044
+        },
+        {
+          "t": 1776102240027,
+          "v": 481751.839307
+        },
+        {
+          "t": 1776133440011,
+          "v": 489800.486876
+        },
+        {
+          "t": 1776164640013,
+          "v": 501338.194126
+        },
+        {
+          "t": 1776195840012,
+          "v": 498245.783972
+        },
+        {
+          "t": 1776227040062,
+          "v": 485134.526356
+        },
+        {
+          "t": 1776258240063,
+          "v": 475763.363909
+        },
+        {
+          "t": 1776289440051,
+          "v": 458988.493331
+        },
+        {
+          "t": 1776327840049,
+          "v": 460694.336576
+        },
+        {
+          "t": 1776360240017,
+          "v": 494585.716196
+        },
+        {
+          "t": 1776390240060,
+          "v": 512924.920397
+        },
+        {
+          "t": 1776421440036,
+          "v": 499182.990487
+        },
+        {
+          "t": 1776452640063,
+          "v": 492393.650728
+        },
+        {
+          "t": 1776482640039,
+          "v": 468128.310142
+        },
+        {
+          "t": 1776513840084,
+          "v": 515041.286202
+        },
+        {
+          "t": 1776545040008,
+          "v": 518726.596916
+        },
+        {
+          "t": 1776576240041,
+          "v": 521590.918054
+        },
+        {
+          "t": 1776601732274,
+          "v": 526875.007199
+        }
+      ],
+      "first": 278243.661732,
+      "last": 526875.007199,
+      "changePct": 0.8935741569792804
+    },
+    "0x985f02b19dbc062e565c981aac5614baf2cf501f": {
+      "window": "month",
+      "points": [
+        {
+          "t": 1773962400013,
+          "v": 17466569.795056
+        },
+        {
+          "t": 1774047600047,
+          "v": 16719616.815028
+        },
+        {
+          "t": 1774135200037,
+          "v": 16819931.20857
+        },
+        {
+          "t": 1774216800090,
+          "v": 15542158.01469
+        },
+        {
+          "t": 1774303200162,
+          "v": 19130021.116456
+        },
+        {
+          "t": 1774390800041,
+          "v": 18783989.349257
+        },
+        {
+          "t": 1774477200015,
+          "v": 18450601.359713
+        },
+        {
+          "t": 1774563600004,
+          "v": 18054498.021636
+        },
+        {
+          "t": 1774648800044,
+          "v": 16994274.679856
+        },
+        {
+          "t": 1774734000088,
+          "v": 17075660.860747
+        },
+        {
+          "t": 1774827600018,
+          "v": 16734004.025642
+        },
+        {
+          "t": 1774912800002,
+          "v": 16338095.330061
+        },
+        {
+          "t": 1775000400014,
+          "v": 17345510.90796
+        },
+        {
+          "t": 1775082000020,
+          "v": 16061936.605913
+        },
+        {
+          "t": 1775169600032,
+          "v": 16101444.092811
+        },
+        {
+          "t": 1775254800046,
+          "v": 15789549.306418
+        },
+        {
+          "t": 1775340000032,
+          "v": 15765907.634061
+        },
+        {
+          "t": 1775432400025,
+          "v": 15467439.412639
+        },
+        {
+          "t": 1775517600017,
+          "v": 15620465.5967
+        },
+        {
+          "t": 1775602800038,
+          "v": 23511989.10226
+        },
+        {
+          "t": 1775686800004,
+          "v": 23905378.01111
+        },
+        {
+          "t": 1775773200025,
+          "v": 24323793.491041
+        },
+        {
+          "t": 1775859600056,
+          "v": 24857609.863611
+        },
+        {
+          "t": 1775944800036,
+          "v": 25403157.238117
+        },
+        {
+          "t": 1775977200004,
+          "v": 24300815.808678
+        },
+        {
+          "t": 1776008400081,
+          "v": 23387573.531135
+        },
+        {
+          "t": 1776040800042,
+          "v": 23097526.185264
+        },
+        {
+          "t": 1776073200025,
+          "v": 23111047.603419
+        },
+        {
+          "t": 1776112800064,
+          "v": 24190232.429833
+        },
+        {
+          "t": 1776144000050,
+          "v": 24340174.818176
+        },
+        {
+          "t": 1776176400061,
+          "v": 24950876.577376
+        },
+        {
+          "t": 1776210000062,
+          "v": 25606307.592887
+        },
+        {
+          "t": 1776241200055,
+          "v": 24940937.933275
+        },
+        {
+          "t": 1776273600047,
+          "v": 24890375.486796
+        },
+        {
+          "t": 1776306000015,
+          "v": 24919976.829886
+        },
+        {
+          "t": 1776336273502,
+          "v": 19821492.654091
+        },
+        {
+          "t": 1776368400027,
+          "v": 19699261.542304
+        },
+        {
+          "t": 1776392122822,
+          "v": 9694152.484858
+        },
+        {
+          "t": 1776423600038,
+          "v": 9863292.732434
+        },
+        {
+          "t": 1776454800030,
+          "v": 10201224.198506
+        },
+        {
+          "t": 1776486000039,
+          "v": 10204839.796944
+        },
+        {
+          "t": 1776516000074,
+          "v": 10236983.466625
+        },
+        {
+          "t": 1776547200048,
+          "v": 10240217.311088
+        },
+        {
+          "t": 1776579600058,
+          "v": 10253631.649989
+        },
+        {
+          "t": 1776601732476,
+          "v": 10244239.860373
+        }
+      ],
+      "first": 17466569.795056,
+      "last": 10244239.860373,
+      "changePct": -0.41349446510827315
     },
     "0xa8ad3b7407031091f27af3bfedf170edc77cf761": {
       "window": "month",
@@ -4055,393 +4439,13 @@
           "v": 249737.916634
         },
         {
-          "t": 1776598691481,
-          "v": 240111.506526
+          "t": 1776601732409,
+          "v": 239298.824034
         }
       ],
       "first": 59677.455179,
-      "last": 240111.506526,
-      "changePct": 3.023487694067981
-    },
-    "0x10eadac3c42b809de31eee8a23b45540d05e57e8": {
-      "window": "month",
-      "points": [
-        {
-          "t": 1773962520038,
-          "v": 1240231.840612
-        },
-        {
-          "t": 1774048920010,
-          "v": 1240231.840612
-        },
-        {
-          "t": 1774135320042,
-          "v": 1240231.840612
-        },
-        {
-          "t": 1774220520070,
-          "v": 1240231.840612
-        },
-        {
-          "t": 1774305720000,
-          "v": 1240231.840612
-        },
-        {
-          "t": 1774393320024,
-          "v": 1383568.539216
-        },
-        {
-          "t": 1774479720077,
-          "v": 1550836.619381
-        },
-        {
-          "t": 1774568520080,
-          "v": 1550836.619381
-        },
-        {
-          "t": 1774654920050,
-          "v": 1550836.619381
-        },
-        {
-          "t": 1774738920096,
-          "v": 1550836.619381
-        },
-        {
-          "t": 1774822920049,
-          "v": 1550836.619381
-        },
-        {
-          "t": 1774911720055,
-          "v": 1550836.619381
-        },
-        {
-          "t": 1774998120045,
-          "v": 1550836.619381
-        },
-        {
-          "t": 1775084520068,
-          "v": 1562890.198915
-        },
-        {
-          "t": 1775172120048,
-          "v": 1562890.198915
-        },
-        {
-          "t": 1775252520032,
-          "v": 1562890.198915
-        },
-        {
-          "t": 1775346120032,
-          "v": 1562890.198915
-        },
-        {
-          "t": 1775432520011,
-          "v": 1562890.198915
-        },
-        {
-          "t": 1775518920041,
-          "v": 1525856.61754
-        },
-        {
-          "t": 1775598120040,
-          "v": 1596082.402328
-        },
-        {
-          "t": 1775685720035,
-          "v": 1735138.015881
-        },
-        {
-          "t": 1775778120006,
-          "v": 1667177.907928
-        },
-        {
-          "t": 1775860920103,
-          "v": 1667177.907928
-        },
-        {
-          "t": 1775892120063,
-          "v": 1667177.907928
-        },
-        {
-          "t": 1775925720057,
-          "v": 1667177.907928
-        },
-        {
-          "t": 1775958120031,
-          "v": 1667177.907928
-        },
-        {
-          "t": 1775988120069,
-          "v": 1667177.907928
-        },
-        {
-          "t": 1776020520024,
-          "v": 1667177.907928
-        },
-        {
-          "t": 1776051720061,
-          "v": 1657619.794383
-        },
-        {
-          "t": 1776090120013,
-          "v": 1636891.823775
-        },
-        {
-          "t": 1776122520055,
-          "v": 1607416.999847
-        },
-        {
-          "t": 1776154920000,
-          "v": 1605092.392202
-        },
-        {
-          "t": 1776184920004,
-          "v": 1590118.707652
-        },
-        {
-          "t": 1776216120022,
-          "v": 1590118.707652
-        },
-        {
-          "t": 1776247320069,
-          "v": 1590118.707652
-        },
-        {
-          "t": 1776279720048,
-          "v": 1590118.707652
-        },
-        {
-          "t": 1776312120010,
-          "v": 1681682.590057
-        },
-        {
-          "t": 1776350520062,
-          "v": 1661381.461847
-        },
-        {
-          "t": 1776380520078,
-          "v": 1661381.461847
-        },
-        {
-          "t": 1776414120016,
-          "v": 1661381.461847
-        },
-        {
-          "t": 1776444120092,
-          "v": 1661381.461847
-        },
-        {
-          "t": 1776477720003,
-          "v": 1661381.461847
-        },
-        {
-          "t": 1776510120093,
-          "v": 1661381.461847
-        },
-        {
-          "t": 1776541320016,
-          "v": 1661381.461847
-        },
-        {
-          "t": 1776572520070,
-          "v": 1661381.461847
-        },
-        {
-          "t": 1776598691685,
-          "v": 1661381.461847
-        }
-      ],
-      "first": 1240231.840612,
-      "last": 1661381.461847,
-      "changePct": 0.33957330189747514
-    },
-    "0x68f1c65d362cdec95aaee727eeea2577c6bc3647": {
-      "window": "month",
-      "points": [
-        {
-          "t": 1773963600090,
-          "v": 218823.182139
-        },
-        {
-          "t": 1774050000041,
-          "v": 223717.505666
-        },
-        {
-          "t": 1774135200037,
-          "v": 223737.829176
-        },
-        {
-          "t": 1774216800090,
-          "v": 221801.945701
-        },
-        {
-          "t": 1774308000068,
-          "v": 219003.734756
-        },
-        {
-          "t": 1774394400026,
-          "v": 234761.089735
-        },
-        {
-          "t": 1774479600072,
-          "v": 246948.186135
-        },
-        {
-          "t": 1774566000071,
-          "v": 259122.145141
-        },
-        {
-          "t": 1774653600044,
-          "v": 306038.396999
-        },
-        {
-          "t": 1774736400054,
-          "v": 299994.339883
-        },
-        {
-          "t": 1774824000065,
-          "v": 321184.179914
-        },
-        {
-          "t": 1774911600066,
-          "v": 329843.44373
-        },
-        {
-          "t": 1775000400014,
-          "v": 329195.251528
-        },
-        {
-          "t": 1775079600059,
-          "v": 328778.359217
-        },
-        {
-          "t": 1775166000039,
-          "v": 327693.13207
-        },
-        {
-          "t": 1775253600031,
-          "v": 328522.254464
-        },
-        {
-          "t": 1775340000032,
-          "v": 329016.986352
-        },
-        {
-          "t": 1775432400025,
-          "v": 329571.095187
-        },
-        {
-          "t": 1775517600017,
-          "v": 328982.935038
-        },
-        {
-          "t": 1775604000017,
-          "v": 331180.096248
-        },
-        {
-          "t": 1775689200039,
-          "v": 377644.016857
-        },
-        {
-          "t": 1775774400062,
-          "v": 408743.41878
-        },
-        {
-          "t": 1775863200028,
-          "v": 398828.857497
-        },
-        {
-          "t": 1775948400020,
-          "v": 392752.198415
-        },
-        {
-          "t": 1775978400101,
-          "v": 407147.271688
-        },
-        {
-          "t": 1776010800001,
-          "v": 419670.297461
-        },
-        {
-          "t": 1776040800042,
-          "v": 427525.070364
-        },
-        {
-          "t": 1776073200025,
-          "v": 427942.550764
-        },
-        {
-          "t": 1776112800064,
-          "v": 410566.923314
-        },
-        {
-          "t": 1776144000050,
-          "v": 407645.767956
-        },
-        {
-          "t": 1776176400061,
-          "v": 399545.29052
-        },
-        {
-          "t": 1776210000062,
-          "v": 381895.218482
-        },
-        {
-          "t": 1776241200055,
-          "v": 410865.470115
-        },
-        {
-          "t": 1776273600047,
-          "v": 416236.940011
-        },
-        {
-          "t": 1776306000015,
-          "v": 416351.886147
-        },
-        {
-          "t": 1776336000046,
-          "v": 417306.862149
-        },
-        {
-          "t": 1776368400027,
-          "v": 415800.08453
-        },
-        {
-          "t": 1776402000052,
-          "v": 415406.546645
-        },
-        {
-          "t": 1776433200057,
-          "v": 416446.176014
-        },
-        {
-          "t": 1776464400067,
-          "v": 415920.771127
-        },
-        {
-          "t": 1776494400053,
-          "v": 416124.615692
-        },
-        {
-          "t": 1776525600063,
-          "v": 415620.173997
-        },
-        {
-          "t": 1776558000034,
-          "v": 415196.583648
-        },
-        {
-          "t": 1776588000068,
-          "v": 414557.782451
-        },
-        {
-          "t": 1776598691616,
-          "v": 414518.606965
-        }
-      ],
-      "first": 218823.182139,
-      "last": 414518.606965,
-      "changePct": 0.8943084682028392
+      "last": 239298.824034,
+      "changePct": 3.0098697794038523
     }
   }
 }
