@@ -57,10 +57,20 @@
                 <th>未实现PnL</th>
                 <th>杠杆</th>
                 <th>保证金</th>
+                <th>开仓时间</th>
+                <th>保证金占净值</th>
               </tr>
             </thead>
             <tbody id="positionTableBody"></tbody>
           </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>资金曲线（带坐标）</h2>
+        <div id="curveStatusDetail" class="hint">准备加载资金曲线...</div>
+        <div class="strategy-curve detail-curve-wrap">
+          <canvas id="detailCurveCanvas" class="curve-canvas detail-curve-canvas"></canvas>
         </div>
       </section>
 
