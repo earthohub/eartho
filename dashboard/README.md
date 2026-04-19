@@ -9,6 +9,7 @@
 ## 文件说明
 
 - `index.html`：页面结构
+- `strategy.html`：单地址策略详情页（收益、因子、持仓）
 - `styles.css`：页面样式
 - `app.js`：浏览器端实时拉取、计算与绘图逻辑
 - `update.js`：本地脚本，按需拉取并生成快照数据 `data/latest.json`

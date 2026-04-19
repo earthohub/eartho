@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>策略详情 - Hyperliquid 跟单面板</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div>
+        <h1>策略详情页</h1>
+        <p class="subtitle">收益、因子、当前持仓（用于跟单执行）</p>
+      </div>
+      <div class="header-actions">
+        <a class="btn" href="./index.html">返回总览</a>
+      </div>
+    </header>
+
+    <section class="summary-card">
+      <div>
+        <h2 id="strategyTitle">地址策略详情</h2>
+        <p id="strategyStatus">准备加载...</p>
+      </div>
+      <div class="metrics" id="strategyMetrics"></div>
+    </section>
+
+    <main class="layout">
+      <section class="card">
+        <h2>策略画像与执行建议</h2>
+        <div class="strategy-detail-grid">
+          <div class="strategy-detail-block">
+            <h3>风格与规则</h3>
+            <div id="styleTags" class="strategy-style"></div>
+            <ul id="ruleBookList" class="detail-list"></ul>
+          </div>
+          <div class="strategy-detail-block">
+            <h3>因子得分</h3>
+            <div id="factorGrid" class="factor-grid"></div>
+            <p class="hint">分值为分位百分比，越高代表同池相对更优。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>当前持仓（清晰明细）</h2>
+        <div id="positionStatus" class="hint">准备加载持仓...</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>币种</th>
+                <th>方向</th>
+                <th>仓位数量</th>
+                <th>入场价</th>
+                <th>仓位价值</th>
+                <th>未实现PnL</th>
+                <th>杠杆</th>
+                <th>保证金</th>
+              </tr>
+            </thead>
+            <tbody id="positionTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>外部链接</h2>
+        <div id="linkGroup" class="link-group"></div>
+      </section>
+    </main>
+
+    <script src="./strategy.js"></script>
+  </body>
+</html>

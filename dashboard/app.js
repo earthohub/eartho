@@ -435,7 +435,12 @@ function renderStrategyCards(rows) {
           </div>
           <div class="strategy-head-right">
             <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
-            <a class="strategy-link" href="https://app.hyperliquid.xyz/trader/${row.address}" target="_blank" rel="noopener noreferrer">策略链接</a>
+            <a class="strategy-link" href="./strategy.html?addr=${encodeURIComponent(
+              row.address
+            )}" target="_blank" rel="noopener noreferrer">策略详情</a>
+            <a class="strategy-link external" href="https://app.hyperliquid.xyz/trader/${
+              row.address
+            }" target="_blank" rel="noopener noreferrer">官方页</a>
           </div>
         </div>
 
