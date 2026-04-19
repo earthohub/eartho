@@ -16,6 +16,22 @@
 
 ## 使用方式
 
+### 0) 一键同步（推荐）
+
+网络稳定时自动走 Git；网络不稳定时自动走离线覆盖，并重启本地服务：
+
+```powershell
+cd "C:\Users\Zonghu Liao\Desktop\eartho"
+powershell -ExecutionPolicy Bypass -File ".\sync-dashboard.ps1"
+```
+
+脚本会自动执行：
+- 优先尝试 `git ls-remote/fetch/reset` 同步到目标分支
+- Git 失败时自动下载分支 zip 离线覆盖 `dashboard/`
+- 语法检查 `dashboard/app.js`
+- 重启 `http://127.0.0.1:8080`
+- 打印关键自检项（Top18 / Quota8 / StrategyLink / SnapshotFallback）
+
 ### 1) 直接打开网页
 
 在本地启动静态文件服务（推荐）：
