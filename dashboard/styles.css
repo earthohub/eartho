@@ -237,6 +237,16 @@ tr:hover td {
   margin-bottom: 8px;
 }
 
+.strategy-link {
+  font-size: 12px;
+  color: #7cc7ff;
+  text-decoration: none;
+}
+
+.strategy-link:hover {
+  text-decoration: underline;
+}
+
 .strategy-title {
   font-size: 15px;
   font-weight: 650;

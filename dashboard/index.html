@@ -42,12 +42,10 @@
         <ul class="method-list">
           <li>数据源：Mainnet leaderboard + Info portfolio（实时拉取）。</li>
           <li>过滤：剔除treasury等非目标地址（不再依赖 vaults 数据源）。</li>
-          <li>
-            可跟踪门槛：账户净值 ≥ 500k USDC，月成交额 ≥ 50m USDC（可在代码中调参）。
-          </li>
-          <li>
-            综合分权重：收益质量28% + 绝对Alpha22% + 交易效率20% + 一致性15% + 容量10% + 回撤代理5%。
-          </li>
+          <li>可跟踪门槛：账户净值 ≥ 100k USDC，月成交额 ≥ 10m USDC。</li>
+          <li>核心池规则：Top18 且至少 8 个地址位于 10万~200万账户区间。</li>
+          <li>风险红线：回撤代理 ≤ 25%，日亏损代理 ≤ 8%，whipsaw 代理 ≤ 4。</li>
+          <li>综合分权重：稳定收益35% + 风险控制30% + 可复制性20% + 容量10% + Alpha5%。</li>
         </ul>
       </section>
     </main>

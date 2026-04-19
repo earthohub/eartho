@@ -369,7 +369,10 @@ function renderStrategyCards(rows) {
             }</div>
             <div class="mono muted">${row.address}</div>
           </div>
-          <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
+          <div class="strategy-head-right">
+            <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
+            <a class="strategy-link" href="https://app.hyperliquid.xyz/leaderboard/${row.address}" target="_blank" rel="noopener noreferrer">策略链接</a>
+          </div>
         </div>
 
         <div class="strategy-style">
