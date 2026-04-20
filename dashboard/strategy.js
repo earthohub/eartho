@@ -9,8 +9,7 @@ const detailEls = {
   factorGrid: document.getElementById("factorGrid"),
   positionStatus: document.getElementById("positionStatus"),
   positionTableBody: document.getElementById("positionTableBody"),
-  curveStatus: document.getElementById("curveStatus"),
-  curveMeta: document.getElementById("curveMeta"),
+  curveStatus: document.getElementById("curveStatusDetail"),
   curveCanvas: document.getElementById("detailCurveCanvas"),
   linkGroup: document.getElementById("linkGroup"),
 };
@@ -195,8 +194,8 @@ function parsePortfolioCurve(portfolioRaw) {
 function drawCurveWithAxes(canvas, points) {
   if (!canvas || !points || points.length < 2) return;
   const ratio = window.devicePixelRatio || 1;
-  const width = Math.max(320, Math.floor(canvas.clientWidth));
-  const height = Math.max(180, Math.floor(canvas.clientHeight));
+  const width = Math.max(560, Math.floor(canvas.clientWidth));
+  const height = Math.max(260, Math.floor(canvas.clientHeight));
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   const ctx = canvas.getContext("2d");
@@ -209,10 +208,10 @@ function drawCurveWithAxes(canvas, points) {
   const maxV = Math.max(...values);
   const span = Math.max(maxV - minV, 1e-9);
 
-  const leftPad = 64;
-  const rightPad = 14;
-  const topPad = 12;
-  const bottomPad = 34;
+  const leftPad = 96;
+  const rightPad = 24;
+  const topPad = 18;
+  const bottomPad = 52;
   const plotW = width - leftPad - rightPad;
   const plotH = height - topPad - bottomPad;
   const bottomY = topPad + plotH;
@@ -223,7 +222,7 @@ function drawCurveWithAxes(canvas, points) {
 
   const yTicks = [maxV, (maxV + minV) / 2, minV];
   ctx.lineWidth = 1.2;
-  ctx.font = '12px "Inter", "Segoe UI", sans-serif';
+  ctx.font = '13px "Inter", "Segoe UI", sans-serif';
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
   yTicks.forEach((tick) => {
@@ -234,7 +233,7 @@ function drawCurveWithAxes(canvas, points) {
     ctx.lineTo(width - rightPad, y);
     ctx.stroke();
     ctx.fillStyle = "rgba(237, 242, 251, 0.98)";
-    ctx.fillText(money(tick), leftPad - 6, y);
+    ctx.fillText(money(tick), leftPad - 10, y);
   });
 
   ctx.strokeStyle = "rgba(219, 228, 242, 0.92)";
@@ -263,10 +262,10 @@ function drawCurveWithAxes(canvas, points) {
   xTicks.forEach((tick) => {
     ctx.beginPath();
     ctx.moveTo(tick.x, bottomY);
-    ctx.lineTo(tick.x, bottomY + 4);
+    ctx.lineTo(tick.x, bottomY + 6);
     ctx.stroke();
     ctx.textAlign = tick.align;
-    ctx.fillText(tick.label, tick.x, bottomY + 7);
+    ctx.fillText(tick.label, tick.x, bottomY + 10);
   });
 
   const firstV = points[0].v;
@@ -369,8 +368,7 @@ async function init() {
     const first = curve.points[0].v;
     const last = curve.points[curve.points.length - 1].v;
     const change = first === 0 ? 0 : (last - first) / first;
-    setText(detailEls.curveStatus, "资金曲线加载完成");
-    setText(detailEls.curveMeta, `${curve.window} / ${pct(change)}`);
+    setText(detailEls.curveStatus, `资金曲线加载完成（${curve.window}，${pct(change)}）`);
     drawCurveWithAxes(detailEls.curveCanvas, curve.points);
   } catch (err) {
     console.error(err);

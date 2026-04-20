@@ -333,8 +333,13 @@ tr:hover td {
   background: #161b27;
 }
 
-.curve-canvas.detail-curve {
-  height: 220px;
+.detail-curve-wrap {
+  padding: 12px;
+}
+
+.curve-canvas.detail-curve-canvas {
+  height: 300px;
+  width: 100%;
 }
 
 .strategy-link.external {
