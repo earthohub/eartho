@@ -90,18 +90,6 @@ async function fetchJson(url, options = {}, timeoutMs = 18_000) {
   }
 }
 
-async function fetchState(addr) {
-  return fetchJson(
-    INFO_URL,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "clearinghouseState", user: addr }),
-    },
-    20_000
-  );
-}
-
 async function fetchPortfolio(addr) {
   return fetchJson(
     INFO_URL,
@@ -151,7 +139,13 @@ function fmtDateTime(ts) {
 }
 
 function parseOpenTime(position) {
-  const candidates = [position.openTime, position.openTs, position.openTimestamp, position.time];
+  const candidates = [
+    position.openTime,
+    position.openTs,
+    position.openTimestamp,
+    position.time,
+    position.entryTime,
+  ];
   for (const ts of candidates) {
     const ms = normalizeEpochMs(ts);
     if (ms) return ms;
@@ -160,34 +154,50 @@ function parseOpenTime(position) {
 }
 
 function renderPositions(chState) {
-  const rows = (chState?.assetPositions || []).map((x) => x.position).filter(Boolean);
+  const raw = chState?.assetPositions || [];
+  const rows = raw
+    .map((x) => {
+      if (x?.position) return { dex: x.dex, position: x.position };
+      if (x?.coin || x?.szi) return { dex: "", position: x };
+      return null;
+    })
+    .filter(Boolean);
   const accountValue = num(chState?.marginSummary?.accountValue);
   if (!rows.length) {
-    setText(detailEls.positionStatus, "当前无持仓（或地址无可用持仓数据）。");
+    const hint =
+      chState?._mergedDexCount > 1
+        ? `当前无持仓（已合并 ${chState._mergedDexCount} 个永续市场；与官网不一致时请刷新）。`
+        : "当前无持仓（或地址无可用持仓数据）。";
+    setText(detailEls.positionStatus, hint);
     setHTML(detailEls.positionTableBody, "");
     return;
   }
 
-  setText(detailEls.positionStatus, `当前持仓数量：${rows.length}`);
+  const statusExtra =
+    chState?._mergedDexCount > 1 ? ` · 已合并 ${chState._mergedDexCount} 个永续市场` : "";
+  setText(detailEls.positionStatus, `当前持仓数量：${rows.length}${statusExtra}`);
   const html = rows
-    .map((p) => {
+    .map(({ dex, position: p }) => {
       const levRaw = p.leverage?.value;
       const lev =
         levRaw != null && Number.isFinite(Number(levRaw)) ? `${Number(levRaw)}x` : "-";
+      const levType = p.leverage?.type ? String(p.leverage.type) : "";
+      const levLabel = levType ? `${lev} (${levType})` : lev;
       const openMs = parseOpenTime(p);
       const marginUsed = num(p.marginUsed);
       const marginRatio = accountValue > 0 ? marginUsed / accountValue : 0;
       const pnl = num(p.unrealizedPnl);
       const pnlClass = pnl > 0 ? "pos" : pnl < 0 ? "neg" : "";
+      const coinLabel = dex && dex !== "主所" ? `${p.coin || "-"} <span class="muted">· ${dex}</span>` : (p.coin || "-");
       return `
       <tr>
-        <td>${p.coin || "-"}</td>
+        <td>${coinLabel}</td>
         <td>${sideFromSzi(p.szi)}</td>
-        <td>${fmtNum(p.szi, 5)}</td>
-        <td>${fmtPrice(p.entryPx)}</td>
+        <td class="mono">${fmtNum(p.szi, 5)}</td>
+        <td class="mono">${fmtPrice(p.entryPx)}</td>
         <td>${money(p.positionValue)}</td>
-        <td class="${pnlClass}">${moneySigned(p.unrealizedPnl)}</td>
-        <td>${lev}</td>
+        <td class="${pnlClass} mono">${moneySigned(p.unrealizedPnl)}</td>
+        <td>${levLabel}</td>
         <td>${money(p.marginUsed)}</td>
         <td>${openMs ? fmtDateTime(openMs) : "—"}</td>
         <td>${pct(marginRatio)}</td>
@@ -406,8 +416,8 @@ async function init() {
     }
     renderRow(row);
 
-    setText(detailEls.positionStatus, "加载当前持仓...");
-    const ch = await fetchState(addr);
+    setText(detailEls.positionStatus, "加载当前持仓（合并全部永续市场）...");
+    const ch = await fetchMergedClearinghouseState(addr);
     renderPositions(ch);
 
     setText(detailEls.curveStatus, "加载资金曲线...");

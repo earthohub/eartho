@@ -85,7 +85,7 @@ const els = {
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-20-snapshot-first-live-bg";
+const APP_BUILD = "2026-04-20-merge-perp-dex-clearinghouse";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -769,23 +769,11 @@ async function fetchPortfolio(address) {
   );
 }
 
-async function fetchClearinghouseState(address) {
-  return fetchJson(
-    INFO_URL,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "clearinghouseState", user: address }),
-    },
-    20_000
-  );
-}
-
 function hasOpenPosition(chState) {
   const positions = chState?.assetPositions || [];
   return positions.some((item) => {
-    const p = item?.position;
-    if (!p) return false;
+    const p = item?.position ?? item;
+    if (!p || typeof p !== "object") return false;
     const szi = Number(p.szi || 0);
     const value = Number(p.positionValue || 0);
     return Math.abs(szi) > 0 || Math.abs(value) > 0;
@@ -867,7 +855,18 @@ async function loadLivePositionFlagsForTopList() {
       while (queue.length) {
         const row = queue.shift();
         try {
-          const chState = await fetchClearinghouseState(row.address);
+          const chState =
+            typeof fetchMergedClearinghouseState === "function"
+              ? await fetchMergedClearinghouseState(row.address)
+              : await fetchJson(
+                  INFO_URL,
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ type: "clearinghouseState", user: row.address }),
+                  },
+                  20_000
+                );
           state.livePositionByAddr[row.address] = hasOpenPosition(chState);
         } catch (err) {
           // Best-effort signal; network failure should not block rendering.
