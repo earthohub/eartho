@@ -335,10 +335,12 @@ tr:hover td {
 
 .detail-curve-wrap {
   padding: 12px;
+  width: min(100%, 980px);
+  margin: 0 auto;
 }
 
 .curve-canvas.detail-curve-canvas {
-  height: 300px;
+  height: 420px;
   width: 100%;
 }
 

@@ -194,8 +194,9 @@ function parsePortfolioCurve(portfolioRaw) {
 function drawCurveWithAxes(canvas, points) {
   if (!canvas || !points || points.length < 2) return;
   const ratio = window.devicePixelRatio || 1;
-  const width = Math.max(560, Math.floor(canvas.clientWidth));
-  const height = Math.max(260, Math.floor(canvas.clientHeight));
+  const width = Math.max(320, Math.floor(canvas.clientWidth));
+  // Enforce fixed Y:X = 1:2 for detail chart readability.
+  const height = Math.max(180, Math.floor(width / 2));
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   const ctx = canvas.getContext("2d");
@@ -208,9 +209,9 @@ function drawCurveWithAxes(canvas, points) {
   const maxV = Math.max(...values);
   const span = Math.max(maxV - minV, 1e-9);
 
-  const leftPad = 96;
-  const rightPad = 24;
-  const topPad = 18;
+  const leftPad = 88;
+  const rightPad = 20;
+  const topPad = 16;
   const bottomPad = 52;
   const plotW = width - leftPad - rightPad;
   const plotH = height - topPad - bottomPad;
