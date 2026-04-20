@@ -9,7 +9,9 @@ const detailEls = {
   factorGrid: document.getElementById("factorGrid"),
   positionStatus: document.getElementById("positionStatus"),
   positionTableBody: document.getElementById("positionTableBody"),
+  positionTimeHint: document.getElementById("positionTimeHint"),
   curveStatus: document.getElementById("curveStatusDetail"),
+  curveMeta: document.getElementById("curveMetaDetail"),
   curveCanvas: document.getElementById("detailCurveCanvas"),
   linkGroup: document.getElementById("linkGroup"),
 };
@@ -19,12 +21,29 @@ function qAddr() {
   return String(q.get("addr") || "").toLowerCase();
 }
 
+function num(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
 function money(v) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(Number(v || 0));
+  }).format(num(v));
+}
+
+function moneySigned(v) {
+  const n = num(v);
+  const body = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(Math.abs(n));
+  if (n > 0) return `+${body}`;
+  if (n < 0) return `-${body}`;
+  return body;
 }
 
 function pct(v) {
@@ -72,18 +91,6 @@ async function fetchJson(url, options = {}, timeoutMs = 18_000) {
   }
 }
 
-async function fetchState(addr) {
-  return fetchJson(
-    INFO_URL,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "clearinghouseState", user: addr }),
-    },
-    20_000
-  );
-}
-
 async function fetchPortfolio(addr) {
   return fetchJson(
     INFO_URL,
@@ -104,9 +111,19 @@ function sideFromSzi(szi) {
 }
 
 function fmtNum(v, d = 4) {
-  const n = Number(v || 0);
+  if (v === null || v === undefined || v === "") return "-";
+  const n = num(v);
   if (!Number.isFinite(n)) return "-";
   return n.toFixed(d);
+}
+
+/** Entry / mark prices: compact decimals for large prices. */
+function fmtPrice(v) {
+  const n = num(v);
+  if (!Number.isFinite(n) || n <= 0) return "-";
+  if (n >= 1000) return n.toFixed(2);
+  if (n >= 1) return n.toFixed(4);
+  return n.toFixed(6);
 }
 
 function fmtDateTime(ts) {
@@ -123,7 +140,13 @@ function fmtDateTime(ts) {
 }
 
 function parseOpenTime(position) {
-  const candidates = [position.openTime, position.openTs, position.openTimestamp, position.time];
+  const candidates = [
+    position.openTime,
+    position.openTs,
+    position.openTimestamp,
+    position.time,
+    position.entryTime,
+  ];
   for (const ts of candidates) {
     const ms = normalizeEpochMs(ts);
     if (ms) return ms;
@@ -132,37 +155,101 @@ function parseOpenTime(position) {
 }
 
 function renderPositions(chState) {
-  const rows = (chState?.assetPositions || []).map((x) => x.position).filter(Boolean);
-  const accountValue = Number(chState?.marginSummary?.accountValue || 0);
+  const tbody = detailEls.positionTableBody;
+  if (!tbody) return;
+  tbody.replaceChildren();
+  if (detailEls.positionTimeHint) detailEls.positionTimeHint.hidden = true;
+
+  const raw = chState?.assetPositions || [];
+  const rows = raw
+    .map((x) => {
+      if (x?.position) return { dex: x.dex, position: x.position };
+      if (x?.coin || x?.szi) return { dex: "", position: x };
+      return null;
+    })
+    .filter(Boolean);
+  const accountValue = num(chState?.marginSummary?.accountValue);
   if (!rows.length) {
-    setText(detailEls.positionStatus, "当前无持仓（或地址无可用持仓数据）。");
-    setHTML(detailEls.positionTableBody, "");
+    const hint =
+      chState?._mergedDexCount > 1
+        ? `当前无持仓（已合并 ${chState._mergedDexCount} 个永续市场；与官网不一致时请刷新）。`
+        : "当前无持仓（或地址无可用持仓数据）。";
+    setText(detailEls.positionStatus, hint);
+    tbody.replaceChildren();
     return;
   }
 
-  setText(detailEls.positionStatus, `当前持仓数量：${rows.length}`);
-  const html = rows
-    .map((p) => {
-      const lev = p.leverage?.value != null ? `${p.leverage.value}x` : "-";
-      const openTime = parseOpenTime(p);
-      const marginUsed = Number(p.marginUsed || 0);
-      const marginRatio = accountValue > 0 ? marginUsed / accountValue : 0;
-      return `
-      <tr>
-        <td>${p.coin || "-"}</td>
-        <td>${sideFromSzi(p.szi)}</td>
-        <td>${fmtNum(p.szi, 3)}</td>
-        <td>${fmtDateTime(openTime)}</td>
-        <td>${fmtNum(p.entryPx, 6)}</td>
-        <td>${money(p.positionValue)}</td>
-        <td>${money(p.unrealizedPnl)}</td>
-        <td>${lev}</td>
-        <td>${money(p.marginUsed)}</td>
-        <td>${pct(marginRatio)}</td>
-      </tr>`;
-    })
-    .join("");
-  setHTML(detailEls.positionTableBody, html);
+  const statusExtra =
+    chState?._mergedDexCount > 1 ? ` · 已合并 ${chState._mergedDexCount} 个永续市场` : "";
+  setText(detailEls.positionStatus, `当前持仓数量：${rows.length}${statusExtra}`);
+  if (detailEls.positionTimeHint) detailEls.positionTimeHint.hidden = false;
+
+  for (const { dex, position: p } of rows) {
+    const levRaw = p.leverage?.value;
+    const lev =
+      levRaw != null && Number.isFinite(Number(levRaw)) ? `${Number(levRaw)}x` : "-";
+    const levType = p.leverage?.type ? String(p.leverage.type) : "";
+    const levLabel = levType ? `${lev} (${levType})` : lev;
+    const openMs = parseOpenTime(p);
+    const marginUsed = num(p.marginUsed);
+    const marginRatio = accountValue > 0 ? marginUsed / accountValue : 0;
+    const pnl = num(p.unrealizedPnl);
+    const pnlClass = pnl > 0 ? "pos" : pnl < 0 ? "neg" : "";
+
+    const tr = document.createElement("tr");
+
+    const tdCoin = document.createElement("td");
+    tdCoin.textContent = p.coin || "-";
+    if (dex && dex !== "主所") {
+      const span = document.createElement("span");
+      span.className = "muted";
+      span.textContent = ` · ${dex}`;
+      tdCoin.appendChild(span);
+    }
+    tr.appendChild(tdCoin);
+
+    const tdSide = document.createElement("td");
+    tdSide.textContent = sideFromSzi(p.szi);
+    tr.appendChild(tdSide);
+
+    const tdSzi = document.createElement("td");
+    tdSzi.className = "mono";
+    tdSzi.textContent = fmtNum(p.szi, 5);
+    tr.appendChild(tdSzi);
+
+    const tdEntry = document.createElement("td");
+    tdEntry.className = "mono";
+    tdEntry.textContent = fmtPrice(p.entryPx);
+    tr.appendChild(tdEntry);
+
+    const tdNtl = document.createElement("td");
+    tdNtl.textContent = money(p.positionValue);
+    tr.appendChild(tdNtl);
+
+    const tdPnl = document.createElement("td");
+    tdPnl.className = ["mono", pnlClass].filter(Boolean).join(" ");
+    tdPnl.textContent = moneySigned(p.unrealizedPnl);
+    tr.appendChild(tdPnl);
+
+    const tdLev = document.createElement("td");
+    tdLev.textContent = levLabel;
+    tr.appendChild(tdLev);
+
+    const tdMargin = document.createElement("td");
+    tdMargin.textContent = money(p.marginUsed);
+    tr.appendChild(tdMargin);
+
+    const tdOpen = document.createElement("td");
+    tdOpen.textContent = openMs ? fmtDateTime(openMs) : "—";
+    if (!openMs) tdOpen.title = "接口未返回开仓时间";
+    tr.appendChild(tdOpen);
+
+    const tdRatio = document.createElement("td");
+    tdRatio.textContent = pct(marginRatio);
+    tr.appendChild(tdRatio);
+
+    tbody.appendChild(tr);
+  }
 }
 
 function downsamplePoints(points, maxPoints = 180) {
@@ -195,8 +282,10 @@ function drawCurveWithAxes(canvas, points) {
   if (!canvas || !points || points.length < 2) return;
   const ratio = window.devicePixelRatio || 1;
   const width = Math.max(320, Math.floor(canvas.clientWidth));
-  // Enforce fixed Y:X = 1:2 for detail chart readability.
-  const height = Math.max(180, Math.floor(width / 2));
+  let height = Math.floor(canvas.clientHeight);
+  if (height < 120) {
+    height = Math.max(200, Math.floor(width / 2.15));
+  }
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   const ctx = canvas.getContext("2d");
@@ -205,14 +294,18 @@ function drawCurveWithAxes(canvas, points) {
   ctx.clearRect(0, 0, width, height);
 
   const values = points.map((p) => p.v);
-  const minV = Math.min(...values);
-  const maxV = Math.max(...values);
+  const rawMin = Math.min(...values);
+  const rawMax = Math.max(...values);
+  const rawSpan = Math.max(rawMax - rawMin, 1e-9);
+  const pad = Math.max(rawSpan * 0.08, Math.max(Math.abs(rawMax), Math.abs(rawMin)) * 1e-6);
+  const minV = rawMin - pad;
+  const maxV = rawMax + pad;
   const span = Math.max(maxV - minV, 1e-9);
 
-  const leftPad = 88;
+  const leftPad = 92;
   const rightPad = 20;
-  const topPad = 16;
-  const bottomPad = 52;
+  const topPad = 18;
+  const bottomPad = 54;
   const plotW = width - leftPad - rightPad;
   const plotH = height - topPad - bottomPad;
   const bottomY = topPad + plotH;
@@ -272,16 +365,29 @@ function drawCurveWithAxes(canvas, points) {
   const firstV = points[0].v;
   const lastV = points[points.length - 1].v;
   const positive = lastV >= firstV;
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = positive ? "#39d98a" : "#ff6b7a";
+  const lineColor = positive ? "#39d98a" : "#ff6b7a";
+  const fillTop = points.map((p, i) => ({ x: toX(i), y: toY(p.v) }));
+  ctx.lineWidth = 2.25;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.strokeStyle = lineColor;
   ctx.beginPath();
-  points.forEach((p, i) => {
-    const x = toX(i);
-    const y = toY(p.v);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+  fillTop.forEach((pt, i) => {
+    if (i === 0) ctx.moveTo(pt.x, pt.y);
+    else ctx.lineTo(pt.x, pt.y);
   });
   ctx.stroke();
+
+  const grad = ctx.createLinearGradient(0, topPad, 0, bottomY);
+  grad.addColorStop(0, positive ? "rgba(57, 217, 138, 0.22)" : "rgba(255, 107, 122, 0.2)");
+  grad.addColorStop(1, "rgba(18, 23, 34, 0)");
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.moveTo(fillTop[0].x, bottomY);
+  fillTop.forEach((pt) => ctx.lineTo(pt.x, pt.y));
+  ctx.lineTo(fillTop[fillTop.length - 1].x, bottomY);
+  ctx.closePath();
+  ctx.fill();
 }
 
 function renderRow(row) {
@@ -355,21 +461,30 @@ async function init() {
     }
     renderRow(row);
 
-    setText(detailEls.positionStatus, "加载当前持仓...");
-    const ch = await fetchState(addr);
+    setText(detailEls.positionStatus, "加载当前持仓（合并全部永续市场）...");
+    const ch = await fetchMergedClearinghouseState(addr);
     renderPositions(ch);
 
     setText(detailEls.curveStatus, "加载资金曲线...");
     const portfolioRaw = await fetchPortfolio(addr);
     const curve = parsePortfolioCurve(portfolioRaw);
     if (!curve) {
+      lastCurvePoints = null;
       setText(detailEls.curveStatus, "无可用资金曲线数据。");
+      if (detailEls.curveMeta) setText(detailEls.curveMeta, "—");
       return;
     }
     const first = curve.points[0].v;
     const last = curve.points[curve.points.length - 1].v;
     const change = first === 0 ? 0 : (last - first) / first;
     setText(detailEls.curveStatus, `资金曲线加载完成（${curve.window}，${pct(change)}）`);
+    if (detailEls.curveMeta) {
+      setText(
+        detailEls.curveMeta,
+        `${curve.window} · ${money(first)} → ${money(last)} · ${pct(change)}`
+      );
+    }
+    lastCurvePoints = curve.points;
     drawCurveWithAxes(detailEls.curveCanvas, curve.points);
   } catch (err) {
     console.error(err);
@@ -378,5 +493,12 @@ async function init() {
     setText(detailEls.curveStatus, "资金曲线加载失败。");
   }
 }
+
+let lastCurvePoints = null;
+window.addEventListener("resize", () => {
+  if (lastCurvePoints && detailEls.curveCanvas) {
+    drawCurveWithAxes(detailEls.curveCanvas, lastCurvePoints);
+  }
+});
 
 init();

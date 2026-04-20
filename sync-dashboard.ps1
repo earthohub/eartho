@@ -68,8 +68,10 @@ if ($gitReady) {
   Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
 }
 
+node --check ".\dashboard\clearinghouse-merge.js"
+node --check ".\dashboard\strategy.js"
 node --check ".\dashboard\app.js"
-OK "app.js syntax check passed"
+OK "dashboard JS syntax checks passed"
 
 Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
   Select-Object -ExpandProperty OwningProcess -Unique |

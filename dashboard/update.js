@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Hyperliquid dashboard data updater
+ * HyperRanking dashboard data updater
  * Pulls latest Mainnet leaderboard + per-address portfolio curves,
  * computes rankings, styles, rules, and writes data/latest.json.
  */

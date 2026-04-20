@@ -2,6 +2,19 @@ const DATA_URLS = {
   leaderboard: "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard",
 };
 
+/** Mainnet leaderboard payload is large; slow networks need a generous budget. */
+const LEADERBOARD_FETCH = {
+  timeoutMs: 120_000,
+  maxRetries: 5,
+  backoffMs: (attempt) => 800 * 2 ** attempt,
+};
+
+const SNAPSHOT_FETCH = {
+  timeoutMs: 25_000,
+  maxRetries: 2,
+  backoffMs: (attempt) => 400 * (attempt + 1),
+};
+
 const INFO_URL = "https://api.hyperliquid.xyz/info";
 
 const CONFIG = {
@@ -69,10 +82,14 @@ const els = {
   summaryMetrics: document.getElementById("summaryMetrics"),
   topListTemplateGrid:
     document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
+  watchlistGrid: document.getElementById("watchlistGrid"),
+  watchlistEmpty: document.getElementById("watchlistEmpty"),
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-19-top18-fallback-snapshot";
+const WATCHLIST_STORAGE_KEY = "hyperranking_watchlist_v1";
+
+const APP_BUILD = "2026-04-20-watchlist-panel";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -147,6 +164,61 @@ function normalizeAddress(addr) {
 
 function addrShort(addr) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+}
+
+function readWatchlistFromStorage() {
+  try {
+    const raw = localStorage.getItem(WATCHLIST_STORAGE_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return new Set();
+    return new Set(arr.map((a) => normalizeAddress(a)).filter(Boolean));
+  } catch {
+    return new Set();
+  }
+}
+
+function persistWatchlist(set) {
+  try {
+    localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify([...set]));
+  } catch (e) {
+    console.warn("[dashboard] watchlist persist failed", e);
+  }
+}
+
+let watchlistAddresses = readWatchlistFromStorage();
+
+function stubWatchlistRow(addr) {
+  const a = normalizeAddress(addr);
+  return {
+    address: a,
+    displayName: "",
+    accountValue: 0,
+    roiM: 0,
+    pnlM: 0,
+    vlmM: 0,
+    score: 0,
+    rank: null,
+    style: { primary: "—", secondary: "—" },
+    checklist: { entry: "—", follow: "—", stop: "—" },
+  };
+}
+
+function resolveWatchlistRows() {
+  const out = [];
+  for (const addr of watchlistAddresses) {
+    const normalized = normalizeAddress(addr);
+    const fromTop = state.topList.find((r) => r.address === normalized);
+    out.push(fromTop || stubWatchlistRow(normalized));
+  }
+  return out;
+}
+
+function mergeAddressesForPortfolio() {
+  const set = new Set();
+  for (const r of state.topList) set.add(r.address);
+  for (const a of watchlistAddresses) set.add(normalizeAddress(a));
+  return [...set];
 }
 
 function toWindowMap(windowPerformances) {
@@ -413,7 +485,8 @@ function renderSummary() {
   );
 }
 
-function renderStrategyCards(rows) {
+function renderStrategyCards(rows, opts = {}) {
+  const watchlistMode = opts.watchlistMode === true;
   return rows
     .map((row, idx) => {
       const c = row.checklist;
@@ -426,11 +499,23 @@ function renderStrategyCards(rows) {
         ? "资金曲线加载中..."
         : "无可用资金曲线";
 
+      const titleRank = watchlistMode
+        ? row.rank != null
+          ? `观察 #${row.rank}`
+          : "观察"
+        : `#${row.rank || idx + 1}`;
+      const inWatch = watchlistAddresses.has(normalizeAddress(row.address));
+      const watchControls = watchlistMode
+        ? `<button type="button" class="btn btn-tiny btn-watch danger" data-action="watchlist-remove" data-addr="${row.address}">移出观察库</button>`
+        : inWatch
+        ? `<button type="button" class="btn btn-tiny btn-watch ghost" data-action="watchlist-remove" data-addr="${row.address}">已加入</button>`
+        : `<button type="button" class="btn btn-tiny btn-watch accent" data-action="watchlist-add" data-addr="${row.address}">加入观察库</button>`;
+
       return `
       <article class="strategy-card ${hasLivePosition ? "has-live-position" : ""}">
         <div class="strategy-head">
           <div>
-            <div class="strategy-title">#${row.rank || idx + 1} ${
+            <div class="strategy-title">${titleRank} ${
               row.displayName || addrShort(row.address)
             }</div>
             <div class="mono muted">${row.address}</div>
@@ -438,6 +523,7 @@ function renderStrategyCards(rows) {
           <div class="strategy-head-right">
             ${hasLivePosition ? '<div class="live-position-pill">持仓中</div>' : ""}
             <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
+            ${watchControls}
             <a class="strategy-link local" href="./strategy.html?addr=${encodeURIComponent(
               row.address
             )}" target="_blank" rel="noopener noreferrer">策略详情</a>
@@ -504,7 +590,18 @@ function pickTopWithMidBandQuota(rows, limit, bandConfig) {
 }
 
 function renderTopListTemplateCards() {
-  safeSetHTML(els.topListTemplateGrid, renderStrategyCards(state.topList));
+  safeSetHTML(els.topListTemplateGrid, renderStrategyCards(state.topList, { watchlistMode: false }));
+}
+
+function renderWatchlistSection() {
+  if (!els.watchlistGrid) return;
+  const rows = resolveWatchlistRows();
+  if (els.watchlistEmpty) els.watchlistEmpty.hidden = rows.length > 0;
+  if (rows.length === 0) {
+    els.watchlistGrid.innerHTML = "";
+    return;
+  }
+  safeSetHTML(els.watchlistGrid, renderStrategyCards(rows, { watchlistMode: true }));
 }
 
 function drawSparkline(canvas, points, positive) {
@@ -706,13 +803,18 @@ function renderCurveStatus() {
 
 function renderAll() {
   renderSummary();
+  renderWatchlistSection();
   renderTopListTemplateCards();
   renderCurveStatus();
   renderCurves();
 }
 
-async function fetchJson(url, options = {}, timeoutMs = 15_000) {
-  const maxRetries = 2;
+async function fetchJson(url, options = {}, timeoutMs = 15_000, retryOpts) {
+  const maxRetries = retryOpts?.maxRetries ?? 2;
+  const backoffMs =
+    typeof retryOpts?.backoffMs === "function"
+      ? retryOpts.backoffMs
+      : (attempt) => 500 * (attempt + 1);
   let lastErr = null;
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
     const ctrl = new AbortController();
@@ -732,7 +834,7 @@ async function fetchJson(url, options = {}, timeoutMs = 15_000) {
         (err?.name === "AbortError" ||
           /failed to fetch|network|aborted|load failed/i.test(String(lastErr.message || "")));
       if (!retryable) throw lastErr;
-      await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+      await new Promise((resolve) => setTimeout(resolve, backoffMs(attempt)));
     } finally {
       clearTimeout(t);
     }
@@ -752,23 +854,11 @@ async function fetchPortfolio(address) {
   );
 }
 
-async function fetchClearinghouseState(address) {
-  return fetchJson(
-    INFO_URL,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "clearinghouseState", user: address }),
-    },
-    20_000
-  );
-}
-
 function hasOpenPosition(chState) {
   const positions = chState?.assetPositions || [];
   return positions.some((item) => {
-    const p = item?.position;
-    if (!p) return false;
+    const p = item?.position ?? item;
+    if (!p || typeof p !== "object") return false;
     const szi = Number(p.szi || 0);
     const value = Number(p.positionValue || 0);
     return Math.abs(szi) > 0 || Math.abs(value) > 0;
@@ -803,28 +893,29 @@ function parsePortfolioCurve(portfolioRaw) {
 }
 
 async function loadCurvesForTopList() {
+  const addrs = mergeAddressesForPortfolio();
   state.curves = {};
   state.curveLoading = true;
-  state.curveProgress = { done: 0, total: state.topList.length, success: 0, failed: 0 };
+  state.curveProgress = { done: 0, total: addrs.length, success: 0, failed: 0 };
   renderCurveStatus();
   renderCurves();
 
-  const queue = [...state.topList];
-  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
+  const queue = [...addrs];
+  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, Math.max(queue.length, 1)) }).map(
     async () => {
       while (queue.length) {
-        const row = queue.shift();
+        const addr = queue.shift();
         try {
-          const raw = await fetchPortfolio(row.address);
+          const raw = await fetchPortfolio(addr);
           const curve = parsePortfolioCurve(raw);
           if (curve) {
-            state.curves[row.address] = curve;
+            state.curves[addr] = curve;
             state.curveProgress.success += 1;
           } else {
             state.curveProgress.failed += 1;
           }
         } catch (err) {
-          console.warn(`资金曲线获取失败: ${row.address}`, err);
+          console.warn(`资金曲线获取失败: ${addr}`, err);
           state.curveProgress.failed += 1;
         } finally {
           state.curveProgress.done += 1;
@@ -844,17 +935,29 @@ async function loadLivePositionFlagsForTopList() {
   state.livePositionByAddr = {};
   renderAll();
 
-  const queue = [...state.topList];
-  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
+  const addrs = mergeAddressesForPortfolio();
+  const queue = [...addrs];
+  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, Math.max(queue.length, 1)) }).map(
     async () => {
       while (queue.length) {
-        const row = queue.shift();
+        const addr = queue.shift();
         try {
-          const chState = await fetchClearinghouseState(row.address);
-          state.livePositionByAddr[row.address] = hasOpenPosition(chState);
+          const chState =
+            typeof fetchMergedClearinghouseState === "function"
+              ? await fetchMergedClearinghouseState(addr)
+              : await fetchJson(
+                  INFO_URL,
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ type: "clearinghouseState", user: addr }),
+                  },
+                  20_000
+                );
+          state.livePositionByAddr[addr] = hasOpenPosition(chState);
         } catch (err) {
           // Best-effort signal; network failure should not block rendering.
-          state.livePositionByAddr[row.address] = false;
+          state.livePositionByAddr[addr] = false;
         } finally {
           renderAll();
         }
@@ -865,58 +968,105 @@ async function loadLivePositionFlagsForTopList() {
   await Promise.all(workers);
 }
 
-async function recompute() {
+function applyLeaderboardRaw(leaderboardRaw) {
+  const rowsAll = (leaderboardRaw.leaderboardRows || []).map(toRow);
+  const filtered = rowsAll.filter((r) => r.address && !EXCLUDED_ADDRESSES.has(r.address));
+  const eligible = filtered.filter(
+    (r) => r.accountValue >= CONFIG.minAccountValue && r.vlmM >= CONFIG.minMonthVolume
+  );
+
+  scoreRows(eligible);
+  const coreCandidates = eligible.filter((r) => r.isCoreEligible);
+  const topList = pickTopWithMidBandQuota(coreCandidates, CONFIG.topN, CONFIG.midAccountBand);
+  topList.forEach((row, i) => {
+    row.rank = i + 1;
+    row.style = classifyStyle(row);
+    row.checklist = buildChecklistByStyle(row);
+  });
+
+  state.topList = topList;
+  state.lastUpdatedAt = Date.now();
+  state.summary = {
+    totalRows: rowsAll.length,
+    filteredRows: filtered.length,
+    eligibleCount: eligible.length,
+    coreCount: coreCandidates.length,
+    topNTotalAccount: state.topList.reduce((acc, r) => acc + r.accountValue, 0),
+    midBandCount: state.topList.filter(
+      (r) => r.accountValue >= CONFIG.midAccountBand.min && r.accountValue <= CONFIG.midAccountBand.max
+    ).length,
+  };
+}
+
+async function refreshFromLiveLeaderboard() {
+  const leaderboardRaw = await fetchJson(
+    DATA_URLS.leaderboard,
+    {},
+    LEADERBOARD_FETCH.timeoutMs,
+    {
+      maxRetries: LEADERBOARD_FETCH.maxRetries,
+      backoffMs: LEADERBOARD_FETCH.backoffMs,
+    }
+  );
+  applyLeaderboardRaw(leaderboardRaw);
+  renderAll();
+  await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
+}
+
+async function loadSnapshotAndRenderCurves() {
+  const snapshot = await fetchJson(
+    "./data/latest.json",
+    {},
+    SNAPSHOT_FETCH.timeoutMs,
+    {
+      maxRetries: SNAPSHOT_FETCH.maxRetries,
+      backoffMs: SNAPSHOT_FETCH.backoffMs,
+    }
+  );
+  if (!hydrateStateFromSnapshot(snapshot)) return false;
+  renderAll();
+  await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
+  return true;
+}
+
+async function recompute(fromUserClick = false) {
   if (els.refreshBtn) els.refreshBtn.disabled = true;
-  safeSetText(els.statusText, "正在更新数据，请稍候...");
+  safeSetText(
+    els.statusText,
+    fromUserClick ? "正在从排行榜拉取最新数据..." : "正在加载本地快照..."
+  );
   try {
-    const leaderboardRaw = await fetchJson(DATA_URLS.leaderboard);
-    const rowsAll = (leaderboardRaw.leaderboardRows || []).map(toRow);
-    const filtered = rowsAll.filter((r) => r.address && !EXCLUDED_ADDRESSES.has(r.address));
-    const eligible = filtered.filter(
-      (r) => r.accountValue >= CONFIG.minAccountValue && r.vlmM >= CONFIG.minMonthVolume
-    );
-
-    scoreRows(eligible);
-    const coreCandidates = eligible.filter((r) => r.isCoreEligible);
-    const topList = pickTopWithMidBandQuota(coreCandidates, CONFIG.topN, CONFIG.midAccountBand);
-    topList.forEach((row, i) => {
-      row.rank = i + 1;
-      row.style = classifyStyle(row);
-      row.checklist = buildChecklistByStyle(row);
-    });
-
-    state.topList = topList;
-    state.lastUpdatedAt = Date.now();
-    state.summary = {
-      totalRows: rowsAll.length,
-      filteredRows: filtered.length,
-      eligibleCount: eligible.length,
-      coreCount: coreCandidates.length,
-      topNTotalAccount: state.topList.reduce((acc, r) => acc + r.accountValue, 0),
-      midBandCount: state.topList.filter(
-        (r) => r.accountValue >= CONFIG.midAccountBand.min && r.accountValue <= CONFIG.midAccountBand.max
-      ).length,
-    };
-
-    renderAll();
-    await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
-  } catch (err) {
-    console.error(err);
-    try {
-      const snapshot = await fetchJson("./data/latest.json", {}, 8_000);
-      if (hydrateStateFromSnapshot(snapshot)) {
+    if (fromUserClick) {
+      try {
+        await refreshFromLiveLeaderboard();
+      } catch (err) {
+        console.error(err);
+        const ok = await loadSnapshotAndRenderCurves();
+        if (!ok) {
+          safeSetText(els.statusText, `更新失败：${err.message}`);
+          return;
+        }
         safeSetText(
           els.statusText,
-          `实时数据拉取失败，已回退到本地快照（${new Date(state.lastUpdatedAt).toLocaleString()}）`
+          `实时排行榜不可用，已回退到本地快照（${new Date(state.lastUpdatedAt).toLocaleString()}）`
         );
-        renderAll();
-        await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
+      }
+    } else {
+      const snapOk = await loadSnapshotAndRenderCurves();
+      if (!snapOk) {
+        safeSetText(els.statusText, "本地快照不可用，正在尝试实时排行榜...");
+        try {
+          await refreshFromLiveLeaderboard();
+        } catch (e) {
+          console.error(e);
+          safeSetText(els.statusText, `加载失败：${e.message}`);
+        }
         return;
       }
-    } catch (fallbackErr) {
-      console.warn("fallback snapshot load failed", fallbackErr);
+      void refreshFromLiveLeaderboard().catch((e) =>
+        console.warn("background leaderboard sync failed", e)
+      );
     }
-    safeSetText(els.statusText, `更新失败：${err.message}`);
   } finally {
     if (els.refreshBtn) els.refreshBtn.disabled = false;
   }
@@ -949,7 +1099,27 @@ window.addEventListener("resize", () => {
   }, 120);
 });
 
-if (els.refreshBtn) els.refreshBtn.addEventListener("click", recompute);
+if (els.refreshBtn) els.refreshBtn.addEventListener("click", () => recompute(true));
 if (els.exportBtn) els.exportBtn.addEventListener("click", exportJson);
 
-recompute();
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-action^='watchlist-']");
+  if (!btn) return;
+  const addr = btn.getAttribute("data-addr");
+  if (!addr) return;
+  const normalized = normalizeAddress(addr);
+  const action = btn.getAttribute("data-action");
+  if (action === "watchlist-add") {
+    watchlistAddresses.add(normalized);
+  } else if (action === "watchlist-remove") {
+    watchlistAddresses.delete(normalized);
+  } else {
+    return;
+  }
+  persistWatchlist(watchlistAddresses);
+  renderAll();
+  void loadCurvesForTopList();
+  void loadLivePositionFlagsForTopList();
+});
+
+recompute(false);

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>策略详情 - Hyperliquid 跟单面板</title>
+    <title>策略详情 - HyperRanking</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -46,7 +46,19 @@
         <h2>当前持仓（清晰明细）</h2>
         <div id="positionStatus" class="hint">准备加载持仓...</div>
         <div class="table-wrap">
-          <table class="data-table">
+          <table class="data-table strategy-pos-table">
+            <colgroup>
+              <col class="col-coin" />
+              <col class="col-side" />
+              <col class="col-szi" />
+              <col class="col-entry" />
+              <col class="col-ntl" />
+              <col class="col-pnl" />
+              <col class="col-lev" />
+              <col class="col-margin" />
+              <col class="col-time" />
+              <col class="col-ratio" />
+            </colgroup>
             <thead>
               <tr>
                 <th>币种</th>
@@ -63,6 +75,9 @@
             </thead>
             <tbody id="positionTableBody"></tbody>
           </table>
+          <p id="positionTimeHint" class="hint tight" hidden>
+            开仓时间：`clearinghouseState` 的持仓对象通常不含开仓时间字段，未返回时显示「—」。
+          </p>
         </div>
       </section>
 
@@ -74,7 +89,7 @@
             <div class="curve-title">资金曲线</div>
             <div id="curveMetaDetail" class="curve-meta">--</div>
           </div>
-          <canvas id="detailCurveCanvas" class="curve-canvas detail-curve"></canvas>
+          <canvas id="detailCurveCanvas" class="curve-canvas detail-curve detail-curve-canvas"></canvas>
         </div>
       </section>
 
@@ -84,6 +99,7 @@
       </section>
     </main>
 
+    <script src="./clearinghouse-merge.js"></script>
     <script src="./strategy.js"></script>
   </body>
 </html>

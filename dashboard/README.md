@@ -1,4 +1,4 @@
-# Hyperliquid 私人跟踪面板
+# HyperRanking
 
 这个目录包含一个独立的“私有跟踪网页”，用于展示：
 
