@@ -4,9 +4,15 @@ const DATA_URLS = {
 
 /** Mainnet leaderboard payload is large; slow networks need a generous budget. */
 const LEADERBOARD_FETCH = {
-  timeoutMs: 90_000,
-  maxRetries: 4,
+  timeoutMs: 120_000,
+  maxRetries: 5,
   backoffMs: (attempt) => 800 * 2 ** attempt,
+};
+
+const SNAPSHOT_FETCH = {
+  timeoutMs: 25_000,
+  maxRetries: 2,
+  backoffMs: (attempt) => 400 * (attempt + 1),
 };
 
 const INFO_URL = "https://api.hyperliquid.xyz/info";
@@ -79,7 +85,7 @@ const els = {
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-20-leaderboard-timeout-90s";
+const APP_BUILD = "2026-04-20-snapshot-first-live-bg";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -876,66 +882,105 @@ async function loadLivePositionFlagsForTopList() {
   await Promise.all(workers);
 }
 
-async function recompute() {
+function applyLeaderboardRaw(leaderboardRaw) {
+  const rowsAll = (leaderboardRaw.leaderboardRows || []).map(toRow);
+  const filtered = rowsAll.filter((r) => r.address && !EXCLUDED_ADDRESSES.has(r.address));
+  const eligible = filtered.filter(
+    (r) => r.accountValue >= CONFIG.minAccountValue && r.vlmM >= CONFIG.minMonthVolume
+  );
+
+  scoreRows(eligible);
+  const coreCandidates = eligible.filter((r) => r.isCoreEligible);
+  const topList = pickTopWithMidBandQuota(coreCandidates, CONFIG.topN, CONFIG.midAccountBand);
+  topList.forEach((row, i) => {
+    row.rank = i + 1;
+    row.style = classifyStyle(row);
+    row.checklist = buildChecklistByStyle(row);
+  });
+
+  state.topList = topList;
+  state.lastUpdatedAt = Date.now();
+  state.summary = {
+    totalRows: rowsAll.length,
+    filteredRows: filtered.length,
+    eligibleCount: eligible.length,
+    coreCount: coreCandidates.length,
+    topNTotalAccount: state.topList.reduce((acc, r) => acc + r.accountValue, 0),
+    midBandCount: state.topList.filter(
+      (r) => r.accountValue >= CONFIG.midAccountBand.min && r.accountValue <= CONFIG.midAccountBand.max
+    ).length,
+  };
+}
+
+async function refreshFromLiveLeaderboard() {
+  const leaderboardRaw = await fetchJson(
+    DATA_URLS.leaderboard,
+    {},
+    LEADERBOARD_FETCH.timeoutMs,
+    {
+      maxRetries: LEADERBOARD_FETCH.maxRetries,
+      backoffMs: LEADERBOARD_FETCH.backoffMs,
+    }
+  );
+  applyLeaderboardRaw(leaderboardRaw);
+  renderAll();
+  await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
+}
+
+async function loadSnapshotAndRenderCurves() {
+  const snapshot = await fetchJson(
+    "./data/latest.json",
+    {},
+    SNAPSHOT_FETCH.timeoutMs,
+    {
+      maxRetries: SNAPSHOT_FETCH.maxRetries,
+      backoffMs: SNAPSHOT_FETCH.backoffMs,
+    }
+  );
+  if (!hydrateStateFromSnapshot(snapshot)) return false;
+  renderAll();
+  await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
+  return true;
+}
+
+async function recompute(fromUserClick = false) {
   if (els.refreshBtn) els.refreshBtn.disabled = true;
-  safeSetText(els.statusText, "正在更新数据，请稍候...");
+  safeSetText(
+    els.statusText,
+    fromUserClick ? "正在从排行榜拉取最新数据..." : "正在加载本地快照..."
+  );
   try {
-    const leaderboardRaw = await fetchJson(
-      DATA_URLS.leaderboard,
-      {},
-      LEADERBOARD_FETCH.timeoutMs,
-      {
-        maxRetries: LEADERBOARD_FETCH.maxRetries,
-        backoffMs: LEADERBOARD_FETCH.backoffMs,
-      }
-    );
-    const rowsAll = (leaderboardRaw.leaderboardRows || []).map(toRow);
-    const filtered = rowsAll.filter((r) => r.address && !EXCLUDED_ADDRESSES.has(r.address));
-    const eligible = filtered.filter(
-      (r) => r.accountValue >= CONFIG.minAccountValue && r.vlmM >= CONFIG.minMonthVolume
-    );
-
-    scoreRows(eligible);
-    const coreCandidates = eligible.filter((r) => r.isCoreEligible);
-    const topList = pickTopWithMidBandQuota(coreCandidates, CONFIG.topN, CONFIG.midAccountBand);
-    topList.forEach((row, i) => {
-      row.rank = i + 1;
-      row.style = classifyStyle(row);
-      row.checklist = buildChecklistByStyle(row);
-    });
-
-    state.topList = topList;
-    state.lastUpdatedAt = Date.now();
-    state.summary = {
-      totalRows: rowsAll.length,
-      filteredRows: filtered.length,
-      eligibleCount: eligible.length,
-      coreCount: coreCandidates.length,
-      topNTotalAccount: state.topList.reduce((acc, r) => acc + r.accountValue, 0),
-      midBandCount: state.topList.filter(
-        (r) => r.accountValue >= CONFIG.midAccountBand.min && r.accountValue <= CONFIG.midAccountBand.max
-      ).length,
-    };
-
-    renderAll();
-    await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
-  } catch (err) {
-    console.error(err);
-    try {
-      const snapshot = await fetchJson("./data/latest.json", {}, 15_000);
-      if (hydrateStateFromSnapshot(snapshot)) {
+    if (fromUserClick) {
+      try {
+        await refreshFromLiveLeaderboard();
+      } catch (err) {
+        console.error(err);
+        const ok = await loadSnapshotAndRenderCurves();
+        if (!ok) {
+          safeSetText(els.statusText, `更新失败：${err.message}`);
+          return;
+        }
         safeSetText(
           els.statusText,
-          `实时数据拉取失败，已回退到本地快照（${new Date(state.lastUpdatedAt).toLocaleString()}）`
+          `实时排行榜不可用，已回退到本地快照（${new Date(state.lastUpdatedAt).toLocaleString()}）`
         );
-        renderAll();
-        await Promise.all([loadCurvesForTopList(), loadLivePositionFlagsForTopList()]);
+      }
+    } else {
+      const snapOk = await loadSnapshotAndRenderCurves();
+      if (!snapOk) {
+        safeSetText(els.statusText, "本地快照不可用，正在尝试实时排行榜...");
+        try {
+          await refreshFromLiveLeaderboard();
+        } catch (e) {
+          console.error(e);
+          safeSetText(els.statusText, `加载失败：${e.message}`);
+        }
         return;
       }
-    } catch (fallbackErr) {
-      console.warn("fallback snapshot load failed", fallbackErr);
+      void refreshFromLiveLeaderboard().catch((e) =>
+        console.warn("background leaderboard sync failed", e)
+      );
     }
-    safeSetText(els.statusText, `更新失败：${err.message}`);
   } finally {
     if (els.refreshBtn) els.refreshBtn.disabled = false;
   }
@@ -968,7 +1013,7 @@ window.addEventListener("resize", () => {
   }, 120);
 });
 
-if (els.refreshBtn) els.refreshBtn.addEventListener("click", recompute);
+if (els.refreshBtn) els.refreshBtn.addEventListener("click", () => recompute(true));
 if (els.exportBtn) els.exportBtn.addEventListener("click", exportJson);
 
-recompute();
+recompute(false);
