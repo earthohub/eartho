@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <title>廖浩先的 12 岁生日宇宙</title>
+    <link rel="stylesheet" href="assets/css/index.css" />
+  </head>
+  <body>
+    <header
+      class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-primary/90 to-primary/70 backdrop-blur-md border-b border-secondary/30 transition-all duration-300"
+    >
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="text-2xl font-bold text-white">HX's Space & LEGO Lab</div>
+          </div>
+          <div class="hidden md:flex items-center gap-8">
+            <a href="#about" class="text-white hover:text-secondary transition-colors font-medium">关于我</a>
+            <a href="#lego-world" class="text-white hover:text-secondary transition-colors font-medium">我的乐高世界</a>
+            <a href="#nasa-projects" class="text-white hover:text-secondary transition-colors font-medium">NASA 发射项目</a>
+            <a href="#birthday" class="text-white hover:text-secondary transition-colors font-medium">生日专区</a>
+            <a
+              href="#blessings"
+              class="bg-secondary hover:bg-orange-600 text-primary px-6 py-2 rounded-full font-medium transition-colors"
+              >留言祝福</a
+            >
+          </div>
+          <button class="md:hidden text-white p-2" id="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-secondary/30 pt-4">
+          <a href="#about" class="block text-white hover:text-secondary transition-colors font-medium py-2">关于我</a>
+          <a href="#lego-world" class="block text-white hover:text-secondary transition-colors font-medium py-2">我的乐高世界</a>
+          <a href="#nasa-projects" class="block text-white hover:text-secondary transition-colors font-medium py-2">NASA 发射项目</a>
+          <a href="#birthday" class="block text-white hover:text-secondary transition-colors font-medium py-2">生日专区</a>
+          <a
+            href="#blessings"
+            class="block bg-secondary hover:bg-orange-600 text-primary px-6 py-2 rounded-full font-medium transition-colors mt-2 text-center"
+            >留言祝福</a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <main class="pt-20">
+      <section id="hero" class="min-h-screen relative overflow-hidden pt-0">
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-700"></div>
+        <div class="absolute inset-0" id="stars" aria-hidden="true"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-screen flex items-center">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full items-center">
+            <div class="text-white animate-fade-up">
+              <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                廖浩先的
+                <br />
+                <span class="text-secondary">12 岁生日宇宙</span>
+              </h1>
+              <p class="text-xl md:text-2xl mb-8 text-blue-100">喜欢乐高和 NASA 的 11 岁少年，倒计时迎接 12 岁发射！</p>
+              <div class="flex gap-4 flex-wrap">
+                <a href="#lego-world" class="bg-secondary hover:bg-orange-600 text-primary px-8 py-4 rounded-full font-bold transition-colors transform hover:scale-105">
+                  探索我的乐高世界
+                </a>
+                <a href="#nasa-projects" class="bg-accent hover:bg-red-700 text-white px-8 py-4 rounded-full font-bold transition-colors transform hover:scale-105">
+                  看看最新 NASA 发射项目
+                </a>
+              </div>
+            </div>
+            <div class="flex justify-center animate-float">
+              <img
+                src="assets/img/a8017254-2fbf-11f1-94d7-0242ac110002-1H4REUcdOhLkix7TJ22W3.jpg"
+                alt="乐高火箭发射场景"
+                class="max-w-md w-full h-auto drop-shadow-2xl"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="flex justify-center">
+              <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-secondary to-accent rounded-3xl blur-lg opacity-20"></div>
+                <img
+                  src="assets/img/a839c3fa-2fbf-11f1-88ae-0242ac110002-mSV3EMBlz33pKp8-EKIG2.jpg"
+                  alt="廖浩先的照片"
+                  class="relative w-64 h-64 rounded-3xl object-cover border-4 border-primary shadow-xl"
+                />
+              </div>
+            </div>
+            <div>
+              <h2 class="text-4xl font-bold text-primary mb-6">关于我</h2>
+              <p class="text-lg text-foreground/80 leading-relaxed mb-6">
+                大家好，我叫廖浩先，今年 11 岁，很快就要 12 岁了。我最喜欢乐高和 NASA，喜欢自己搭建各种飞船、基地，也喜欢关注最新的 NASA 发射项目。
+              </p>
+              <p class="text-lg text-foreground/80 leading-relaxed mb-6">
+                这个网站是为我的 12 岁生日准备的，想和大家分享我的兴趣。通过这里，你可以看到我最喜欢的乐高创意作品，还能了解到 NASA 正在进行的太空探索任务。
+              </p>
+              <div class="flex gap-4 flex-wrap">
+                <div class="bg-secondary/20 border-l-4 border-secondary px-4 py-3 rounded">
+                  <p class="font-bold text-primary">🎂 倒计时</p>
+                  <p class="text-sm text-foreground/70">即将成为 12 岁少年</p>
+                </div>
+                <div class="bg-accent/20 border-l-4 border-accent px-4 py-3 rounded">
+                  <p class="font-bold text-primary">🚀 热爱</p>
+                  <p class="text-sm text-foreground/70">乐高和 NASA 太空探索</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="lego-world" class="py-20 bg-muted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-primary mb-4">我的乐高世界</h2>
+            <p class="text-xl text-foreground/70">这里是我最喜欢的一些乐高作品，很多都和太空、火箭有关。</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
+              <img
+                src="assets/img/a7ecc7a1-2fbf-11f1-ba86-0242ac110002-FFdGy4l-Me3GzVtmdQH77.jpg"
+                alt="乐高火箭发射台"
+                class="w-full h-48 object-cover"
+              />
+              <div class="p-6">
+                <h3 class="text-2xl font-bold text-primary mb-2">火箭发射台</h3>
+                <p class="text-foreground/70">
+                  我用五彩缤纷的乐高积木搭建的太空火箭发射台，包括滑梯、控制室和可活动的火箭。
+                </p>
+              </div>
+            </div>
+            <div class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
+              <img
+                src="assets/img/a7ed8fd5-2fbf-11f1-90de-0242ac110002-bf_cvZtsVPFbZHCFMmqN2.jpg"
+                alt="乐高月球基地"
+                class="w-full h-48 object-cover"
+              />
+              <div class="p-6">
+                <h3 class="text-2xl font-bold text-primary mb-2">月球基地</h3>
+                <p class="text-foreground/70">一个完整的月球探索基地，有居住舱、科研设备、小宇航员和月球车。非常酷！</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
+              <img
+                src="assets/img/a7f38ca0-2fbf-11f1-b1dc-0242ac110002-36zBhrmhmV1heOFTIBqI4.jpg"
+                alt="乐高太空探测车"
+                class="w-full h-48 object-cover"
+              />
+              <div class="p-6">
+                <h3 class="text-2xl font-bold text-primary mb-2">太空探测车</h3>
+                <p class="text-foreground/70">灵感来自 NASA 的火星探测车，配备了太阳能板、摄像头和科研仪器。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="nasa-projects" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-primary mb-4">最新的 NASA 发射项目</h2>
+            <p class="text-xl text-foreground/70">我很喜欢关注 NASA 的发射任务，这里记录了一些我觉得很酷的发射项目。</p>
+          </div>
+          <div class="space-y-6">
+            <div class="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8 border border-primary/20 hover:border-secondary hover:shadow-lg transition-all">
+              <div class="flex gap-6 items-start flex-col sm:flex-row">
+                <img
+                  src="assets/img/a827d347-2fbf-11f1-a94a-0242ac110002-RhctLw-4X9H6O8H3Kwm1C.jpg"
+                  alt="SpaceX 猎鹰 9 号火箭"
+                  class="w-32 h-32 object-cover rounded-xl flex-shrink-0"
+                />
+                <div>
+                  <h3 class="text-2xl font-bold text-primary mb-2">SpaceX Falcon 9 火箭</h3>
+                  <p class="text-foreground/70 mb-3">
+                    龙飞船和猎鹰 9 号火箭是目前最先进的商业航天器，多次完成往返空间站的任务。这是真正的太空探索！
+                  </p>
+                  <p class="text-sm text-secondary font-semibold">🚀 商业航天的里程碑</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8 border border-primary/20 hover:border-secondary hover:shadow-lg transition-all">
+              <div class="flex gap-6 items-start flex-col sm:flex-row">
+                <img
+                  src="assets/img/a7dcd678-2fbf-11f1-856a-0242ac110002-e3brW9Y-ZzRe5oggXvl3R.jpg"
+                  alt="NASA 毅力号火星车"
+                  class="w-32 h-32 object-cover rounded-xl flex-shrink-0"
+                />
+                <div>
+                  <h3 class="text-2xl font-bold text-primary mb-2">毅力号火星探测车</h3>
+                  <p class="text-foreground/70 mb-3">
+                    毅力号是 NASA 最新的火星探测车，可以采集火星样本，寻找微生物生命的迹象。我梦想有一天能看到它的发现！
+                  </p>
+                  <p class="text-sm text-secondary font-semibold">🔴 火星探索的未来</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8 border border-primary/20 hover:border-secondary hover:shadow-lg transition-all">
+              <div class="flex gap-6 items-start flex-col sm:flex-row">
+                <img
+                  src="assets/img/a87e9ed1-2fbf-11f1-bc12-0242ac110002-vk2XhhE1boHpnKGxkfL1N.jpg"
+                  alt="詹姆斯·韦伯太空望远镜"
+                  class="w-32 h-32 object-cover rounded-xl flex-shrink-0"
+                />
+                <div>
+                  <h3 class="text-2xl font-bold text-primary mb-2">詹姆斯·韦伯太空望远镜</h3>
+                  <p class="text-foreground/70 mb-3">
+                    这是人类有史以来最强大的太空望远镜，正在观测宇宙最古老的星系。通过它，我们能看到宇宙的起源！
+                  </p>
+                  <p class="text-sm text-secondary font-semibold">🌌 观测宇宙的窗口</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="birthday" class="py-20 bg-gradient-to-b from-secondary/20 to-accent/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-primary mb-4">12 岁生日倒计时</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="bg-white rounded-3xl p-12 shadow-lg text-center">
+              <p class="text-lg text-foreground/70 mb-8">距离我 12 岁生日还有</p>
+              <div id="countdown" class="grid grid-cols-4 gap-4 mb-8">
+                <div class="bg-primary rounded-xl p-6">
+                  <div class="text-3xl font-bold text-white" id="days">--</div>
+                  <div class="text-sm text-primary-foreground">天</div>
+                </div>
+                <div class="bg-secondary rounded-xl p-6">
+                  <div class="text-3xl font-bold text-primary" id="hours">--</div>
+                  <div class="text-sm text-secondary-foreground">小时</div>
+                </div>
+                <div class="bg-accent rounded-xl p-6">
+                  <div class="text-3xl font-bold text-white" id="minutes">--</div>
+                  <div class="text-sm text-accent-foreground">分钟</div>
+                </div>
+                <div class="bg-blue-500 rounded-xl p-6">
+                  <div class="text-3xl font-bold text-white" id="seconds">--</div>
+                  <div class="text-sm text-white">秒</div>
+                </div>
+              </div>
+              <p class="text-primary font-semibold text-lg">让我们一起倒计时！</p>
+            </div>
+            <div class="bg-white rounded-3xl p-12 shadow-lg">
+              <h3 class="text-2xl font-bold text-primary mb-8">12 岁生日愿望清单</h3>
+              <ul class="space-y-4">
+                <li class="flex items-start gap-3">
+                  <span class="text-2xl">📦</span>
+                  <span class="text-lg text-foreground/80">一套超大型乐高创意组合</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-2xl">🚀</span>
+                  <span class="text-lg text-foreground/80">参观航天科技馆或航天发射基地</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-2xl">🔭</span>
+                  <span class="text-lg text-foreground/80">一架天文望远镜，观察月亮和行星</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-2xl">🎓</span>
+                  <span class="text-lg text-foreground/80">参加航天科学夏令营</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-2xl">🎉</span>
+                  <span class="text-lg text-foreground/80">和好朋友们一起庆祝生日派对</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="blessings" class="py-20 bg-white">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-primary mb-4">给我留一句生日祝福吧！</h2>
+            <p class="text-xl text-foreground/70">期待收到你的祝福和建议，谢谢！</p>
+          </div>
+          <div class="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl p-12 border border-primary/20">
+            <form id="blessing-form" class="space-y-6">
+              <div>
+                <label for="name" class="block text-lg font-semibold text-primary mb-2">
+                  你的名字 <span class="text-accent">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="your_name"
+                  required
+                  class="w-full px-4 py-3 rounded-xl border-2 border-primary/30 focus:border-primary focus:outline-none text-foreground"
+                  placeholder="请输入你的名字"
+                  autocomplete="name"
+                />
+              </div>
+              <div>
+                <label for="message" class="block text-lg font-semibold text-primary mb-2">
+                  祝福内容 <span class="text-accent">*</span>
+                </label>
+                <textarea
+                  id="message"
+                  name="blessing_message"
+                  required
+                  rows="6"
+                  class="w-full px-4 py-3 rounded-xl border-2 border-primary/30 focus:border-primary focus:outline-none text-foreground resize-none"
+                  placeholder="写下你的生日祝福..."
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 text-lg"
+              >
+                🎉 提交祝福
+              </button>
+            </form>
+            <div id="form-done" class="hidden mt-6 p-4 bg-green-100 text-green-800 rounded-xl border border-green-300">
+              <p class="font-semibold">感谢你的祝福！✨</p>
+              <p>你的留言已成功记录（本地预览）。在线站点提交后我会很快看到！</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-gradient-to-t from-primary to-primary/95 text-white py-12 mt-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          <div>
+            <h3 class="text-2xl font-bold mb-4">HX's Space & LEGO Lab</h3>
+            <p class="text-primary-foreground/80">廖浩先的 12 岁生日主题个人页面，展示对乐高和 NASA 的热情。</p>
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+            <ul class="space-y-2">
+              <li><a href="#about" class="hover:text-secondary transition-colors">关于我</a></li>
+              <li><a href="#lego-world" class="hover:text-secondary transition-colors">我的乐高世界</a></li>
+              <li><a href="#nasa-projects" class="hover:text-secondary transition-colors">NASA 发射项目</a></li>
+              <li><a href="#birthday" class="hover:text-secondary transition-colors">生日专区</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold mb-4">关注我</h4>
+            <div class="space-y-2">
+              <p class="text-primary-foreground/80">敬请期待更多精彩内容！</p>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-primary-foreground/20 pt-8">
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="text-primary-foreground/80 mb-4 md:mb-0">© 2026 廖浩先 · 12 岁生日主题个人页面 · 本地化静态副本</div>
+            <div class="text-secondary text-2xl">🚀</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var btn = document.getElementById("mobile-menu-button");
+        var menu = document.getElementById("mobile-menu");
+        if (!btn || !menu) return;
+        btn.addEventListener("click", function () {
+          var hiddenNow = menu.classList.toggle("hidden");
+          btn.setAttribute("aria-expanded", hiddenNow ? "false" : "true");
+        });
+        menu.querySelectorAll("a").forEach(function (a) {
+          a.addEventListener("click", function () {
+            menu.classList.add("hidden");
+            btn.setAttribute("aria-expanded", "false");
+          });
+        });
+      })();
+
+      (function () {
+        var container = document.getElementById("stars");
+        if (!container) return;
+        for (var i = 0; i < 50; i++) {
+          var d = document.createElement("div");
+          d.className = "absolute bg-white rounded-full";
+          d.style.width = Math.random() * 2.5 + 0.2 + "px";
+          d.style.height = Math.random() * 2.5 + 0.1 + "px";
+          d.style.left = Math.random() * 100 + "%";
+          d.style.top = Math.random() * 100 + "%";
+          d.style.opacity = String(0.35 + Math.random() * 0.65);
+          d.style.animation = "twinkle " + (2 + Math.random() * 3).toFixed(2) + "s infinite";
+          container.appendChild(d);
+        }
+      })();
+
+      function tickCountdown() {
+        var now = new Date();
+        var target = new Date(now.getFullYear(), 2, 15);
+        if (now > target) target = new Date(now.getFullYear() + 1, 2, 15);
+        var diff = target.getTime() - now.getTime();
+        var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        var el = function (id) {
+          return document.getElementById(id);
+        };
+        if (el("days")) el("days").textContent = String(days).padStart(2, "0");
+        if (el("hours")) el("hours").textContent = String(hours).padStart(2, "0");
+        if (el("minutes")) el("minutes").textContent = String(minutes).padStart(2, "0");
+        if (el("seconds")) el("seconds").textContent = String(seconds).padStart(2, "0");
+      }
+      tickCountdown();
+      setInterval(tickCountdown, 1000);
+
+      document.getElementById("blessing-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        document.getElementById("blessing-form").classList.add("hidden");
+        document.getElementById("form-done").classList.remove("hidden");
+      });
+    </script>
+  </body>
+</html>
