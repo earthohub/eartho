@@ -141,6 +141,24 @@ table {
   min-width: 980px;
 }
 
+.strategy-pos-table col.col-szi,
+.strategy-pos-table col.col-entry {
+  width: 8.5em;
+}
+
+.strategy-pos-table col.col-ntl,
+.strategy-pos-table col.col-margin {
+  width: 7.5em;
+}
+
+.strategy-pos-table col.col-pnl {
+  width: 8em;
+}
+
+.strategy-pos-table col.col-time {
+  width: 10.5em;
+}
+
 th,
 td {
   padding: 10px;

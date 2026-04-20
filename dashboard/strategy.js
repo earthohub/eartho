@@ -9,6 +9,7 @@ const detailEls = {
   factorGrid: document.getElementById("factorGrid"),
   positionStatus: document.getElementById("positionStatus"),
   positionTableBody: document.getElementById("positionTableBody"),
+  positionTimeHint: document.getElementById("positionTimeHint"),
   curveStatus: document.getElementById("curveStatusDetail"),
   curveMeta: document.getElementById("curveMetaDetail"),
   curveCanvas: document.getElementById("detailCurveCanvas"),
@@ -154,6 +155,11 @@ function parseOpenTime(position) {
 }
 
 function renderPositions(chState) {
+  const tbody = detailEls.positionTableBody;
+  if (!tbody) return;
+  tbody.replaceChildren();
+  if (detailEls.positionTimeHint) detailEls.positionTimeHint.hidden = true;
+
   const raw = chState?.assetPositions || [];
   const rows = raw
     .map((x) => {
@@ -169,42 +175,81 @@ function renderPositions(chState) {
         ? `当前无持仓（已合并 ${chState._mergedDexCount} 个永续市场；与官网不一致时请刷新）。`
         : "当前无持仓（或地址无可用持仓数据）。";
     setText(detailEls.positionStatus, hint);
-    setHTML(detailEls.positionTableBody, "");
+    tbody.replaceChildren();
     return;
   }
 
   const statusExtra =
     chState?._mergedDexCount > 1 ? ` · 已合并 ${chState._mergedDexCount} 个永续市场` : "";
   setText(detailEls.positionStatus, `当前持仓数量：${rows.length}${statusExtra}`);
-  const html = rows
-    .map(({ dex, position: p }) => {
-      const levRaw = p.leverage?.value;
-      const lev =
-        levRaw != null && Number.isFinite(Number(levRaw)) ? `${Number(levRaw)}x` : "-";
-      const levType = p.leverage?.type ? String(p.leverage.type) : "";
-      const levLabel = levType ? `${lev} (${levType})` : lev;
-      const openMs = parseOpenTime(p);
-      const marginUsed = num(p.marginUsed);
-      const marginRatio = accountValue > 0 ? marginUsed / accountValue : 0;
-      const pnl = num(p.unrealizedPnl);
-      const pnlClass = pnl > 0 ? "pos" : pnl < 0 ? "neg" : "";
-      const coinLabel = dex && dex !== "主所" ? `${p.coin || "-"} <span class="muted">· ${dex}</span>` : (p.coin || "-");
-      return `
-      <tr>
-        <td>${coinLabel}</td>
-        <td>${sideFromSzi(p.szi)}</td>
-        <td class="mono">${fmtNum(p.szi, 5)}</td>
-        <td class="mono">${fmtPrice(p.entryPx)}</td>
-        <td>${money(p.positionValue)}</td>
-        <td class="${pnlClass} mono">${moneySigned(p.unrealizedPnl)}</td>
-        <td>${levLabel}</td>
-        <td>${money(p.marginUsed)}</td>
-        <td>${openMs ? fmtDateTime(openMs) : "—"}</td>
-        <td>${pct(marginRatio)}</td>
-      </tr>`;
-    })
-    .join("");
-  setHTML(detailEls.positionTableBody, html);
+  if (detailEls.positionTimeHint) detailEls.positionTimeHint.hidden = false;
+
+  for (const { dex, position: p } of rows) {
+    const levRaw = p.leverage?.value;
+    const lev =
+      levRaw != null && Number.isFinite(Number(levRaw)) ? `${Number(levRaw)}x` : "-";
+    const levType = p.leverage?.type ? String(p.leverage.type) : "";
+    const levLabel = levType ? `${lev} (${levType})` : lev;
+    const openMs = parseOpenTime(p);
+    const marginUsed = num(p.marginUsed);
+    const marginRatio = accountValue > 0 ? marginUsed / accountValue : 0;
+    const pnl = num(p.unrealizedPnl);
+    const pnlClass = pnl > 0 ? "pos" : pnl < 0 ? "neg" : "";
+
+    const tr = document.createElement("tr");
+
+    const tdCoin = document.createElement("td");
+    tdCoin.textContent = p.coin || "-";
+    if (dex && dex !== "主所") {
+      const span = document.createElement("span");
+      span.className = "muted";
+      span.textContent = ` · ${dex}`;
+      tdCoin.appendChild(span);
+    }
+    tr.appendChild(tdCoin);
+
+    const tdSide = document.createElement("td");
+    tdSide.textContent = sideFromSzi(p.szi);
+    tr.appendChild(tdSide);
+
+    const tdSzi = document.createElement("td");
+    tdSzi.className = "mono";
+    tdSzi.textContent = fmtNum(p.szi, 5);
+    tr.appendChild(tdSzi);
+
+    const tdEntry = document.createElement("td");
+    tdEntry.className = "mono";
+    tdEntry.textContent = fmtPrice(p.entryPx);
+    tr.appendChild(tdEntry);
+
+    const tdNtl = document.createElement("td");
+    tdNtl.textContent = money(p.positionValue);
+    tr.appendChild(tdNtl);
+
+    const tdPnl = document.createElement("td");
+    tdPnl.className = ["mono", pnlClass].filter(Boolean).join(" ");
+    tdPnl.textContent = moneySigned(p.unrealizedPnl);
+    tr.appendChild(tdPnl);
+
+    const tdLev = document.createElement("td");
+    tdLev.textContent = levLabel;
+    tr.appendChild(tdLev);
+
+    const tdMargin = document.createElement("td");
+    tdMargin.textContent = money(p.marginUsed);
+    tr.appendChild(tdMargin);
+
+    const tdOpen = document.createElement("td");
+    tdOpen.textContent = openMs ? fmtDateTime(openMs) : "—";
+    if (!openMs) tdOpen.title = "接口未返回开仓时间";
+    tr.appendChild(tdOpen);
+
+    const tdRatio = document.createElement("td");
+    tdRatio.textContent = pct(marginRatio);
+    tr.appendChild(tdRatio);
+
+    tbody.appendChild(tr);
+  }
 }
 
 function downsamplePoints(points, maxPoints = 180) {
