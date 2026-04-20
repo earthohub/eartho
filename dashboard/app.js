@@ -82,10 +82,14 @@ const els = {
   summaryMetrics: document.getElementById("summaryMetrics"),
   topListTemplateGrid:
     document.getElementById("top10TemplateGrid") || document.getElementById("strategyCardGrid"),
+  watchlistGrid: document.getElementById("watchlistGrid"),
+  watchlistEmpty: document.getElementById("watchlistEmpty"),
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-20-merge-perp-dex-clearinghouse";
+const WATCHLIST_STORAGE_KEY = "hyperranking_watchlist_v1";
+
+const APP_BUILD = "2026-04-20-watchlist-panel";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -160,6 +164,61 @@ function normalizeAddress(addr) {
 
 function addrShort(addr) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+}
+
+function readWatchlistFromStorage() {
+  try {
+    const raw = localStorage.getItem(WATCHLIST_STORAGE_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return new Set();
+    return new Set(arr.map((a) => normalizeAddress(a)).filter(Boolean));
+  } catch {
+    return new Set();
+  }
+}
+
+function persistWatchlist(set) {
+  try {
+    localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify([...set]));
+  } catch (e) {
+    console.warn("[dashboard] watchlist persist failed", e);
+  }
+}
+
+let watchlistAddresses = readWatchlistFromStorage();
+
+function stubWatchlistRow(addr) {
+  const a = normalizeAddress(addr);
+  return {
+    address: a,
+    displayName: "",
+    accountValue: 0,
+    roiM: 0,
+    pnlM: 0,
+    vlmM: 0,
+    score: 0,
+    rank: null,
+    style: { primary: "—", secondary: "—" },
+    checklist: { entry: "—", follow: "—", stop: "—" },
+  };
+}
+
+function resolveWatchlistRows() {
+  const out = [];
+  for (const addr of watchlistAddresses) {
+    const normalized = normalizeAddress(addr);
+    const fromTop = state.topList.find((r) => r.address === normalized);
+    out.push(fromTop || stubWatchlistRow(normalized));
+  }
+  return out;
+}
+
+function mergeAddressesForPortfolio() {
+  const set = new Set();
+  for (const r of state.topList) set.add(r.address);
+  for (const a of watchlistAddresses) set.add(normalizeAddress(a));
+  return [...set];
 }
 
 function toWindowMap(windowPerformances) {
@@ -426,7 +485,8 @@ function renderSummary() {
   );
 }
 
-function renderStrategyCards(rows) {
+function renderStrategyCards(rows, opts = {}) {
+  const watchlistMode = opts.watchlistMode === true;
   return rows
     .map((row, idx) => {
       const c = row.checklist;
@@ -439,11 +499,23 @@ function renderStrategyCards(rows) {
         ? "资金曲线加载中..."
         : "无可用资金曲线";
 
+      const titleRank = watchlistMode
+        ? row.rank != null
+          ? `观察 #${row.rank}`
+          : "观察"
+        : `#${row.rank || idx + 1}`;
+      const inWatch = watchlistAddresses.has(normalizeAddress(row.address));
+      const watchControls = watchlistMode
+        ? `<button type="button" class="btn btn-tiny btn-watch danger" data-action="watchlist-remove" data-addr="${row.address}">移出观察库</button>`
+        : inWatch
+        ? `<button type="button" class="btn btn-tiny btn-watch ghost" data-action="watchlist-remove" data-addr="${row.address}">已加入</button>`
+        : `<button type="button" class="btn btn-tiny btn-watch accent" data-action="watchlist-add" data-addr="${row.address}">加入观察库</button>`;
+
       return `
       <article class="strategy-card ${hasLivePosition ? "has-live-position" : ""}">
         <div class="strategy-head">
           <div>
-            <div class="strategy-title">#${row.rank || idx + 1} ${
+            <div class="strategy-title">${titleRank} ${
               row.displayName || addrShort(row.address)
             }</div>
             <div class="mono muted">${row.address}</div>
@@ -451,6 +523,7 @@ function renderStrategyCards(rows) {
           <div class="strategy-head-right">
             ${hasLivePosition ? '<div class="live-position-pill">持仓中</div>' : ""}
             <div class="strategy-score">综合分 ${fmtScore(row.score)}</div>
+            ${watchControls}
             <a class="strategy-link local" href="./strategy.html?addr=${encodeURIComponent(
               row.address
             )}" target="_blank" rel="noopener noreferrer">策略详情</a>
@@ -517,7 +590,18 @@ function pickTopWithMidBandQuota(rows, limit, bandConfig) {
 }
 
 function renderTopListTemplateCards() {
-  safeSetHTML(els.topListTemplateGrid, renderStrategyCards(state.topList));
+  safeSetHTML(els.topListTemplateGrid, renderStrategyCards(state.topList, { watchlistMode: false }));
+}
+
+function renderWatchlistSection() {
+  if (!els.watchlistGrid) return;
+  const rows = resolveWatchlistRows();
+  if (els.watchlistEmpty) els.watchlistEmpty.hidden = rows.length > 0;
+  if (rows.length === 0) {
+    els.watchlistGrid.innerHTML = "";
+    return;
+  }
+  safeSetHTML(els.watchlistGrid, renderStrategyCards(rows, { watchlistMode: true }));
 }
 
 function drawSparkline(canvas, points, positive) {
@@ -719,6 +803,7 @@ function renderCurveStatus() {
 
 function renderAll() {
   renderSummary();
+  renderWatchlistSection();
   renderTopListTemplateCards();
   renderCurveStatus();
   renderCurves();
@@ -808,28 +893,29 @@ function parsePortfolioCurve(portfolioRaw) {
 }
 
 async function loadCurvesForTopList() {
+  const addrs = mergeAddressesForPortfolio();
   state.curves = {};
   state.curveLoading = true;
-  state.curveProgress = { done: 0, total: state.topList.length, success: 0, failed: 0 };
+  state.curveProgress = { done: 0, total: addrs.length, success: 0, failed: 0 };
   renderCurveStatus();
   renderCurves();
 
-  const queue = [...state.topList];
-  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
+  const queue = [...addrs];
+  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, Math.max(queue.length, 1)) }).map(
     async () => {
       while (queue.length) {
-        const row = queue.shift();
+        const addr = queue.shift();
         try {
-          const raw = await fetchPortfolio(row.address);
+          const raw = await fetchPortfolio(addr);
           const curve = parsePortfolioCurve(raw);
           if (curve) {
-            state.curves[row.address] = curve;
+            state.curves[addr] = curve;
             state.curveProgress.success += 1;
           } else {
             state.curveProgress.failed += 1;
           }
         } catch (err) {
-          console.warn(`资金曲线获取失败: ${row.address}`, err);
+          console.warn(`资金曲线获取失败: ${addr}`, err);
           state.curveProgress.failed += 1;
         } finally {
           state.curveProgress.done += 1;
@@ -849,28 +935,29 @@ async function loadLivePositionFlagsForTopList() {
   state.livePositionByAddr = {};
   renderAll();
 
-  const queue = [...state.topList];
-  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, queue.length) }).map(
+  const addrs = mergeAddressesForPortfolio();
+  const queue = [...addrs];
+  const workers = Array.from({ length: Math.min(CONFIG.portfolioConcurrency, Math.max(queue.length, 1)) }).map(
     async () => {
       while (queue.length) {
-        const row = queue.shift();
+        const addr = queue.shift();
         try {
           const chState =
             typeof fetchMergedClearinghouseState === "function"
-              ? await fetchMergedClearinghouseState(row.address)
+              ? await fetchMergedClearinghouseState(addr)
               : await fetchJson(
                   INFO_URL,
                   {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ type: "clearinghouseState", user: row.address }),
+                    body: JSON.stringify({ type: "clearinghouseState", user: addr }),
                   },
                   20_000
                 );
-          state.livePositionByAddr[row.address] = hasOpenPosition(chState);
+          state.livePositionByAddr[addr] = hasOpenPosition(chState);
         } catch (err) {
           // Best-effort signal; network failure should not block rendering.
-          state.livePositionByAddr[row.address] = false;
+          state.livePositionByAddr[addr] = false;
         } finally {
           renderAll();
         }
@@ -1014,5 +1101,25 @@ window.addEventListener("resize", () => {
 
 if (els.refreshBtn) els.refreshBtn.addEventListener("click", () => recompute(true));
 if (els.exportBtn) els.exportBtn.addEventListener("click", exportJson);
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-action^='watchlist-']");
+  if (!btn) return;
+  const addr = btn.getAttribute("data-addr");
+  if (!addr) return;
+  const normalized = normalizeAddress(addr);
+  const action = btn.getAttribute("data-action");
+  if (action === "watchlist-add") {
+    watchlistAddresses.add(normalized);
+  } else if (action === "watchlist-remove") {
+    watchlistAddresses.delete(normalized);
+  } else {
+    return;
+  }
+  persistWatchlist(watchlistAddresses);
+  renderAll();
+  void loadCurvesForTopList();
+  void loadLivePositionFlagsForTopList();
+});
 
 recompute(false);

@@ -82,6 +82,37 @@ h3 {
   color: white;
 }
 
+.btn-tiny {
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.btn-watch.accent {
+  background: rgba(63, 140, 255, 0.22);
+  border-color: rgba(99, 165, 255, 0.55);
+  color: #cfe4ff;
+}
+
+.btn-watch.ghost {
+  background: rgba(154, 163, 178, 0.12);
+  border-color: rgba(154, 163, 178, 0.35);
+  color: var(--muted);
+}
+
+.btn-watch.danger {
+  background: rgba(255, 107, 122, 0.12);
+  border-color: rgba(255, 107, 122, 0.45);
+  color: #ffb3bd;
+}
+
+.watchlist-card-section {
+  border-color: rgba(63, 140, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(63, 140, 255, 0.12);
+}
+
 .summary-card {
   margin: 18px 28px 0;
   background: var(--panel);
@@ -262,7 +293,7 @@ tr:hover td {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  align-items: baseline;
+  align-items: flex-start;
   margin-bottom: 8px;
 }
 
