@@ -2,6 +2,13 @@ const DATA_URLS = {
   leaderboard: "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard",
 };
 
+/** Mainnet leaderboard payload is large; slow networks need a generous budget. */
+const LEADERBOARD_FETCH = {
+  timeoutMs: 90_000,
+  maxRetries: 4,
+  backoffMs: (attempt) => 800 * 2 ** attempt,
+};
+
 const INFO_URL = "https://api.hyperliquid.xyz/info";
 
 const CONFIG = {
@@ -72,7 +79,7 @@ const els = {
   curveStatus: document.getElementById("curveStatus"),
 };
 
-const APP_BUILD = "2026-04-19-top18-fallback-snapshot";
+const APP_BUILD = "2026-04-20-leaderboard-timeout-90s";
 window.__HL_DASHBOARD_BUILD__ = APP_BUILD;
 
 function safeSetText(el, text) {
@@ -711,8 +718,12 @@ function renderAll() {
   renderCurves();
 }
 
-async function fetchJson(url, options = {}, timeoutMs = 15_000) {
-  const maxRetries = 2;
+async function fetchJson(url, options = {}, timeoutMs = 15_000, retryOpts) {
+  const maxRetries = retryOpts?.maxRetries ?? 2;
+  const backoffMs =
+    typeof retryOpts?.backoffMs === "function"
+      ? retryOpts.backoffMs
+      : (attempt) => 500 * (attempt + 1);
   let lastErr = null;
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
     const ctrl = new AbortController();
@@ -732,7 +743,7 @@ async function fetchJson(url, options = {}, timeoutMs = 15_000) {
         (err?.name === "AbortError" ||
           /failed to fetch|network|aborted|load failed/i.test(String(lastErr.message || "")));
       if (!retryable) throw lastErr;
-      await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+      await new Promise((resolve) => setTimeout(resolve, backoffMs(attempt)));
     } finally {
       clearTimeout(t);
     }
@@ -869,7 +880,15 @@ async function recompute() {
   if (els.refreshBtn) els.refreshBtn.disabled = true;
   safeSetText(els.statusText, "正在更新数据，请稍候...");
   try {
-    const leaderboardRaw = await fetchJson(DATA_URLS.leaderboard);
+    const leaderboardRaw = await fetchJson(
+      DATA_URLS.leaderboard,
+      {},
+      LEADERBOARD_FETCH.timeoutMs,
+      {
+        maxRetries: LEADERBOARD_FETCH.maxRetries,
+        backoffMs: LEADERBOARD_FETCH.backoffMs,
+      }
+    );
     const rowsAll = (leaderboardRaw.leaderboardRows || []).map(toRow);
     const filtered = rowsAll.filter((r) => r.address && !EXCLUDED_ADDRESSES.has(r.address));
     const eligible = filtered.filter(
@@ -903,7 +922,7 @@ async function recompute() {
   } catch (err) {
     console.error(err);
     try {
-      const snapshot = await fetchJson("./data/latest.json", {}, 8_000);
+      const snapshot = await fetchJson("./data/latest.json", {}, 15_000);
       if (hydrateStateFromSnapshot(snapshot)) {
         safeSetText(
           els.statusText,
