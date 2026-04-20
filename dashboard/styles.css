@@ -340,8 +340,13 @@ tr:hover td {
 }
 
 .curve-canvas.detail-curve-canvas {
-  height: 420px;
   width: 100%;
+  height: auto;
+  min-height: 240px;
+  max-height: min(52vh, 520px);
+  aspect-ratio: 2.15 / 1;
+  display: block;
+  border-radius: 8px;
 }
 
 .strategy-link.external {
