@@ -4,21 +4,29 @@ Lightweight Polymarket probability monitor: velocity, acceleration, volume conte
 and rough lead–lag vs BTC spot (default: CoinGecko; Polymarket resolution text often cites Binance).
 
 Public APIs only — no API keys.
+
+Local Chinese dashboard: ``python -m polymarket_monitor`` (from repo root), or ``--web``.
 """
 
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import math
+import sys
+import threading
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import webbrowser
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from statistics import mean, pstdev
 from typing import Any, Iterable
+from urllib.parse import urlparse
 
 GAMMA_API = "https://gamma-api.polymarket.com"
 CLOB_API = "https://clob.polymarket.com"
@@ -516,6 +524,226 @@ def print_table(payload: dict[str, Any]) -> None:
             )
 
 
+def render_html_zh(payload: dict[str, Any], *, refresh_sec: int = 60) -> str:
+    """Single-page Chinese UI; auto-refresh via meta (full reload)."""
+    ev = payload.get("event") or {}
+    title = str(ev.get("title") or "Polymarket 监测")
+    slug = str(ev.get("slug") or "")
+    ts = int(payload.get("as_of_unix") or 0)
+    btc_ref = str(payload.get("btc_reference") or "")
+
+    def cell(v: Any, nd: int = 4) -> str:
+        if v is None:
+            return "—"
+        if isinstance(v, bool):
+            return "是" if v else "否"
+        if isinstance(v, int):
+            return f"{v:,}"
+        if isinstance(v, float):
+            if nd <= 0:
+                return f"{v:,.0f}"
+            return f"{v:.{nd}f}".rstrip("0").rstrip(".")
+        return html.escape(str(v))
+
+    rows_html: list[str] = []
+    for m in payload.get("markets") or []:
+        flags = str(m.get("alerts") or "")
+        row_cls = "row-alert" if flags else ""
+        rows_html.append(
+            "<tr class='{cls}'>"
+            "<td>{strike}</td>"
+            "<td class='num'>{mid}</td>"
+            "<td class='num'>{spr}</td>"
+            "<td class='num'>{v24}</td>"
+            "<td class='num'>{d5}</td>"
+            "<td class='num'>{d15}</td>"
+            "<td class='num'>{d1h}</td>"
+            "<td class='num'>{vel}</td>"
+            "<td class='num'>{acc}</td>"
+            "<td class='num'>{z}</td>"
+            "<td class='flags'>{flags}</td>"
+            "</tr>".format(
+                cls=row_cls,
+                strike=html.escape(str(m.get("groupItemTitle") or "")),
+                mid=cell(m.get("mid_yes"), 4),
+                spr=cell(m.get("spread"), 4),
+                v24=cell(m.get("volume24hr_clob"), 0),
+                d5=cell(m.get("dp_5m"), 4),
+                d15=cell(m.get("dp_15m"), 4),
+                d1h=cell(m.get("dp_1h"), 4),
+                vel=cell(m.get("velocity_15m_per_min"), 6),
+                acc=cell(m.get("acceleration_15m"), 6),
+                z=cell(m.get("zscore_15m_delta"), 2),
+                flags=html.escape(flags) if flags else "—",
+            )
+        )
+
+    ll = payload.get("lead_lag") or {}
+    ll_rows = ""
+    if "correlations_by_step" in ll:
+        for item in ll["correlations_by_step"]:
+            r = item.get("r")
+            rs = f"{r:.3f}" if isinstance(r, (int, float)) else "—"
+            st = int(item.get("step", 0))
+            ll_rows += f"<tr><td class='num'>{st:+d}</td><td class='num'>{rs}</td></tr>"
+    ll_note = html.escape(str(ll.get("note") or ""))
+    ll_rep = html.escape(str(ll.get("representative_market") or ""))
+    ll_best = ll.get("strongest_r")
+    ll_step = ll.get("strongest_step")
+    ll_best_s = f"{ll_best:.3f}" if isinstance(ll_best, (int, float)) else "—"
+    ll_step_s = str(ll_step) if ll_step is not None else "—"
+    ll_err = ll.get("error")
+    ll_block = ""
+    if ll_err:
+        ll_block = f"<p class='warn'>{html.escape(str(ll_err))}</p>"
+    elif ll_rows:
+        ll_block = f"""
+        <h2>与 BTC 的粗领先 / 滞后（Pearson）</h2>
+        <p class='muted'>代表市场（波动最大）：<strong>{ll_rep}</strong>。{ll_note}</p>
+        <p class='muted'>最强相关：步长 <strong>{ll_step_s}</strong>，r = <strong>{ll_best_s}</strong></p>
+        <table class='grid'><thead><tr><th>步长偏移</th><th>相关系数 r</th></tr></thead><tbody>{ll_rows}</tbody></table>
+        """
+
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="refresh" content="{refresh_sec}"/>
+  <title>{html.escape(title)} — 概率监测</title>
+  <style>
+    :root {{ font-family: system-ui, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; }}
+    body {{ margin: 0; background: #0f1419; color: #e6edf3; }}
+    header {{ padding: 1rem 1.25rem; background: #161b22; border-bottom: 1px solid #30363d; }}
+    h1 {{ margin: 0; font-size: 1.15rem; font-weight: 600; }}
+    .sub {{ margin: 0.35rem 0 0; font-size: 0.85rem; color: #8b949e; }}
+    main {{ padding: 1rem 1.25rem 2rem; overflow-x: auto; }}
+    table.grid {{ border-collapse: collapse; width: 100%; min-width: 920px; font-size: 0.85rem; }}
+    th, td {{ border: 1px solid #30363d; padding: 0.45rem 0.55rem; text-align: left; }}
+    th {{ background: #21262d; color: #c9d1d9; font-weight: 600; white-space: nowrap; }}
+    tr:nth-child(even) {{ background: #12181f; }}
+    tr.row-alert {{ background: #3d2a00; }}
+    td.num {{ text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }}
+    td.flags {{ font-size: 0.8rem; color: #d29922; }}
+    .muted {{ color: #8b949e; font-size: 0.88rem; }}
+    .warn {{ color: #f85149; }}
+    h2 {{ margin: 1.5rem 0 0.5rem; font-size: 1rem; }}
+    footer {{ padding: 0 1.25rem 1.5rem; font-size: 0.78rem; color: #6e7681; }}
+    a {{ color: #58a6ff; }}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{html.escape(title)}</h1>
+    <p class="sub">slug: <code>{html.escape(slug)}</code> · 数据时间 Unix: <strong>{ts}</strong>
+      · BTC 参考: <code>{html.escape(btc_ref)}</code></p>
+    <p class="sub">本页每 <strong>{refresh_sec}</strong> 秒自动刷新；也可按 F5 手动刷新。</p>
+  </header>
+  <main>
+    <table class="grid">
+      <thead>
+        <tr>
+          <th>行权 / 分组</th>
+          <th>Yes 中间价</th>
+          <th>价差</th>
+          <th>24h 成交量 (CLOB)</th>
+          <th>Δp 5 分钟</th>
+          <th>Δp 15 分钟</th>
+          <th>Δp 1 小时</th>
+          <th>15m 速度 (/分)</th>
+          <th>15m 加速度</th>
+          <th>15m Δ 的 Z</th>
+          <th>标记</th>
+        </tr>
+      </thead>
+      <tbody>
+        {''.join(rows_html) if rows_html else "<tr><td colspan='11' class='muted'>暂无市场数据</td></tr>"}
+      </tbody>
+    </table>
+    {ll_block}
+  </main>
+  <footer>
+    数据来自 Polymarket Gamma / CLOB 公开接口；不构成投资建议。
+  </footer>
+</body>
+</html>"""
+
+
+def run_web_server(
+    *,
+    slug: str,
+    top_n: int | None,
+    workers: int,
+    z_alert: float,
+    dp_alert: float,
+    lead_lag: bool,
+    host: str,
+    port: int,
+    refresh_sec: int,
+    open_browser: bool,
+) -> int:
+    def build_payload() -> dict[str, Any]:
+        return run_once(
+            slug,
+            top_n=top_n,
+            workers=workers,
+            z_alert=z_alert,
+            dp_alert=dp_alert,
+            lead_lag=lead_lag,
+        )
+
+    class _Handler(BaseHTTPRequestHandler):
+        def log_message(self, _fmt: str, *_args: Any) -> None:
+            return
+
+        def do_GET(self) -> None:  # noqa: N802
+            path = urlparse(self.path).path
+            try:
+                if path == "/api.json":
+                    payload = build_payload()
+                    raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    self.wfile.write(raw)
+                    return
+                if path in ("/", "/index.html"):
+                    payload = build_payload()
+                    page = render_html_zh(payload, refresh_sec=refresh_sec).encode("utf-8")
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/html; charset=utf-8")
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    self.wfile.write(page)
+                    return
+                self.send_error(404, "Not Found")
+            except Exception as e:
+                err = html.escape(str(e))
+                body = f"<html><body><pre>{err}</pre></body></html>".encode("utf-8")
+                self.send_response(500)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(body)
+
+    httpd = ThreadingHTTPServer((host, port), _Handler)
+    url = f"http://{host}:{port}/"
+    print(f"本地监测页面（中文）：{url}")
+    print("按 Ctrl+C 停止服务。")
+    if open_browser:
+
+        def _open() -> None:
+            webbrowser.open(url)
+
+        threading.Timer(0.35, _open).start()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\n已停止。")
+        return 0
+    return 0
+
+
 def _snaps_from_payload(payload: dict[str, Any]) -> list[MarketSnap]:
     """Reconstruct minimal snaps for printing from payload markets."""
     out: list[MarketSnap] = []
@@ -556,8 +784,22 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--z-alert", type=float, default=2.0, help="Flag if |z| on 15m rolling delta exceeds this")
     p.add_argument("--dp-alert", type=float, default=0.05, help="Flag if |dp_15m| exceeds this")
     p.add_argument("--no-lead-lag", action="store_true", help="Skip BTC lead–lag block")
-    p.add_argument("--json", action="store_true", help="Print JSON only")
+    p.add_argument("--json", action="store_true", help="Print JSON only (CLI; not used with --web)")
     p.add_argument("--loop-sec", type=int, default=0, help="If >0, repeat every N seconds (Ctrl+C to stop)")
+    p.add_argument(
+        "--web",
+        action="store_true",
+        help="启动本地中文网页（默认 http://127.0.0.1:8765/）；更简单可用：python -m polymarket_monitor",
+    )
+    p.add_argument("--web-host", default="127.0.0.1", help="Web 监听地址")
+    p.add_argument("--web-port", type=int, default=8765, help="Web 监听端口")
+    p.add_argument(
+        "--web-refresh",
+        type=int,
+        default=60,
+        help="网页自动刷新间隔（秒，meta refresh）",
+    )
+    p.add_argument("--no-browser", action="store_true", help="启动网页服务但不自动打开浏览器")
     args = p.parse_args(argv)
 
     def once() -> dict[str, Any]:
@@ -568,6 +810,24 @@ def main(argv: list[str] | None = None) -> int:
             z_alert=args.z_alert,
             dp_alert=args.dp_alert,
             lead_lag=not args.no_lead_lag,
+        )
+
+    if args.web:
+        if args.json:
+            print("已忽略 --json（当前为 --web 模式）", file=sys.stderr)
+        if args.loop_sec > 0:
+            print("已忽略 --loop-sec（网页用自动刷新；见 --web-refresh）", file=sys.stderr)
+        return run_web_server(
+            slug=args.slug,
+            top_n=args.top,
+            workers=args.workers,
+            z_alert=args.z_alert,
+            dp_alert=args.dp_alert,
+            lead_lag=not args.no_lead_lag,
+            host=args.web_host,
+            port=args.web_port,
+            refresh_sec=max(5, args.web_refresh),
+            open_browser=not args.no_browser,
         )
 
     if args.loop_sec <= 0:
