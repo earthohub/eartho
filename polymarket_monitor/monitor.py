@@ -33,7 +33,7 @@ CLOB_API = "https://clob.polymarket.com"
 COINGECKO_CHART = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
 
 
-def _http_json(url: str, timeout: float = 30.0) -> Any:
+def _http_json(url: str, timeout: float = 60.0) -> Any:
     req = urllib.request.Request(url, headers={"User-Agent": "polymarket-monitor/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return json.loads(resp.read().decode("utf-8"))
@@ -524,99 +524,23 @@ def print_table(payload: dict[str, Any]) -> None:
             )
 
 
-def render_html_zh(payload: dict[str, Any], *, refresh_sec: int = 60) -> str:
-    """Single-page Chinese UI; auto-refresh via meta (full reload)."""
-    ev = payload.get("event") or {}
-    title = str(ev.get("title") or "Polymarket 监测")
-    slug = str(ev.get("slug") or "")
-    ts = int(payload.get("as_of_unix") or 0)
-    btc_ref = str(payload.get("btc_reference") or "")
-
-    def cell(v: Any, nd: int = 4) -> str:
-        if v is None:
-            return "—"
-        if isinstance(v, bool):
-            return "是" if v else "否"
-        if isinstance(v, int):
-            return f"{v:,}"
-        if isinstance(v, float):
-            if nd <= 0:
-                return f"{v:,.0f}"
-            return f"{v:.{nd}f}".rstrip("0").rstrip(".")
-        return html.escape(str(v))
-
-    rows_html: list[str] = []
-    for m in payload.get("markets") or []:
-        flags = str(m.get("alerts") or "")
-        row_cls = "row-alert" if flags else ""
-        rows_html.append(
-            "<tr class='{cls}'>"
-            "<td>{strike}</td>"
-            "<td class='num'>{mid}</td>"
-            "<td class='num'>{spr}</td>"
-            "<td class='num'>{v24}</td>"
-            "<td class='num'>{d5}</td>"
-            "<td class='num'>{d15}</td>"
-            "<td class='num'>{d1h}</td>"
-            "<td class='num'>{vel}</td>"
-            "<td class='num'>{acc}</td>"
-            "<td class='num'>{z}</td>"
-            "<td class='flags'>{flags}</td>"
-            "</tr>".format(
-                cls=row_cls,
-                strike=html.escape(str(m.get("groupItemTitle") or "")),
-                mid=cell(m.get("mid_yes"), 4),
-                spr=cell(m.get("spread"), 4),
-                v24=cell(m.get("volume24hr_clob"), 0),
-                d5=cell(m.get("dp_5m"), 4),
-                d15=cell(m.get("dp_15m"), 4),
-                d1h=cell(m.get("dp_1h"), 4),
-                vel=cell(m.get("velocity_15m_per_min"), 6),
-                acc=cell(m.get("acceleration_15m"), 6),
-                z=cell(m.get("zscore_15m_delta"), 2),
-                flags=html.escape(flags) if flags else "—",
-            )
-        )
-
-    ll = payload.get("lead_lag") or {}
-    ll_rows = ""
-    if "correlations_by_step" in ll:
-        for item in ll["correlations_by_step"]:
-            r = item.get("r")
-            rs = f"{r:.3f}" if isinstance(r, (int, float)) else "—"
-            st = int(item.get("step", 0))
-            ll_rows += f"<tr><td class='num'>{st:+d}</td><td class='num'>{rs}</td></tr>"
-    ll_note = html.escape(str(ll.get("note") or ""))
-    ll_rep = html.escape(str(ll.get("representative_market") or ""))
-    ll_best = ll.get("strongest_r")
-    ll_step = ll.get("strongest_step")
-    ll_best_s = f"{ll_best:.3f}" if isinstance(ll_best, (int, float)) else "—"
-    ll_step_s = str(ll_step) if ll_step is not None else "—"
-    ll_err = ll.get("error")
-    ll_block = ""
-    if ll_err:
-        ll_block = f"<p class='warn'>{html.escape(str(ll_err))}</p>"
-    elif ll_rows:
-        ll_block = f"""
-        <h2>与 BTC 的粗领先 / 滞后（Pearson）</h2>
-        <p class='muted'>代表市场（波动最大）：<strong>{ll_rep}</strong>。{ll_note}</p>
-        <p class='muted'>最强相关：步长 <strong>{ll_step_s}</strong>，r = <strong>{ll_best_s}</strong></p>
-        <table class='grid'><thead><tr><th>步长偏移</th><th>相关系数 r</th></tr></thead><tbody>{ll_rows}</tbody></table>
-        """
-
+def render_shell_html_zh(*, refresh_sec: int) -> str:
+    """Instant-response shell; data loaded via fetch('/api.json') to avoid browser timeouts."""
+    rms = max(5, int(refresh_sec)) * 1000
     return f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="refresh" content="{refresh_sec}"/>
-  <title>{html.escape(title)} — 概率监测</title>
+  <title>Polymarket 概率监测</title>
   <style>
     :root {{ font-family: system-ui, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; }}
     body {{ margin: 0; background: #0f1419; color: #e6edf3; }}
     header {{ padding: 1rem 1.25rem; background: #161b22; border-bottom: 1px solid #30363d; }}
     h1 {{ margin: 0; font-size: 1.15rem; font-weight: 600; }}
     .sub {{ margin: 0.35rem 0 0; font-size: 0.85rem; color: #8b949e; }}
+    #status {{ margin-top: 0.5rem; font-size: 0.9rem; color: #d29922; }}
+    #status.err {{ color: #f85149; }}
     main {{ padding: 1rem 1.25rem 2rem; overflow-x: auto; }}
     table.grid {{ border-collapse: collapse; width: 100%; min-width: 920px; font-size: 0.85rem; }}
     th, td {{ border: 1px solid #30363d; padding: 0.45rem 0.55rem; text-align: left; }}
@@ -629,15 +553,13 @@ def render_html_zh(payload: dict[str, Any], *, refresh_sec: int = 60) -> str:
     .warn {{ color: #f85149; }}
     h2 {{ margin: 1.5rem 0 0.5rem; font-size: 1rem; }}
     footer {{ padding: 0 1.25rem 1.5rem; font-size: 0.78rem; color: #6e7681; }}
-    a {{ color: #58a6ff; }}
   </style>
 </head>
 <body>
   <header>
-    <h1>{html.escape(title)}</h1>
-    <p class="sub">slug: <code>{html.escape(slug)}</code> · 数据时间 Unix: <strong>{ts}</strong>
-      · BTC 参考: <code>{html.escape(btc_ref)}</code></p>
-    <p class="sub">本页每 <strong>{refresh_sec}</strong> 秒自动刷新；也可按 F5 手动刷新。</p>
+    <h1 id="hdr-title">Polymarket 概率监测</h1>
+    <p class="sub" id="hdr-sub">正在连接数据接口…</p>
+    <p id="status">首次加载 Polymarket / CoinGecko 可能需要几十秒，请稍候。</p>
   </header>
   <main>
     <table class="grid">
@@ -656,15 +578,123 @@ def render_html_zh(payload: dict[str, Any], *, refresh_sec: int = 60) -> str:
           <th>标记</th>
         </tr>
       </thead>
-      <tbody>
-        {''.join(rows_html) if rows_html else "<tr><td colspan='11' class='muted'>暂无市场数据</td></tr>"}
+      <tbody id="markets-body">
+        <tr><td colspan="11" class="muted">等待数据…</td></tr>
       </tbody>
     </table>
-    {ll_block}
+    <div id="lead-wrap"></div>
   </main>
   <footer>
-    数据来自 Polymarket Gamma / CLOB 公开接口；不构成投资建议。
+    数据来自 Polymarket Gamma / CLOB 公开接口；不构成投资建议。每 <strong>{max(5, int(refresh_sec))}</strong> 秒自动刷新（仅刷新数据，不整页重载）。
   </footer>
+  <script>
+(function() {{
+  const REFRESH_MS = {rms};
+  const API = '/api.json';
+
+  function esc(s) {{
+    if (s === null || s === undefined) return '';
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }}
+  function cell(v, nd) {{
+    if (v === null || v === undefined) return '—';
+    if (typeof v === 'boolean') return v ? '是' : '否';
+    if (typeof v === 'number' && Number.isInteger(v) && nd <= 0) return v.toLocaleString('en-US');
+    if (typeof v === 'number') {{
+      if (nd <= 0) return Math.round(v).toLocaleString('en-US');
+      let t = v.toFixed(nd).replace(/\\.?0+$/, '');
+      return t === '-0' ? '0' : t;
+    }}
+    return esc(String(v));
+  }}
+
+  function render(payload) {{
+    const ev = payload.event || {{}};
+    document.getElementById('hdr-title').textContent = (ev.title || 'Polymarket 监测') + ' — 概率监测';
+    const slug = ev.slug || '';
+    const ts = payload.as_of_unix || 0;
+    const btc = payload.btc_reference || '';
+    document.getElementById('hdr-sub').innerHTML =
+      'slug: <code>' + esc(slug) + '</code> · 数据时间 Unix: <strong>' + esc(String(ts)) +
+      '</strong> · BTC 参考: <code>' + esc(btc) + '</code>';
+
+    const markets = payload.markets || [];
+    let rows = '';
+    if (!markets.length) {{
+      rows = "<tr><td colspan='11' class='muted'>暂无市场数据</td></tr>";
+    }} else {{
+      for (const m of markets) {{
+        const flags = (m.alerts || '').trim();
+        const cls = flags ? 'row-alert' : '';
+        rows += '<tr class="' + cls + '">' +
+          '<td>' + esc(m.groupItemTitle || '') + '</td>' +
+          '<td class="num">' + cell(m.mid_yes, 4) + '</td>' +
+          '<td class="num">' + cell(m.spread, 4) + '</td>' +
+          '<td class="num">' + cell(m.volume24hr_clob, 0) + '</td>' +
+          '<td class="num">' + cell(m.dp_5m, 4) + '</td>' +
+          '<td class="num">' + cell(m.dp_15m, 4) + '</td>' +
+          '<td class="num">' + cell(m.dp_1h, 4) + '</td>' +
+          '<td class="num">' + cell(m.velocity_15m_per_min, 6) + '</td>' +
+          '<td class="num">' + cell(m.acceleration_15m, 6) + '</td>' +
+          '<td class="num">' + cell(m.zscore_15m_delta, 2) + '</td>' +
+          '<td class="flags">' + (flags ? esc(flags) : '—') + '</td></tr>';
+      }}
+    }}
+    document.getElementById('markets-body').innerHTML = rows;
+
+    const ll = payload.lead_lag || {{}};
+    let llHtml = '';
+    if (ll.error) {{
+      llHtml = "<p class='warn'>" + esc(String(ll.error)) + "</p>";
+    }} else if (ll.correlations_by_step) {{
+      let lr = '';
+      for (const item of ll.correlations_by_step) {{
+        const r = item.r;
+        const rs = (typeof r === 'number') ? r.toFixed(3) : '—';
+        const st = Number(item.step);
+        const stShow = (st >= 0 ? '+' : '') + st;
+        lr += '<tr><td class="num">' + stShow + '</td><td class="num">' + rs + '</td></tr>';
+      }}
+      const rep = esc(String(ll.representative_market || ''));
+      const note = esc(String(ll.note || ''));
+      const bss = ll.strongest_r;
+      const br = (typeof bss === 'number') ? bss.toFixed(3) : '—';
+      const bst = ll.strongest_step !== undefined && ll.strongest_step !== null ? String(ll.strongest_step) : '—';
+      llHtml = "<h2>与 BTC 的粗领先 / 滞后（Pearson）</h2>" +
+        "<p class='muted'>代表市场（波动最大）：<strong>" + rep + "</strong>。" + note + "</p>" +
+        "<p class='muted'>最强相关：步长 <strong>" + esc(bst) + "</strong>，r = <strong>" + br + "</strong></p>" +
+        "<table class='grid'><thead><tr><th>步长偏移</th><th>相关系数 r</th></tr></thead><tbody>" + lr + "</tbody></table>";
+    }}
+    document.getElementById('lead-wrap').innerHTML = llHtml;
+  }}
+
+  async function load() {{
+    const st = document.getElementById('status');
+    st.className = '';
+    st.textContent = '正在拉取 /api.json …';
+    try {{
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 180000);
+      const r = await fetch(API, {{ signal: ctrl.signal }});
+      clearTimeout(tid);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const payload = await r.json();
+      render(payload);
+      st.textContent = '数据已更新。下次自动刷新倒计时 ' + (REFRESH_MS/1000) + ' 秒。';
+    }} catch (e) {{
+      st.className = 'err';
+      st.textContent = '加载失败：' + (e && e.message ? e.message : String(e)) +
+        '。请确认本机可访问 Polymarket / CoinGecko，或稍后在终端查看报错。';
+    }}
+  }}
+
+  document.addEventListener('DOMContentLoaded', function() {{
+    load();
+    setInterval(load, REFRESH_MS);
+  }});
+}})();
+  </script>
 </body>
 </html>"""
 
@@ -696,26 +726,38 @@ def run_web_server(
         def log_message(self, _fmt: str, *_args: Any) -> None:
             return
 
+        def _safe_write(self, data: bytes) -> None:
+            try:
+                self.wfile.write(data)
+            except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
+                pass
+
         def do_GET(self) -> None:  # noqa: N802
             path = urlparse(self.path).path
             try:
+                if path == "/favicon.ico":
+                    self.send_response(204)
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
                 if path == "/api.json":
                     payload = build_payload()
                     raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
                     self.send_response(200)
                     self.send_header("Content-Type", "application/json; charset=utf-8")
                     self.send_header("Cache-Control", "no-store")
+                    self.send_header("Content-Length", str(len(raw)))
                     self.end_headers()
-                    self.wfile.write(raw)
+                    self._safe_write(raw)
                     return
                 if path in ("/", "/index.html"):
-                    payload = build_payload()
-                    page = render_html_zh(payload, refresh_sec=refresh_sec).encode("utf-8")
+                    page = render_shell_html_zh(refresh_sec=refresh_sec).encode("utf-8")
                     self.send_response(200)
                     self.send_header("Content-Type", "text/html; charset=utf-8")
                     self.send_header("Cache-Control", "no-store")
+                    self.send_header("Content-Length", str(len(page)))
                     self.end_headers()
-                    self.wfile.write(page)
+                    self._safe_write(page)
                     return
                 self.send_error(404, "Not Found")
             except Exception as e:
@@ -723,12 +765,14 @@ def run_web_server(
                 body = f"<html><body><pre>{err}</pre></body></html>".encode("utf-8")
                 self.send_response(500)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
-                self.wfile.write(body)
+                self._safe_write(body)
 
     httpd = ThreadingHTTPServer((host, port), _Handler)
     url = f"http://{host}:{port}/"
     print(f"本地监测页面（中文）：{url}")
+    print("首页会立即返回；表格数据由浏览器请求 /api.json 加载（首次可能需几十秒）。")
     print("按 Ctrl+C 停止服务。")
     if open_browser:
 
