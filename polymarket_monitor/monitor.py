@@ -17,13 +17,16 @@ import math
 import sys
 import threading
 import time
+import traceback
 import urllib.error
 import urllib.parse
 import urllib.request
 import webbrowser
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from statistics import mean, pstdev
 from typing import Any, Iterable
 from urllib.parse import urlparse
@@ -31,6 +34,32 @@ from urllib.parse import urlparse
 GAMMA_API = "https://gamma-api.polymarket.com"
 CLOB_API = "https://clob.polymarket.com"
 COINGECKO_CHART = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+
+# Local append-only history (web mode); chart line cap to avoid huge payloads
+STATE_DIR = Path(__file__).resolve().parent / "data_store"
+SNAPSHOTS_JSONL = STATE_DIR / "snapshots.jsonl"
+CHART_MARKETS_LIMIT = 18
+WEB_DEFAULT_TOP = 32
+
+
+def sanitize_for_json(obj: Any) -> Any:
+    if obj is None or isinstance(obj, (str, bool, int)):
+        return obj
+    if isinstance(obj, float):
+        if math.isnan(obj) or math.isinf(obj):
+            return None
+        return float(obj)
+    if isinstance(obj, dict):
+        return {str(k): sanitize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize_for_json(v) for v in obj]
+    if isinstance(obj, tuple):
+        return [sanitize_for_json(v) for v in obj]
+    return str(obj)
+
+
+def json_dumps_bytes(obj: Any) -> bytes:
+    return json.dumps(sanitize_for_json(obj), ensure_ascii=False, allow_nan=False).encode("utf-8")
 
 
 def _http_json(url: str, timeout: float = 60.0) -> Any:
@@ -94,10 +123,14 @@ def fetch_prices_history(
     return hist
 
 
-def fetch_btc_chart_usd(*, days: float = 1.0) -> list[tuple[int, float]]:
-    """CoinGecko market_chart: [ms, price]."""
+def fetch_btc_chart_usd(*, days: float | int = 1) -> list[tuple[int, float]]:
+    """CoinGecko market_chart: [ms, price]. Public API allows up to ~365 days."""
     q = urllib.parse.urlencode({"vs_currency": "usd", "days": str(days)})
     j = _http_json(f"{COINGECKO_CHART}?{q}")
+    if isinstance(j, dict) and j.get("error"):
+        raise RuntimeError(str(j.get("error")))
+    if not isinstance(j, dict) or "prices" not in j:
+        raise RuntimeError(f"CoinGecko unexpected response: {str(j)[:300]}")
     out: list[tuple[int, float]] = []
     for ms, px in j.get("prices") or []:
         out.append((int(ms) // 1000, float(px)))
@@ -311,6 +344,51 @@ class MarketSnap:
         ]
 
 
+def gamma_yes_mid(m: dict[str, Any]) -> float | None:
+    try:
+        arr = json.loads(m.get("outcomePrices") or "[]")
+        return float(arr[0])
+    except (json.JSONDecodeError, TypeError, ValueError, IndexError):
+        return None
+
+
+def snap_on_fetch_error(mm: dict[str, Any], err: BaseException) -> MarketSnap:
+    title = str(mm.get("groupItemTitle") or mm.get("question") or mm.get("id", ""))[:80]
+    mid = gamma_yes_mid(mm)
+    if mid is None:
+        mid = 0.0
+    try:
+        yes, _n = parse_clob_token_ids(mm)
+    except Exception:
+        yes = ""
+    vol24 = float(mm.get("volume24hrClob") or mm.get("volume24hr") or 0.0)
+    liq = float(mm.get("liquidityClob") or mm.get("liquidityNum") or mm.get("liquidity") or 0.0)
+    sp = mm.get("spread")
+    try:
+        spf = float(sp) if sp is not None else 0.0
+    except (TypeError, ValueError):
+        spf = 0.0
+    return MarketSnap(
+        market_id=str(mm.get("id", "")),
+        question=str(mm.get("question", "")),
+        group_title=title,
+        yes_token=yes,
+        mid=mid,
+        spread=spf,
+        vol24=vol24,
+        liq=liq,
+        bid_depth3=0.0,
+        ask_depth3=0.0,
+        dp_5m=None,
+        dp_15m=None,
+        dp_1h=None,
+        vel_15m_per_min=None,
+        accel_15m=None,
+        z_15m=None,
+        alert=f"fetch_error:{err!s}"[:400],
+    )
+
+
 def analyze_market(
     m: dict[str, Any],
     *,
@@ -404,7 +482,10 @@ def run_once(
     snaps: list[MarketSnap] = []
 
     def job(mm: dict[str, Any]) -> MarketSnap:
-        return analyze_market(mm, now_ts=now_ts, z_alert=z_alert, dp_alert=dp_alert)
+        try:
+            return analyze_market(mm, now_ts=now_ts, z_alert=z_alert, dp_alert=dp_alert)
+        except Exception as e:
+            return snap_on_fetch_error(mm, e)
 
     with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
         futs = {ex.submit(job, m): m for m in markets}
@@ -430,6 +511,7 @@ def run_once(
             {
                 "id": s.market_id,
                 "groupItemTitle": s.group_title,
+                "yes_token": s.yes_token,
                 "mid_yes": s.mid,
                 "spread": s.spread,
                 "volume24hr_clob": s.vol24,
@@ -490,6 +572,153 @@ def run_once(
     return payload
 
 
+def append_snapshot_line(payload: dict[str, Any]) -> None:
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    ev = payload.get("event") or {}
+    slug = str(ev.get("slug") or "")
+    rec = {
+        "as_of_unix": int(payload.get("as_of_unix") or 0),
+        "slug": slug,
+        "markets": {
+            str(m["id"]): {
+                "mid": m.get("mid_yes"),
+                "vol24": m.get("volume24hr_clob"),
+                "spread": m.get("spread"),
+            }
+            for m in (payload.get("markets") or [])
+        },
+    }
+    with SNAPSHOTS_JSONL.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
+def load_local_snapshot_curves(slug: str, *, max_lines: int = 15000) -> dict[str, list[tuple[int, float]]]:
+    series: dict[str, list[tuple[int, float]]] = defaultdict(list)
+    if not SNAPSHOTS_JSONL.is_file():
+        return dict(series)
+    try:
+        lines = SNAPSHOTS_JSONL.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return dict(series)
+    for line in lines[-max_lines:]:
+        if not line.strip():
+            continue
+        try:
+            o = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if str(o.get("slug") or "") != slug:
+            continue
+        ts = int(o.get("as_of_unix") or 0)
+        for mid, row in (o.get("markets") or {}).items():
+            v = row.get("mid")
+            if isinstance(v, (int, float)):
+                if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                    continue
+                series[str(mid)].append((ts, float(v)))
+    for k, v in series.items():
+        v.sort(key=lambda x: x[0])
+    return dict(series)
+
+
+def build_charts_for_markets(
+    markets: list[dict[str, Any]],
+    slug: str,
+    *,
+    workers: int,
+) -> dict[str, Any]:
+    """Hourly CLOB history (fidelity=60) + CoinGecko BTC (≤365d) + local jsonl overlay."""
+    mslice = [
+        m
+        for m in markets
+        if str(m.get("yes_token") or "").strip() and m.get("id") is not None
+    ][:CHART_MARKETS_LIMIT]
+
+    def fetch_prob(m: dict[str, Any]) -> dict[str, Any]:
+        tid = str(m["yes_token"])
+        label = str(m.get("groupItemTitle") or m.get("id", ""))[:60]
+        mid = str(m.get("id", ""))
+        try:
+            hist = fetch_prices_history(tid, interval="max", fidelity=60)
+            pts = [{"t": int(h["t"]), "p": float(h["p"])} for h in hist]
+            return {"id": mid, "label": label, "source": "clob_hourly", "points": pts}
+        except Exception as e:
+            return {"id": mid, "label": label, "source": "clob_hourly", "error": str(e), "points": []}
+
+    prob: list[dict[str, Any]] = []
+    if mslice:
+        with ThreadPoolExecutor(max_workers=max(2, min(8, workers))) as ex:
+            prob = list(ex.map(fetch_prob, mslice))
+
+    btc_pts: list[dict[str, float | int]] = []
+    btc_err: str | None = None
+    for days in (365, 180, 90, 30, 14):
+        try:
+            raw = fetch_btc_chart_usd(days=days)
+            btc_pts = [{"t": int(t), "p": float(p)} for t, p in raw]
+            btc_err = None
+            break
+        except Exception as e:
+            btc_err = str(e)
+
+    local_map = load_local_snapshot_curves(slug)
+    local_lines: list[dict[str, Any]] = []
+    for m in mslice:
+        mid = str(m.get("id", ""))
+        pts = local_map.get(mid) or []
+        if len(pts) < 2:
+            continue
+        local_lines.append(
+            {
+                "id": mid,
+                "label": str(m.get("groupItemTitle") or mid)[:58] + " (本地快照)",
+                "source": "local_snapshot",
+                "points": [{"t": int(t), "p": float(p)} for t, p in pts],
+            }
+        )
+
+    return {
+        "interval_note": "Polymarket：CLOB prices-history，fidelity=60（约每小时）。BTC：CoinGecko market_chart；在 365 天范围上通常为日线粒度（由 CoinGecko 决定），非逐小时。",
+        "prob_clob_hourly": prob,
+        "btc_usd_hourly": btc_pts,
+        "btc_error": btc_err,
+        "local_snapshot_lines": local_lines,
+        "local_store_path": str(SNAPSHOTS_JSONL),
+    }
+
+
+def assemble_web_api_payload(
+    slug: str,
+    *,
+    top_n: int,
+    workers: int,
+    z_alert: float,
+    dp_alert: float,
+    lead_lag: bool,
+) -> dict[str, Any]:
+    bundle = run_once(
+        slug,
+        top_n=top_n,
+        workers=workers,
+        z_alert=z_alert,
+        dp_alert=dp_alert,
+        lead_lag=lead_lag,
+    )
+    try:
+        bundle["charts"] = build_charts_for_markets(bundle.get("markets") or [], slug, workers=workers)
+    except Exception as e:
+        bundle["charts"] = {"error": str(e), "trace": traceback.format_exc()}
+        traceback.print_exc()
+    try:
+        append_snapshot_line(bundle)
+        bundle["snapshot_appended"] = True
+    except Exception as e2:
+        bundle["snapshot_appended"] = False
+        bundle["snapshot_append_error"] = str(e2)
+    bundle["ok"] = True
+    return bundle
+
+
 def print_table(payload: dict[str, Any]) -> None:
     ev = payload["event"]
     print(f"Event: {ev.get('title')} ({ev.get('slug')})")
@@ -525,178 +754,15 @@ def print_table(payload: dict[str, Any]) -> None:
 
 
 def render_shell_html_zh(*, refresh_sec: int) -> str:
-    """Instant-response shell; data loaded via fetch('/api.json') to avoid browser timeouts."""
-    rms = max(5, int(refresh_sec)) * 1000
-    return f"""<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Polymarket 概率监测</title>
-  <style>
-    :root {{ font-family: system-ui, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; }}
-    body {{ margin: 0; background: #0f1419; color: #e6edf3; }}
-    header {{ padding: 1rem 1.25rem; background: #161b22; border-bottom: 1px solid #30363d; }}
-    h1 {{ margin: 0; font-size: 1.15rem; font-weight: 600; }}
-    .sub {{ margin: 0.35rem 0 0; font-size: 0.85rem; color: #8b949e; }}
-    #status {{ margin-top: 0.5rem; font-size: 0.9rem; color: #d29922; }}
-    #status.err {{ color: #f85149; }}
-    main {{ padding: 1rem 1.25rem 2rem; overflow-x: auto; }}
-    table.grid {{ border-collapse: collapse; width: 100%; min-width: 920px; font-size: 0.85rem; }}
-    th, td {{ border: 1px solid #30363d; padding: 0.45rem 0.55rem; text-align: left; }}
-    th {{ background: #21262d; color: #c9d1d9; font-weight: 600; white-space: nowrap; }}
-    tr:nth-child(even) {{ background: #12181f; }}
-    tr.row-alert {{ background: #3d2a00; }}
-    td.num {{ text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }}
-    td.flags {{ font-size: 0.8rem; color: #d29922; }}
-    .muted {{ color: #8b949e; font-size: 0.88rem; }}
-    .warn {{ color: #f85149; }}
-    h2 {{ margin: 1.5rem 0 0.5rem; font-size: 1rem; }}
-    footer {{ padding: 0 1.25rem 1.5rem; font-size: 0.78rem; color: #6e7681; }}
-  </style>
-</head>
-<body>
-  <header>
-    <h1 id="hdr-title">Polymarket 概率监测</h1>
-    <p class="sub" id="hdr-sub">正在连接数据接口…</p>
-    <p id="status">首次加载 Polymarket / CoinGecko 可能需要几十秒，请稍候。</p>
-  </header>
-  <main>
-    <table class="grid">
-      <thead>
-        <tr>
-          <th>行权 / 分组</th>
-          <th>Yes 中间价</th>
-          <th>价差</th>
-          <th>24h 成交量 (CLOB)</th>
-          <th>Δp 5 分钟</th>
-          <th>Δp 15 分钟</th>
-          <th>Δp 1 小时</th>
-          <th>15m 速度 (/分)</th>
-          <th>15m 加速度</th>
-          <th>15m Δ 的 Z</th>
-          <th>标记</th>
-        </tr>
-      </thead>
-      <tbody id="markets-body">
-        <tr><td colspan="11" class="muted">等待数据…</td></tr>
-      </tbody>
-    </table>
-    <div id="lead-wrap"></div>
-  </main>
-  <footer>
-    数据来自 Polymarket Gamma / CLOB 公开接口；不构成投资建议。每 <strong>{max(5, int(refresh_sec))}</strong> 秒自动刷新（仅刷新数据，不整页重载）。
-  </footer>
-  <script>
-(function() {{
-  const REFRESH_MS = {rms};
-  const API = '/api.json';
-
-  function esc(s) {{
-    if (s === null || s === undefined) return '';
-    return String(s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }}
-  function cell(v, nd) {{
-    if (v === null || v === undefined) return '—';
-    if (typeof v === 'boolean') return v ? '是' : '否';
-    if (typeof v === 'number' && Number.isInteger(v) && nd <= 0) return v.toLocaleString('en-US');
-    if (typeof v === 'number') {{
-      if (nd <= 0) return Math.round(v).toLocaleString('en-US');
-      let t = v.toFixed(nd).replace(/\\.?0+$/, '');
-      return t === '-0' ? '0' : t;
-    }}
-    return esc(String(v));
-  }}
-
-  function render(payload) {{
-    const ev = payload.event || {{}};
-    document.getElementById('hdr-title').textContent = (ev.title || 'Polymarket 监测') + ' — 概率监测';
-    const slug = ev.slug || '';
-    const ts = payload.as_of_unix || 0;
-    const btc = payload.btc_reference || '';
-    document.getElementById('hdr-sub').innerHTML =
-      'slug: <code>' + esc(slug) + '</code> · 数据时间 Unix: <strong>' + esc(String(ts)) +
-      '</strong> · BTC 参考: <code>' + esc(btc) + '</code>';
-
-    const markets = payload.markets || [];
-    let rows = '';
-    if (!markets.length) {{
-      rows = "<tr><td colspan='11' class='muted'>暂无市场数据</td></tr>";
-    }} else {{
-      for (const m of markets) {{
-        const flags = (m.alerts || '').trim();
-        const cls = flags ? 'row-alert' : '';
-        rows += '<tr class="' + cls + '">' +
-          '<td>' + esc(m.groupItemTitle || '') + '</td>' +
-          '<td class="num">' + cell(m.mid_yes, 4) + '</td>' +
-          '<td class="num">' + cell(m.spread, 4) + '</td>' +
-          '<td class="num">' + cell(m.volume24hr_clob, 0) + '</td>' +
-          '<td class="num">' + cell(m.dp_5m, 4) + '</td>' +
-          '<td class="num">' + cell(m.dp_15m, 4) + '</td>' +
-          '<td class="num">' + cell(m.dp_1h, 4) + '</td>' +
-          '<td class="num">' + cell(m.velocity_15m_per_min, 6) + '</td>' +
-          '<td class="num">' + cell(m.acceleration_15m, 6) + '</td>' +
-          '<td class="num">' + cell(m.zscore_15m_delta, 2) + '</td>' +
-          '<td class="flags">' + (flags ? esc(flags) : '—') + '</td></tr>';
-      }}
-    }}
-    document.getElementById('markets-body').innerHTML = rows;
-
-    const ll = payload.lead_lag || {{}};
-    let llHtml = '';
-    if (ll.error) {{
-      llHtml = "<p class='warn'>" + esc(String(ll.error)) + "</p>";
-    }} else if (ll.correlations_by_step) {{
-      let lr = '';
-      for (const item of ll.correlations_by_step) {{
-        const r = item.r;
-        const rs = (typeof r === 'number') ? r.toFixed(3) : '—';
-        const st = Number(item.step);
-        const stShow = (st >= 0 ? '+' : '') + st;
-        lr += '<tr><td class="num">' + stShow + '</td><td class="num">' + rs + '</td></tr>';
-      }}
-      const rep = esc(String(ll.representative_market || ''));
-      const note = esc(String(ll.note || ''));
-      const bss = ll.strongest_r;
-      const br = (typeof bss === 'number') ? bss.toFixed(3) : '—';
-      const bst = ll.strongest_step !== undefined && ll.strongest_step !== null ? String(ll.strongest_step) : '—';
-      llHtml = "<h2>与 BTC 的粗领先 / 滞后（Pearson）</h2>" +
-        "<p class='muted'>代表市场（波动最大）：<strong>" + rep + "</strong>。" + note + "</p>" +
-        "<p class='muted'>最强相关：步长 <strong>" + esc(bst) + "</strong>，r = <strong>" + br + "</strong></p>" +
-        "<table class='grid'><thead><tr><th>步长偏移</th><th>相关系数 r</th></tr></thead><tbody>" + lr + "</tbody></table>";
-    }}
-    document.getElementById('lead-wrap').innerHTML = llHtml;
-  }}
-
-  async function load() {{
-    const st = document.getElementById('status');
-    st.className = '';
-    st.textContent = '正在拉取 /api.json …';
-    try {{
-      const ctrl = new AbortController();
-      const tid = setTimeout(() => ctrl.abort(), 180000);
-      const r = await fetch(API, {{ signal: ctrl.signal }});
-      clearTimeout(tid);
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const payload = await r.json();
-      render(payload);
-      st.textContent = '数据已更新。下次自动刷新倒计时 ' + (REFRESH_MS/1000) + ' 秒。';
-    }} catch (e) {{
-      st.className = 'err';
-      st.textContent = '加载失败：' + (e && e.message ? e.message : String(e)) +
-        '。请确认本机可访问 Polymarket / CoinGecko，或稍后在终端查看报错。';
-    }}
-  }}
-
-  document.addEventListener('DOMContentLoaded', function() {{
-    load();
-    setInterval(load, REFRESH_MS);
-  }});
-}})();
-  </script>
-</body>
-</html>"""
+    sec = max(60, int(refresh_sec))
+    tpl = Path(__file__).resolve().parent / "web_ui.html.template"
+    if not tpl.is_file():
+        return "<!DOCTYPE html><html><body><pre>缺少 web_ui.html.template</pre></body></html>"
+    return (
+        tpl.read_text(encoding="utf-8")
+        .replace("__REFRESH_MS__", str(sec * 1000))
+        .replace("__REFRESH_SEC__", str(sec))
+    )
 
 
 def run_web_server(
@@ -712,10 +778,12 @@ def run_web_server(
     refresh_sec: int,
     open_browser: bool,
 ) -> int:
+    eff_top = top_n if top_n is not None else WEB_DEFAULT_TOP
+
     def build_payload() -> dict[str, Any]:
-        return run_once(
+        return assemble_web_api_payload(
             slug,
-            top_n=top_n,
+            top_n=eff_top,
             workers=workers,
             z_alert=z_alert,
             dp_alert=dp_alert,
@@ -741,9 +809,19 @@ def run_web_server(
                     self.end_headers()
                     return
                 if path == "/api.json":
-                    payload = build_payload()
-                    raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-                    self.send_response(200)
+                    try:
+                        payload = build_payload()
+                        raw = json_dumps_bytes(payload)
+                        self.send_response(200)
+                    except Exception as e:
+                        err_obj = {
+                            "ok": False,
+                            "error": str(e),
+                            "trace": traceback.format_exc(),
+                        }
+                        print(err_obj["trace"], file=sys.stderr)
+                        raw = json_dumps_bytes(err_obj)
+                        self.send_response(500)
                     self.send_header("Content-Type", "application/json; charset=utf-8")
                     self.send_header("Cache-Control", "no-store")
                     self.send_header("Content-Length", str(len(raw)))
@@ -772,7 +850,8 @@ def run_web_server(
     httpd = ThreadingHTTPServer((host, port), _Handler)
     url = f"http://{host}:{port}/"
     print(f"本地监测页面（中文）：{url}")
-    print("首页会立即返回；表格数据由浏览器请求 /api.json 加载（首次可能需几十秒）。")
+    print(f"网页模式每次分析合约数（--top 未指定时默认 {WEB_DEFAULT_TOP}，减轻 500 与超时）。")
+    print("首页立即打开；曲线与表格由 /api.json 提供（约 1 小时粒度 + 本地快照追加）。")
     print("按 Ctrl+C 停止服务。")
     if open_browser:
 
@@ -801,7 +880,7 @@ def _snaps_from_payload(payload: dict[str, Any]) -> list[MarketSnap]:
                 mid=float(m["mid_yes"]),
                 spread=float(m["spread"]),
                 vol24=float(m["volume24hr_clob"]),
-                liq=float(m["liquidity_clob"]),
+                liq=float(m.get("liquidity_clob") or 0.0),
                 bid_depth3=float(m["bid_depth3"]),
                 ask_depth3=float(m["ask_depth3"]),
                 dp_5m=m.get("dp_5m"),
@@ -840,8 +919,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument(
         "--web-refresh",
         type=int,
-        default=60,
-        help="网页自动刷新间隔（秒，meta refresh）",
+        default=3600,
+        help="浏览器轮询 /api.json 的间隔（秒），默认 3600（1 小时）",
     )
     p.add_argument("--no-browser", action="store_true", help="启动网页服务但不自动打开浏览器")
     args = p.parse_args(argv)
@@ -870,7 +949,7 @@ def main(argv: list[str] | None = None) -> int:
             lead_lag=not args.no_lead_lag,
             host=args.web_host,
             port=args.web_port,
-            refresh_sec=max(5, args.web_refresh),
+            refresh_sec=max(60, args.web_refresh),
             open_browser=not args.no_browser,
         )
 
