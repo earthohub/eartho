@@ -1,0 +1,176 @@
+{
+  "zh": {
+    "siteName": "中葡气候与能源联合研究院",
+    "siteNameShort": "中葡气候与能源研究院",
+    "tagline": "推动气候与能源领域的跨国科研合作",
+    "nav": {
+      "home": "首页",
+      "about": "关于我们",
+      "research": "研究方向",
+      "news": "新闻动态",
+      "contact": "联系我们"
+    },
+    "hero": {
+      "title": "中葡气候与能源联合研究院",
+      "subtitle": "China-Portugal Joint Research Institute on Climate and Energy",
+      "description": "汇聚中国与葡萄牙及欧洲伙伴的科研力量，聚焦气候变化、清洁能源与可持续发展，开展高水平联合研究与人才培养。",
+      "ctaPrimary": "了解我们",
+      "ctaSecondary": "最新动态"
+    },
+    "home": {
+      "missionTitle": "使命",
+      "missionText": "以科学创新回应全球气候挑战，促进中葡及国际学术与产业合作，为政策制定与能源转型提供可靠的知识支撑。",
+      "pillarsTitle": "核心领域",
+      "pillars": [
+        {
+          "title": "气候变化",
+          "description": "气候系统监测、影响评估与适应策略研究。"
+        },
+        {
+          "title": "清洁能源",
+          "description": "可再生能源、储能技术与低碳能源系统。"
+        },
+        {
+          "title": "政策与治理",
+          "description": "能源政策、碳市场与国际气候治理比较研究。"
+        }
+      ],
+      "newsTitle": "最新动态",
+      "newsViewAll": "查看全部新闻",
+      "partnersTitle": "合作网络",
+      "partnersText": "与国内外高校、研究机构及产业伙伴建立长期合作关系。具体合作单位名单可在上传原有网站材料后补充更新。"
+    },
+    "about": {
+      "title": "关于我们",
+      "intro": "中葡气候与能源联合研究院是面向气候与能源议题的国际合作研究平台，致力于搭建跨学科、跨文化的科研与人才交流桥梁。",
+      "visionTitle": "愿景",
+      "vision": "成为中葡及欧洲气候与能源领域具有影响力的联合研究枢纽。",
+      "valuesTitle": "价值观",
+      "values": ["科学严谨", "开放合作", "面向社会", "可持续发展"]
+    },
+    "research": {
+      "title": "研究方向",
+      "intro": "研究院围绕气候科学、清洁能源与政策分析三大主线开展联合研究，支持博士后与研究生培养，并组织国际研讨会与联合项目。",
+      "areas": [
+        {
+          "title": "气候科学与适应",
+          "items": ["区域气候模拟与预测", "极端天气与灾害风险", "城市与农业适应"]
+        },
+        {
+          "title": "能源转型与技术",
+          "items": ["光伏、风电与海上能源", "氢能与储能", "综合能源系统优化"]
+        },
+        {
+          "title": "社会经济与政策",
+          "items": ["碳中和路径", "能源-经济-环境模型", "中欧政策比较"]
+        }
+      ]
+    },
+    "news": {
+      "title": "新闻动态",
+      "intro": "了解研究院最新活动、学术成果与合作进展。",
+      "readMore": "阅读全文",
+      "back": "返回新闻列表"
+    },
+    "contact": {
+      "title": "联系我们",
+      "intro": "欢迎学术合作、媒体问询与访问交流。具体地址与联系方式可在上传原有网站材料后更新。",
+      "email": "联系邮箱",
+      "emailValue": "contact@example.org",
+      "address": "通讯地址",
+      "addressValue": "（待补充）",
+      "note": "您可将原网站的联系信息、地图与办公时间等材料提供给我们，以便同步至本站。"
+    },
+    "footer": {
+      "rights": "版权所有",
+      "tagline": "China-Portugal Joint Research Institute on Climate and Energy"
+    }
+  },
+  "en": {
+    "siteName": "China-Portugal Joint Research Institute on Climate and Energy",
+    "siteNameShort": "CP-JRI Climate & Energy",
+    "tagline": "Advancing transnational research on climate and energy",
+    "nav": {
+      "home": "Home",
+      "about": "About",
+      "research": "Research",
+      "news": "News",
+      "contact": "Contact"
+    },
+    "hero": {
+      "title": "China-Portugal Joint Research Institute on Climate and Energy",
+      "subtitle": "中葡气候与能源联合研究院",
+      "description": "Bringing together research communities from China, Portugal, and Europe to address climate change, clean energy, and sustainable development through collaborative science and education.",
+      "ctaPrimary": "About Us",
+      "ctaSecondary": "Latest News"
+    },
+    "home": {
+      "missionTitle": "Mission",
+      "missionText": "We advance scientific solutions to global climate challenges, strengthen China–Portugal and international partnerships, and provide evidence for policy and the energy transition.",
+      "pillarsTitle": "Focus Areas",
+      "pillars": [
+        {
+          "title": "Climate Change",
+          "description": "Monitoring, impact assessment, and adaptation strategies."
+        },
+        {
+          "title": "Clean Energy",
+          "description": "Renewables, storage, and low-carbon energy systems."
+        },
+        {
+          "title": "Policy & Governance",
+          "description": "Energy policy, carbon markets, and international climate governance."
+        }
+      ],
+      "newsTitle": "Latest News",
+      "newsViewAll": "View all news",
+      "partnersTitle": "Partnerships",
+      "partnersText": "We collaborate with universities, research institutes, and industry partners worldwide. Partner listings can be updated when legacy site materials are provided."
+    },
+    "about": {
+      "title": "About Us",
+      "intro": "The Institute is an international platform for climate and energy research, fostering interdisciplinary collaboration and exchange across cultures.",
+      "visionTitle": "Vision",
+      "vision": "To serve as a leading hub for China–Portugal and European cooperation in climate and energy research.",
+      "valuesTitle": "Values",
+      "values": ["Scientific rigor", "Open collaboration", "Societal relevance", "Sustainability"]
+    },
+    "research": {
+      "title": "Research",
+      "intro": "Our work spans climate science, clean energy, and policy analysis. We support postdoctoral and graduate training and host international workshops and joint projects.",
+      "areas": [
+        {
+          "title": "Climate Science & Adaptation",
+          "items": ["Regional climate modeling", "Extreme events and risk", "Urban and agricultural adaptation"]
+        },
+        {
+          "title": "Energy Transition & Technology",
+          "items": ["Solar, wind, and offshore energy", "Hydrogen and storage", "Integrated energy systems"]
+        },
+        {
+          "title": "Socio-economics & Policy",
+          "items": ["Net-zero pathways", "Energy–economy–environment models", "EU–China policy comparison"]
+        }
+      ]
+    },
+    "news": {
+      "title": "News",
+      "intro": "Updates on events, publications, and partnerships.",
+      "readMore": "Read more",
+      "back": "Back to news"
+    },
+    "contact": {
+      "title": "Contact",
+      "intro": "For academic collaboration, media inquiries, or visits. Address and contact details can be updated when legacy site materials are provided.",
+      "email": "Email",
+      "emailValue": "contact@example.org",
+      "address": "Address",
+      "addressValue": "(To be updated)",
+      "note": "You may share contact details, maps, and office hours from your previous website to sync here."
+    },
+    "footer": {
+      "rights": "All rights reserved",
+      "tagline": "中葡气候与能源联合研究院"
+    }
+  }
+}

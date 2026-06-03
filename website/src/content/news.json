@@ -1,0 +1,47 @@
+[
+  {
+    "id": "institute-launch",
+    "date": "2025-09-01",
+    "featured": true,
+    "zh": {
+      "title": "研究院官方网站上线",
+      "summary": "中葡气候与能源联合研究院新版官方网站正式发布，将持续发布学术动态与合作信息。",
+      "body": "欢迎访问中葡气候与能源联合研究院官方网站。本站将集中展示研究院概况、研究方向与新闻动态，为合作伙伴与公众提供统一的信息入口。\n\n后续您可将原网站的新闻稿件、图片与活动记录迁移至 `src/content/news.json` 或按 README 说明添加新条目。"
+    },
+    "en": {
+      "title": "Institute website launched",
+      "summary": "The new official website of the China-Portugal Joint Research Institute on Climate and Energy is now live.",
+      "body": "Welcome to the official website of the China-Portugal Joint Research Institute on Climate and Energy. This site presents our profile, research areas, and news updates in one place.\n\nLegacy news articles, images, and event records can be migrated to `src/content/news.json` or added following the README instructions."
+    }
+  },
+  {
+    "id": "research-seminar",
+    "date": "2025-06-15",
+    "featured": true,
+    "zh": {
+      "title": "联合学术研讨会（示例）",
+      "summary": "中葡双方学者围绕清洁能源与气候政策开展交流研讨。",
+      "body": "此为示例新闻条目，用于展示新闻列表与详情页版式。上传原有网站材料后，可替换为真实活动报道、嘉宾介绍与现场照片链接。"
+    },
+    "en": {
+      "title": "Joint academic seminar (sample)",
+      "summary": "Scholars from China and Portugal exchanged views on clean energy and climate policy.",
+      "body": "This is a sample news item demonstrating the list and detail layouts. Replace it with real event coverage, speaker bios, and photo links when legacy materials are available."
+    }
+  },
+  {
+    "id": "fellowship-call",
+    "date": "2025-03-10",
+    "featured": false,
+    "zh": {
+      "title": "访问学者计划征集（示例）",
+      "summary": "欢迎国内外研究人员申请短期访问与交流项目。",
+      "body": "示例内容：具体申请条件、截止日期与联系方式可在确定后更新至本条目。"
+    },
+    "en": {
+      "title": "Visiting fellowship call (sample)",
+      "summary": "Researchers are invited to apply for short-term visits and exchange programs.",
+      "body": "Sample content: application requirements, deadlines, and contact information can be added to this entry when finalized."
+    }
+  }
+]
