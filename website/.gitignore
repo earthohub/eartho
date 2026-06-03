@@ -34,5 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-website/AGENTS.md
-website/CLAUDE.md
+
+# auto-generated agent docs (create-next-app)
+AGENTS.md
+CLAUDE.md
