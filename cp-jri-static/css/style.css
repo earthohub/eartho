@@ -1,0 +1,474 @@
+/* 中葡气候与能源联合研究院 — 静态官网 */
+:root {
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --text: #1c1917;
+  --muted: #57534e;
+  --primary: #0c4a6e;
+  --primary-dark: #082f49;
+  --accent: #0f766e;
+  --border: #e7e5e4;
+  --hero: linear-gradient(135deg, #082f49 0%, #0c4a6e 45%, #0f766e 100%);
+  --font-sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  --max: 1120px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--bg);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(247, 246, 243, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  flex-wrap: wrap;
+}
+
+.brand {
+  color: var(--primary-dark);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.brand:hover {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.brand small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.nav-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-main a {
+  display: block;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.nav-main a:hover,
+.nav-main a.active {
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-main .has-sub {
+  position: relative;
+}
+
+.nav-main .sub {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 0.35rem;
+  list-style: none;
+  margin: 0.25rem 0 0;
+}
+
+.nav-main .has-sub:hover .sub {
+  display: block;
+}
+
+.nav-main .sub a {
+  border-radius: 0.35rem;
+}
+
+.lang-toggle button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-left: 0.2rem;
+}
+
+.lang-toggle button.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* Hero */
+.hero {
+  background: var(--hero);
+  color: #fff;
+  padding: 3.5rem 0 4rem;
+}
+
+.hero h1 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin: 0 0 0.75rem;
+  line-height: 1.2;
+}
+
+.hero .en-title {
+  opacity: 0.85;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  max-width: 40rem;
+  opacity: 0.9;
+  margin: 0 0 1.5rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn-primary {
+  background: #fff;
+  color: var(--primary-dark);
+}
+
+.btn-outline {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+}
+
+/* Sections */
+.section {
+  padding: 3rem 0;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--primary-dark);
+  margin: 0 0 1.25rem;
+}
+
+.card-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--primary-dark);
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.page-header {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--primary-dark);
+  margin: 0 0 0.5rem;
+}
+
+.page-header .lead {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 42rem;
+  margin: 0;
+}
+
+/* News */
+.search-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-bar input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+
+.search-bar input:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
+
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.news-item {
+  border-bottom: 1px solid var(--border);
+  padding: 1.25rem 0;
+}
+
+.news-item.hidden {
+  display: none;
+}
+
+.news-item time {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.news-item h2 {
+  font-size: 1.15rem;
+  margin: 0.35rem 0;
+  font-weight: 600;
+}
+
+.news-item h2 a {
+  color: var(--primary-dark);
+  text-decoration: none;
+}
+
+.news-item h2 a:hover {
+  color: var(--accent);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  background: #ecfdf5;
+  color: #047857;
+  border-radius: 4px;
+  margin-right: 0.25rem;
+}
+
+/* Article */
+.article-body {
+  max-width: 42rem;
+}
+
+.article-body p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+.article-body img {
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+}
+
+.figure-banner {
+  border-radius: 1rem;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+}
+
+/* Schedule table */
+.schedule {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: var(--surface);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.schedule th,
+.schedule td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.schedule th {
+  background: var(--primary-dark);
+  color: #fff;
+  font-weight: 500;
+}
+
+.schedule tr:last-child td {
+  border-bottom: none;
+}
+
+.schedule .session {
+  font-weight: 600;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.dept-banner {
+  margin: 0 0 2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* Footer */
+.site-footer {
+  background: var(--primary-dark);
+  color: #cbd5e1;
+  padding: 2.5rem 0;
+  margin-top: 3rem;
+  font-size: 0.875rem;
+}
+
+.site-footer a {
+  color: #e2e8f0;
+}
+
+.footer-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.site-footer strong {
+  color: #fff;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.breadcrumb {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.breadcrumb a {
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .nav-main {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.25rem;
+  }
+
+  .schedule {
+    font-size: 0.8rem;
+  }
+
+  .schedule th,
+  .schedule td {
+    padding: 0.5rem;
+  }
+}
+
+[data-lang="en"] .zh-only {
+  display: none !important;
+}
+
+[data-lang="zh"] .en-only {
+  display: none !important;
+}

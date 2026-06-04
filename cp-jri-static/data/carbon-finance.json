@@ -1,0 +1,40 @@
+{
+  "zh": {
+    "title": "碳金融",
+    "subtitle": "碳科技创新创业金融",
+    "intro": "碳金融是指旨在减少温室气体排放的各种金融制度安排和金融交易活动，既包括碳排放权及其衍生品的交易、低碳项目开发的投融资，也包括银行的绿色信贷以及其他相关金融中介活动。推动碳金融发展、促进碳科技创新与创业，对实现「双碳」战略目标具有重要意义。",
+    "sections": [
+      {
+        "title": "碳科技创新创业实践",
+        "body": "征集石油大学校内低碳和碳减排技术、碳金融产品开发与服务、新能源开发等方向的师生创新创业项目，进行项目培育和金融服务支持，推动低碳技术成果转化与产业化。指导团队参加「挑战杯」、全国大学生能源经济学术创意大赛等赛事。"
+      },
+      {
+        "title": "碳金融课程",
+        "body": "与爱丁堡大学等开展碳金融教学国际合作，开设《能源金融》《能源金融、市场与政策》《能源金融与数据分析》等课程，培养碳金融与能源金融交叉人才。"
+      },
+      {
+        "title": "碳金融科研",
+        "body": "围绕碳市场、绿色金融、能源转型开展学术研究，支撑中葡气候与能源联合研究院相关课题与政策咨询。"
+      }
+    ]
+  },
+  "en": {
+    "title": "Carbon Finance",
+    "subtitle": "Carbon Innovation & Entrepreneurship Finance",
+    "intro": "Carbon finance covers financial arrangements and transactions aimed at reducing greenhouse gas emissions, including carbon trading, low-carbon project financing, and green credit.",
+    "sections": [
+      {
+        "title": "Innovation & Practice",
+        "body": "Supporting campus low-carbon startups, carbon finance products, and new energy projects with incubation and financial services."
+      },
+      {
+        "title": "Education",
+        "body": "International cooperation with the University of Edinburgh and courses in energy and carbon finance."
+      },
+      {
+        "title": "Research",
+        "body": "Research on carbon markets, green finance, and energy transition supporting the joint institute."
+      }
+    ]
+  }
+}
