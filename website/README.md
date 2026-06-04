@@ -71,3 +71,14 @@ npm start
 - [Next.js](https://nextjs.org)（App Router）
 - [Tailwind CSS](https://tailwindcss.com)
 - 内容：JSON 文件，便于非开发人员维护
+
+## 原站归档（nft.cup.edu.cn）
+
+已从 [https://nft.cup.edu.cn/](https://nft.cup.edu.cn/) 抓取区块链金融研究中心站点内容（含中葡研究院揭牌新闻），保存在 **`legacy-source/`**：
+
+- `legacy-source/html/` — 原始 HTML（40 页）
+- `legacy-source/images/` — 图片资源
+- `legacy-source/manifest.json` — 页面索引与正文抽取
+- `legacy-source/scraped-news.json` — 新闻/公告结构化列表
+
+重新抓取：`python3 scripts/scrape-legacy-site.py`

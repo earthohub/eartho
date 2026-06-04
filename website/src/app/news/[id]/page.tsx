@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import { formatDate, getNewsById, getNewsLocale } from "@/lib/content";
@@ -17,6 +18,7 @@ export default function NewsDetailPage() {
 
   const content = getNewsLocale(item, locale);
   const paragraphs = content.body.split("\n\n").filter(Boolean);
+  const images = item.images ?? [];
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
@@ -41,6 +43,26 @@ export default function NewsDetailPage() {
       <p className="mt-6 text-lg leading-relaxed text-stone-600">
         {content.summary}
       </p>
+
+      {images.length > 0 ? (
+        <div className="mt-10 space-y-6">
+          {images.map((src) => (
+            <figure
+              key={src}
+              className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-50"
+            >
+              <Image
+                src={src}
+                alt=""
+                width={1200}
+                height={800}
+                className="h-auto w-full object-cover"
+                sizes="(max-width: 768px) 100vw, 720px"
+              />
+            </figure>
+          ))}
+        </div>
+      ) : null}
 
       <div className="prose-news mt-10 border-t border-stone-200 pt-10">
         {paragraphs.map((paragraph) => (

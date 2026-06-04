@@ -42,11 +42,16 @@
     },
     "about": {
       "title": "关于我们",
-      "intro": "中葡气候与能源联合研究院是面向气候与能源议题的国际合作研究平台，致力于搭建跨学科、跨文化的科研与人才交流桥梁。",
+      "intro": "中葡气候与能源联合研究院由中国石油大学（北京）与葡萄牙里斯本高等理工学院（IST）共建。2024年10月11日，双方于里斯本举行签约暨揭牌仪式，面向气候变化、清洁能源与碳中和未来技术开展联合研究与人才培养。",
       "visionTitle": "愿景",
       "vision": "成为中葡及欧洲气候与能源领域具有影响力的联合研究枢纽。",
       "valuesTitle": "价值观",
-      "values": ["科学严谨", "开放合作", "面向社会", "可持续发展"]
+      "values": [
+        "科学严谨",
+        "开放合作",
+        "面向社会",
+        "可持续发展"
+      ]
     },
     "research": {
       "title": "研究方向",
@@ -54,15 +59,27 @@
       "areas": [
         {
           "title": "气候科学与适应",
-          "items": ["区域气候模拟与预测", "极端天气与灾害风险", "城市与农业适应"]
+          "items": [
+            "区域气候模拟与预测",
+            "极端天气与灾害风险",
+            "城市与农业适应"
+          ]
         },
         {
           "title": "能源转型与技术",
-          "items": ["光伏、风电与海上能源", "氢能与储能", "综合能源系统优化"]
+          "items": [
+            "光伏、风电与海上能源",
+            "氢能与储能",
+            "综合能源系统优化"
+          ]
         },
         {
           "title": "社会经济与政策",
-          "items": ["碳中和路径", "能源-经济-环境模型", "中欧政策比较"]
+          "items": [
+            "碳中和路径",
+            "能源-经济-环境模型",
+            "中欧政策比较"
+          ]
         }
       ]
     },
@@ -76,9 +93,9 @@
       "title": "联系我们",
       "intro": "欢迎学术合作、媒体问询与访问交流。具体地址与联系方式可在上传原有网站材料后更新。",
       "email": "联系邮箱",
-      "emailValue": "contact@example.org",
+      "emailValue": "zong@cup.edu.cn",
       "address": "通讯地址",
-      "addressValue": "（待补充）",
+      "addressValue": "北京市昌平区府学路18号（中国石油大学北京）",
       "note": "您可将原网站的联系信息、地图与办公时间等材料提供给我们，以便同步至本站。"
     },
     "footer": {
@@ -129,11 +146,16 @@
     },
     "about": {
       "title": "About Us",
-      "intro": "The Institute is an international platform for climate and energy research, fostering interdisciplinary collaboration and exchange across cultures.",
+      "intro": "The China-Portugal Joint Research Institute on Climate and Energy is co-established by China University of Petroleum (Beijing) and Instituto Superior Técnico (IST), Lisbon. On 11 October 2024, the two universities held a signing and unveiling ceremony in Lisbon to advance joint research and education in climate change, clean energy, and carbon-neutrality technologies.",
       "visionTitle": "Vision",
       "vision": "To serve as a leading hub for China–Portugal and European cooperation in climate and energy research.",
       "valuesTitle": "Values",
-      "values": ["Scientific rigor", "Open collaboration", "Societal relevance", "Sustainability"]
+      "values": [
+        "Scientific rigor",
+        "Open collaboration",
+        "Societal relevance",
+        "Sustainability"
+      ]
     },
     "research": {
       "title": "Research",
@@ -141,15 +163,27 @@
       "areas": [
         {
           "title": "Climate Science & Adaptation",
-          "items": ["Regional climate modeling", "Extreme events and risk", "Urban and agricultural adaptation"]
+          "items": [
+            "Regional climate modeling",
+            "Extreme events and risk",
+            "Urban and agricultural adaptation"
+          ]
         },
         {
           "title": "Energy Transition & Technology",
-          "items": ["Solar, wind, and offshore energy", "Hydrogen and storage", "Integrated energy systems"]
+          "items": [
+            "Solar, wind, and offshore energy",
+            "Hydrogen and storage",
+            "Integrated energy systems"
+          ]
         },
         {
           "title": "Socio-economics & Policy",
-          "items": ["Net-zero pathways", "Energy–economy–environment models", "EU–China policy comparison"]
+          "items": [
+            "Net-zero pathways",
+            "Energy–economy–environment models",
+            "EU–China policy comparison"
+          ]
         }
       ]
     },
@@ -163,9 +197,9 @@
       "title": "Contact",
       "intro": "For academic collaboration, media inquiries, or visits. Address and contact details can be updated when legacy site materials are provided.",
       "email": "Email",
-      "emailValue": "contact@example.org",
+      "emailValue": "zong@cup.edu.cn",
       "address": "Address",
-      "addressValue": "(To be updated)",
+      "addressValue": "No. 18 Fuxue Road, Changping, Beijing (China University of Petroleum)",
       "note": "You may share contact details, maps, and office hours from your previous website to sync here."
     },
     "footer": {
