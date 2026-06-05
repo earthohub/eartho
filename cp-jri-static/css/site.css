@@ -1,21 +1,19 @@
-/* JRICE — premium dark theme (PPT-inspired) */
+/* JRICE — light theme with China–Portugal accent lines */
 :root {
-  --bg: #0b1628;
-  --bg-elevated: #101f36;
-  --surface: #132640;
-  --surface-soft: #0f1d32;
-  --text: #f1f5f9;
-  --muted: #94a3b8;
-  --line: rgba(148, 163, 184, 0.18);
-  --brand: #f8fafc;
-  --accent: #7eb8ff;
-  --gold: #d4a84b;
+  --bg: #ffffff;
+  --surface: #f6f8fb;
+  --text: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --brand: #0f2942;
+  --accent: #1d4ed8;
+  --gold: #c9a227;
   --red-cn: #c8102e;
   --green-pt: #006847;
   --max: 1080px;
   --font: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-zh: "PingFang SC", "Microsoft YaHei", sans-serif;
-  --accent-bar: 8px;
+  --accent-bar: 6px;
 }
 
 *,
@@ -36,14 +34,13 @@ body {
   color: var(--text);
   background: var(--bg);
   line-height: 1.6;
-  min-height: 100vh;
 }
 
 [data-lang="zh"] body {
   font-family: var(--font-zh), var(--font);
 }
 
-/* China–Portugal accent stripe (PPT left border) */
+/* PPT-style left accent: red + green */
 .site-accent {
   position: fixed;
   left: 0;
@@ -73,7 +70,6 @@ a {
 }
 
 a:hover {
-  color: #a8d4ff;
   text-decoration: underline;
 }
 
@@ -85,9 +81,17 @@ a:hover {
 
 /* Header */
 .site-header {
-  border-bottom: 1px solid var(--line);
-  background: rgba(11, 22, 40, 0.92);
-  backdrop-filter: blur(10px);
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(
+    90deg,
+    var(--red-cn) 0,
+    var(--red-cn) 33%,
+    var(--brand) 33%,
+    var(--brand) 66%,
+    var(--green-pt) 66%,
+    var(--green-pt) 100%
+  ) 1;
+  background: var(--bg);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -111,16 +115,15 @@ a:hover {
 
 .logo strong {
   font-size: 1.15rem;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   font-weight: 700;
 }
 
 .logo span {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--muted);
   letter-spacing: 0.02em;
   font-weight: 400;
-  max-width: 22rem;
 }
 
 .nav {
@@ -135,21 +138,22 @@ a:hover {
 .nav a {
   display: block;
   padding: 0.5rem 0.85rem;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   color: var(--muted);
   text-decoration: none;
   border-radius: 2px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   font-weight: 500;
+  border-bottom: 2px solid transparent;
 }
 
 .nav a:hover,
 .nav a.active {
   color: var(--brand);
-  background: rgba(255, 255, 255, 0.06);
+  background: transparent;
   text-decoration: none;
-  box-shadow: inset 0 -2px 0 var(--gold);
+  border-bottom-color: var(--gold);
 }
 
 .lang {
@@ -172,14 +176,14 @@ a:hover {
 }
 
 .lang button.active {
-  background: var(--surface);
-  color: var(--brand);
+  background: var(--brand);
+  color: #fff;
 }
 
 /* Hero */
 .hero {
-  padding: 5rem 0 4rem;
-  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 100%);
+  padding: 4.5rem 0 3.5rem;
+  background: var(--surface);
   border-bottom: 1px solid var(--line);
   position: relative;
 }
@@ -188,14 +192,14 @@ a:hover {
   content: "";
   position: absolute;
   left: 1.5rem;
-  top: 4.5rem;
-  width: 4rem;
+  top: 4.25rem;
+  width: 3.5rem;
   height: 3px;
   background: var(--gold);
 }
 
 .hero h1 {
-  font-size: clamp(1.85rem, 4vw, 2.5rem);
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
   font-weight: 600;
   margin: 0 0 0.75rem;
   color: var(--brand);
@@ -206,7 +210,7 @@ a:hover {
 .hero .tagline {
   font-size: 1.05rem;
   color: var(--muted);
-  max-width: 38rem;
+  max-width: 36rem;
   margin: 0 0 1.75rem;
 }
 
@@ -215,32 +219,32 @@ a:hover {
   margin-right: 0.75rem;
   margin-bottom: 0.5rem;
   padding: 0.65rem 1.2rem;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   border-radius: 2px;
   text-decoration: none;
 }
 
 .btn-dark {
-  background: var(--gold);
-  color: #1a1205 !important;
+  background: var(--brand);
+  color: #fff !important;
 }
 
 .btn-dark:hover {
-  background: #e4bc62;
+  background: #163556;
   text-decoration: none;
 }
 
 .btn-line {
-  border: 1px solid var(--line);
+  border: 1px solid var(--brand);
   color: var(--brand) !important;
 }
 
 .btn-line:hover {
-  border-color: var(--gold);
-  color: var(--gold) !important;
+  border-color: var(--green-pt);
+  color: var(--green-pt) !important;
   text-decoration: none;
 }
 
@@ -250,9 +254,9 @@ a:hover {
 }
 
 .section h2 {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   color: var(--muted);
   margin: 0 0 1.5rem;
   font-weight: 600;
@@ -261,10 +265,10 @@ a:hover {
 .section h2::after {
   content: "";
   display: block;
-  width: 3rem;
+  width: 2.5rem;
   height: 3px;
   background: var(--gold);
-  margin-top: 0.65rem;
+  margin-top: 0.55rem;
 }
 
 .grid-3 {
@@ -274,10 +278,31 @@ a:hover {
 }
 
 .card {
-  padding: 1.5rem 1.25rem;
+  padding: 1.35rem 1.15rem;
+  background: var(--bg);
   border: 1px solid var(--line);
-  border-top: 2px solid var(--gold);
-  background: rgba(19, 38, 64, 0.45);
+  border-top: 3px solid var(--brand);
+  position: relative;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 0;
+  width: 33%;
+  height: 3px;
+  background: var(--red-cn);
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: 0;
+  width: 33%;
+  height: 3px;
+  background: var(--green-pt);
 }
 
 .card h3 {
@@ -294,9 +319,9 @@ a:hover {
 
 /* Page */
 .page-title {
-  padding: 3.5rem 0 2rem;
+  padding: 3rem 0 2rem;
   border-bottom: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 100%);
+  background: var(--surface);
 }
 
 .page-title h1 {
@@ -310,10 +335,10 @@ a:hover {
 .page-title h1::after {
   content: "";
   display: block;
-  width: 3.5rem;
+  width: 3rem;
   height: 3px;
   background: var(--gold);
-  margin-top: 0.75rem;
+  margin-top: 0.65rem;
 }
 
 .page-title .meta {
@@ -332,7 +357,7 @@ a:hover {
 
 .content p {
   margin: 0 0 1.15rem;
-  color: #cbd5e1;
+  color: #334155;
 }
 
 .content img {
@@ -344,7 +369,7 @@ a:hover {
 
 .img-missing {
   padding: 2rem;
-  background: var(--surface-soft);
+  background: var(--surface);
   border: 1px dashed var(--line);
   color: var(--muted);
   font-size: 0.85rem;
@@ -368,12 +393,7 @@ a:hover {
   border-radius: 2px;
   font-size: 0.95rem;
   margin-bottom: 2rem;
-  background: var(--surface-soft);
-  color: var(--text);
-}
-
-.search::placeholder {
-  color: var(--muted);
+  background: var(--bg);
 }
 
 .news-list {
@@ -409,7 +429,7 @@ a:hover {
 }
 
 .news-list h3 a:hover {
-  color: var(--gold);
+  color: var(--accent);
 }
 
 .news-list .src {
@@ -427,7 +447,7 @@ a:hover {
 .schedule-block h3 {
   margin: 0 0 0.35rem;
   font-size: 0.8rem;
-  color: var(--gold);
+  color: var(--green-pt);
   letter-spacing: 0.05em;
 }
 
@@ -440,14 +460,23 @@ a:hover {
 .schedule-block ul {
   margin: 0;
   padding-left: 1.2rem;
-  color: #cbd5e1;
+  color: #334155;
 }
 
 /* Footer */
 .site-footer {
-  border-top: 1px solid var(--line);
-  padding: 2.5rem 0;
-  background: var(--bg-elevated);
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(
+    90deg,
+    var(--red-cn) 0,
+    var(--red-cn) 33%,
+    var(--brand) 33%,
+    var(--brand) 66%,
+    var(--green-pt) 66%,
+    var(--green-pt) 100%
+  ) 1;
+  padding: 2.5rem 0 1.5rem;
+  background: var(--surface);
   font-size: 0.85rem;
   color: var(--muted);
 }
@@ -463,17 +492,18 @@ a:hover {
   color: var(--brand);
   display: block;
   margin-bottom: 0.35rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
 }
 
 .footer-tagline {
-  margin-top: 1.5rem;
+  margin: 1.5rem auto 0;
   padding-top: 1rem;
   border-top: 1px solid var(--line);
   font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: center;
 }
 
 [data-lang="en"] .zh-only {
@@ -490,10 +520,13 @@ a:hover {
     overflow-x: auto;
     flex-wrap: nowrap;
   }
+}
 
-  .logo span {
-    max-width: 14rem;
-  }
+/* Alternate section background */
+.section-alt {
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
 /* Home gallery */
@@ -518,7 +551,7 @@ a:hover {
   cursor: zoom-in;
   border: 1px solid var(--line);
   overflow: hidden;
-  background: var(--surface-soft);
+  background: var(--surface);
   margin: 0;
 }
 
@@ -528,12 +561,11 @@ a:hover {
   object-fit: cover;
   margin: 0;
   border: none;
-  transition: opacity 0.2s, transform 0.25s;
+  transition: opacity 0.2s;
 }
 
 .gallery-item:hover img {
-  opacity: 0.9;
-  transform: scale(1.02);
+  opacity: 0.92;
 }
 
 .gallery-item figcaption {
@@ -558,7 +590,7 @@ a:hover {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(5, 10, 20, 0.94);
+  background: rgba(15, 23, 42, 0.92);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -593,7 +625,7 @@ a:hover {
 .programme-document {
   margin-top: 2rem;
   border: 1px solid var(--line);
-  background: var(--surface-soft);
+  background: var(--surface);
 }
 
 .programme-page {
@@ -612,14 +644,17 @@ a:hover {
   line-height: 1.55;
   white-space: pre-wrap;
   word-wrap: break-word;
-  color: #cbd5e1;
+  color: #334155;
   overflow-x: auto;
 }
 
 .pdf-link a {
-  color: var(--gold);
+  color: var(--brand);
   font-weight: 600;
-  letter-spacing: 0.04em;
+}
+
+.pdf-link a:hover {
+  color: var(--green-pt);
 }
 
 /* Co-directors — uniform portrait frames */
@@ -644,7 +679,7 @@ a:hover {
   display: block;
   cursor: zoom-in;
   border: 1px solid var(--line);
-  background: var(--surface-soft);
+  background: var(--surface);
   overflow: hidden;
   width: 220px;
   height: 280px;
@@ -665,7 +700,7 @@ a:hover {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--gold);
+  color: var(--green-pt);
   font-weight: 600;
   margin: 0;
 }
@@ -684,7 +719,7 @@ a:hover {
 
 .director-body p {
   font-size: 0.92rem;
-  color: #cbd5e1;
+  color: #334155;
   line-height: 1.65;
 }
 
@@ -692,11 +727,4 @@ a:hover {
   font-size: 0.75rem !important;
   color: var(--muted) !important;
   margin-top: 0.5rem !important;
-}
-
-/* Alternate section backgrounds */
-.section-alt {
-  background: var(--surface-soft);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
 }
