@@ -1,15 +1,21 @@
-/* JRICE — public international site */
+/* JRICE — premium dark theme (PPT-inspired) */
 :root {
-  --bg: #ffffff;
-  --surface: #f8fafc;
-  --text: #0f172a;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --brand: #0f2942;
-  --accent: #1d4ed8;
+  --bg: #0b1628;
+  --bg-elevated: #101f36;
+  --surface: #132640;
+  --surface-soft: #0f1d32;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --line: rgba(148, 163, 184, 0.18);
+  --brand: #f8fafc;
+  --accent: #7eb8ff;
+  --gold: #d4a84b;
+  --red-cn: #c8102e;
+  --green-pt: #006847;
   --max: 1080px;
   --font: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-zh: "PingFang SC", "Microsoft YaHei", sans-serif;
+  --accent-bar: 8px;
 }
 
 *,
@@ -25,14 +31,40 @@ html {
 
 body {
   margin: 0;
+  padding-left: var(--accent-bar);
   font-family: var(--font);
   color: var(--text);
   background: var(--bg);
   line-height: 1.6;
+  min-height: 100vh;
 }
 
 [data-lang="zh"] body {
   font-family: var(--font-zh), var(--font);
+}
+
+/* China–Portugal accent stripe (PPT left border) */
+.site-accent {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--accent-bar);
+  z-index: 300;
+  pointer-events: none;
+  display: flex;
+}
+
+.site-accent span {
+  flex: 1;
+}
+
+.accent-red {
+  background: var(--red-cn);
+}
+
+.accent-green {
+  background: var(--green-pt);
 }
 
 a {
@@ -41,6 +73,7 @@ a {
 }
 
 a:hover {
+  color: #a8d4ff;
   text-decoration: underline;
 }
 
@@ -53,7 +86,8 @@ a:hover {
 /* Header */
 .site-header {
   border-bottom: 1px solid var(--line);
-  background: var(--bg);
+  background: rgba(11, 22, 40, 0.92);
+  backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -77,15 +111,16 @@ a:hover {
 
 .logo strong {
   font-size: 1.15rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   font-weight: 700;
 }
 
 .logo span {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--muted);
   letter-spacing: 0.02em;
   font-weight: 400;
+  max-width: 22rem;
 }
 
 .nav {
@@ -100,27 +135,28 @@ a:hover {
 .nav a {
   display: block;
   padding: 0.5rem 0.85rem;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--muted);
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: 2px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: 500;
 }
 
 .nav a:hover,
 .nav a.active {
   color: var(--brand);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.06);
   text-decoration: none;
+  box-shadow: inset 0 -2px 0 var(--gold);
 }
 
 .lang {
   display: flex;
   gap: 0;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 2px;
   overflow: hidden;
 }
 
@@ -136,19 +172,30 @@ a:hover {
 }
 
 .lang button.active {
-  background: var(--brand);
-  color: #fff;
+  background: var(--surface);
+  color: var(--brand);
 }
 
 /* Hero */
 .hero {
-  padding: 4.5rem 0 3.5rem;
-  background: var(--surface);
+  padding: 5rem 0 4rem;
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 100%);
   border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  top: 4.5rem;
+  width: 4rem;
+  height: 3px;
+  background: var(--gold);
 }
 
 .hero h1 {
-  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-size: clamp(1.85rem, 4vw, 2.5rem);
   font-weight: 600;
   margin: 0 0 0.75rem;
   color: var(--brand);
@@ -159,7 +206,7 @@ a:hover {
 .hero .tagline {
   font-size: 1.05rem;
   color: var(--muted);
-  max-width: 36rem;
+  max-width: 38rem;
   margin: 0 0 1.75rem;
 }
 
@@ -168,22 +215,33 @@ a:hover {
   margin-right: 0.75rem;
   margin-bottom: 0.5rem;
   padding: 0.65rem 1.2rem;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  border-radius: 4px;
+  border-radius: 2px;
   text-decoration: none;
 }
 
 .btn-dark {
-  background: var(--brand);
-  color: #fff !important;
+  background: var(--gold);
+  color: #1a1205 !important;
+}
+
+.btn-dark:hover {
+  background: #e4bc62;
+  text-decoration: none;
 }
 
 .btn-line {
   border: 1px solid var(--line);
   color: var(--brand) !important;
+}
+
+.btn-line:hover {
+  border-color: var(--gold);
+  color: var(--gold) !important;
+  text-decoration: none;
 }
 
 /* Sections */
@@ -192,12 +250,21 @@ a:hover {
 }
 
 .section h2 {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   color: var(--muted);
   margin: 0 0 1.5rem;
   font-weight: 600;
+}
+
+.section h2::after {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 3px;
+  background: var(--gold);
+  margin-top: 0.65rem;
 }
 
 .grid-3 {
@@ -207,8 +274,10 @@ a:hover {
 }
 
 .card {
-  padding: 1.5rem 0;
-  border-top: 2px solid var(--brand);
+  padding: 1.5rem 1.25rem;
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--gold);
+  background: rgba(19, 38, 64, 0.45);
 }
 
 .card h3 {
@@ -225,8 +294,9 @@ a:hover {
 
 /* Page */
 .page-title {
-  padding: 3rem 0 2rem;
+  padding: 3.5rem 0 2rem;
   border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 100%);
 }
 
 .page-title h1 {
@@ -235,6 +305,15 @@ a:hover {
   font-weight: 600;
   color: var(--brand);
   letter-spacing: -0.02em;
+}
+
+.page-title h1::after {
+  content: "";
+  display: block;
+  width: 3.5rem;
+  height: 3px;
+  background: var(--gold);
+  margin-top: 0.75rem;
 }
 
 .page-title .meta {
@@ -253,7 +332,7 @@ a:hover {
 
 .content p {
   margin: 0 0 1.15rem;
-  color: #334155;
+  color: #cbd5e1;
 }
 
 .content img {
@@ -265,7 +344,7 @@ a:hover {
 
 .img-missing {
   padding: 2rem;
-  background: var(--surface);
+  background: var(--surface-soft);
   border: 1px dashed var(--line);
   color: var(--muted);
   font-size: 0.85rem;
@@ -275,7 +354,7 @@ a:hover {
 .source-note {
   font-size: 0.8rem;
   color: var(--muted);
-  border-left: 3px solid var(--line);
+  border-left: 3px solid var(--gold);
   padding-left: 1rem;
   margin-top: 2rem;
 }
@@ -286,9 +365,15 @@ a:hover {
   max-width: 28rem;
   padding: 0.7rem 1rem;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 2px;
   font-size: 0.95rem;
   margin-bottom: 2rem;
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+.search::placeholder {
+  color: var(--muted);
 }
 
 .news-list {
@@ -324,7 +409,7 @@ a:hover {
 }
 
 .news-list h3 a:hover {
-  color: var(--accent);
+  color: var(--gold);
 }
 
 .news-list .src {
@@ -342,7 +427,7 @@ a:hover {
 .schedule-block h3 {
   margin: 0 0 0.35rem;
   font-size: 0.8rem;
-  color: var(--accent);
+  color: var(--gold);
   letter-spacing: 0.05em;
 }
 
@@ -355,14 +440,14 @@ a:hover {
 .schedule-block ul {
   margin: 0;
   padding-left: 1.2rem;
-  color: #334155;
+  color: #cbd5e1;
 }
 
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--line);
   padding: 2.5rem 0;
-  background: var(--surface);
+  background: var(--bg-elevated);
   font-size: 0.85rem;
   color: var(--muted);
 }
@@ -378,7 +463,17 @@ a:hover {
   color: var(--brand);
   display: block;
   margin-bottom: 0.35rem;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
+}
+
+.footer-tagline {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 [data-lang="en"] .zh-only {
@@ -394,6 +489,10 @@ a:hover {
     width: 100%;
     overflow-x: auto;
     flex-wrap: nowrap;
+  }
+
+  .logo span {
+    max-width: 14rem;
   }
 }
 
@@ -415,10 +514,12 @@ a:hover {
 }
 
 .gallery-item {
-  margin: 0;
+  display: block;
+  cursor: zoom-in;
   border: 1px solid var(--line);
-  background: var(--surface);
   overflow: hidden;
+  background: var(--surface-soft);
+  margin: 0;
 }
 
 .gallery-item img {
@@ -427,6 +528,12 @@ a:hover {
   object-fit: cover;
   margin: 0;
   border: none;
+  transition: opacity 0.2s, transform 0.25s;
+}
+
+.gallery-item:hover img {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 
 .gallery-item figcaption {
@@ -441,27 +548,6 @@ a:hover {
 }
 
 /* Lightbox */
-.gallery-item {
-  display: block;
-  cursor: zoom-in;
-  border: 1px solid var(--line);
-  overflow: hidden;
-  background: var(--surface);
-}
-
-.gallery-item img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  margin: 0;
-  border: none;
-  transition: opacity 0.2s;
-}
-
-.gallery-item:hover img {
-  opacity: 0.92;
-}
-
 .content-img-link {
   display: block;
   cursor: zoom-in;
@@ -472,7 +558,7 @@ a:hover {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(15, 23, 42, 0.92);
+  background: rgba(5, 10, 20, 0.94);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -507,7 +593,7 @@ a:hover {
 .programme-document {
   margin-top: 2rem;
   border: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--surface-soft);
 }
 
 .programme-page {
@@ -526,11 +612,17 @@ a:hover {
   line-height: 1.55;
   white-space: pre-wrap;
   word-wrap: break-word;
-  color: #334155;
+  color: #cbd5e1;
   overflow-x: auto;
 }
 
-/* Co-directors */
+.pdf-link a {
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Co-directors — uniform portrait frames */
 .directors-section {
   border-top: 1px solid var(--line);
 }
@@ -538,7 +630,8 @@ a:hover {
 .directors-grid {
   display: grid;
   gap: 2.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  align-items: start;
 }
 
 .director-card {
@@ -551,24 +644,28 @@ a:hover {
   display: block;
   cursor: zoom-in;
   border: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--surface-soft);
   overflow: hidden;
-  max-width: 220px;
+  width: 220px;
+  height: 280px;
+  flex-shrink: 0;
 }
 
 .director-photo-link img {
   width: 100%;
-  height: auto;
+  height: 100%;
   margin: 0;
   border: none;
   display: block;
+  object-fit: cover;
+  object-position: center 15%;
 }
 
 .director-role {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--accent);
+  color: var(--gold);
   font-weight: 600;
   margin: 0;
 }
@@ -587,7 +684,7 @@ a:hover {
 
 .director-body p {
   font-size: 0.92rem;
-  color: #334155;
+  color: #cbd5e1;
   line-height: 1.65;
 }
 
@@ -595,4 +692,11 @@ a:hover {
   font-size: 0.75rem !important;
   color: var(--muted) !important;
   margin-top: 0.5rem !important;
+}
+
+/* Alternate section backgrounds */
+.section-alt {
+  background: var(--surface-soft);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }

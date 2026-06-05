@@ -191,6 +191,7 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
   <link rel="stylesheet" href="{p}css/site.css">
 </head>
 <body>
+<div class="site-accent" aria-hidden="true"><span class="accent-red"></span><span class="accent-green"></span></div>
 <header class="site-header">
   <div class="wrap header-row">
     <a class="logo" href="{p}index.html">
@@ -217,6 +218,8 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
       {contacts_html(compact=True)}
     </div>
   </div>
+  <p class="footer-tagline wrap en-only">Green Energy | AI for Science | Youth Collaboration</p>
+  <p class="footer-tagline wrap zh-only">绿色能源 | AI 科学 | 青年合作</p>
 </footer>
 <div id="lightbox" class="lightbox" hidden aria-hidden="true">
   <button type="button" class="lightbox-close" aria-label="Close">&times;</button>
@@ -287,7 +290,7 @@ def build_index() -> None:
   </div>
 </section>
 {{gallery}}
-<section class="section" style="background:var(--surface);border-top:1px solid var(--line)">
+<section class="section section-alt">
   <div class="wrap">
     <h2 class="en-only">Latest</h2>
     <h2 class="zh-only">最新动态</h2>
@@ -371,7 +374,7 @@ def about_links_section() -> str:
 </li>"""
         )
     return f"""
-<section class="section" style="background:var(--surface);border-top:1px solid var(--line)">
+<section class="section section-alt">
   <div class="wrap content wide">
     <h2 class="en-only">Related coverage</h2>
     <h2 class="zh-only">相关报道</h2>
