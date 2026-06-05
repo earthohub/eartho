@@ -11,6 +11,7 @@ INSTITUTE_FILE = ROOT / "data/institute.json"
 CONTACT_FILE = ROOT / "data/contact.json"
 GALLERY_FILE = ROOT / "data/home-gallery.json"
 PROGRAMME_FILE = ROOT / "data/forum-2026-from-pdf.txt"
+ABOUT_LINKS_FILE = ROOT / "data/about-links.json"
 HOME_IMG_DIR = ROOT / "images/home"
 IMG_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
@@ -51,9 +52,11 @@ def home_gallery_items() -> list[dict]:
     if not HOME_IMG_DIR.exists():
         return []
     items = []
+    skip = {"16.jpg", "16.jpeg", "16.png", "16.JPG", "16.JPEG", "16.PNG"}
     for f in sorted(HOME_IMG_DIR.iterdir()):
-        if f.suffix.lower() in IMG_EXT:
-            items.append({"src": f"images/home/{f.name}", "caption": ""})
+        if f.name in skip or f.suffix.lower() not in IMG_EXT:
+            continue
+        items.append({"src": f"images/home/{f.name}", "caption": ""})
     return items
 
 
@@ -254,8 +257,12 @@ def build_index() -> None:
         <h3><a href="events/forum-2026.html"><span class="zh-only">2026 中葡气候与能源科技交流论坛</span><span class="en-only">2026 China-Portugal Science &amp; Technology Forum on Climate and Energy</span></a></h3>
       </li>
       <li>
-        <time datetime="2024-10-22">2024-10-22</time>
-        <h3><a href="news/inauguration-lisbon-2024.html"><span class="zh-only">中新社：中葡气候与能源联合研究院在葡萄牙里斯本揭牌成立</span><span class="en-only">Institute inaugurated in Lisbon (Xinhua)</span></a></h3>
+        <time datetime="2024-10-09">2024-10-09</time>
+        <h3><a href="news/tecnico-ai-laboratory-2024.html"><span class="zh-only">Técnico：AI for Climate and Energy 合作协议</span><span class="en-only">Técnico: AI for Climate and Energy laboratory</span></a></h3>
+      </li>
+      <li>
+        <time datetime="2024-10-11">2024-10-11</time>
+        <h3><a href="news/embassy-inauguration-2024.html"><span class="zh-only">中国驻葡萄牙大使馆：赵本堂大使出席揭牌仪式</span><span class="en-only">Chinese Embassy: Ambassador at JRICE opening</span></a></h3>
       </li>
     </ul>
     <p style="margin-top:1.5rem"><a href="news/index.html" class="en-only">All news →</a><a href="news/index.html" class="zh-only">全部新闻 →</a></p>
@@ -265,6 +272,34 @@ def build_index() -> None:
     body = body.replace("{gallery}", home_gallery_section())
     write("index.html", shell("index.html", 0, "Home", body))
 
+
+
+
+def about_links_section() -> str:
+    if not ABOUT_LINKS_FILE.exists():
+        return ""
+    links = json.loads(ABOUT_LINKS_FILE.read_text(encoding="utf-8"))
+    items = []
+    for link in links:
+        items.append(
+            f"""<li>
+  <time datetime="{esc(link['date'])}">{esc(link['date'])}</time>
+  <span class="src"><span class="zh-only">{esc(link['source_zh'])}</span><span class="en-only">{esc(link['source_en'])}</span></span>
+  <h3><a href="{esc(link['url'])}" target="_blank" rel="noopener"><span class="zh-only">{esc(link['title_zh'])}</span><span class="en-only">{esc(link['title_en'])}</span></a></h3>
+</li>"""
+        )
+    return f"""
+<section class="section" style="background:var(--surface);border-top:1px solid var(--line)">
+  <div class="wrap content wide">
+    <h2 class="en-only">Related coverage</h2>
+    <h2 class="zh-only">相关报道</h2>
+    <p class="gallery-hint en-only">Official and partner news about JRICE (external links).</p>
+    <p class="gallery-hint zh-only">JRICE 相关官方与合作方报道（外链）。</p>
+    <ul class="news-list">{"".join(items)}</ul>
+    <p style="margin-top:1.25rem"><a href="news/index.html" class="en-only">All news on this site →</a><a href="news/index.html" class="zh-only">本站全部新闻 →</a></p>
+  </div>
+</section>
+"""
 
 def build_about() -> None:
     inst = institute_en()
@@ -279,9 +314,11 @@ def build_about() -> None:
   <p class="zh-only">JRICE（中葡气候与能源联合研究院）由中国石油大学（北京）与葡萄牙里斯本高等理工学院共建，面向气候变化、清洁能源与碳中和未来技术开展联合研究与人才培养。</p>
   <p class="en-only">JRICE ({esc(inst)}) is co-established by China University of Petroleum (Beijing) and Instituto Superior Técnico (IST), Lisbon.</p>
   <p class="zh-only">2024年10月11日，双方于里斯本举行签约暨揭牌仪式。详见 <a href="news/inauguration-lisbon-2024.html">新闻报道</a>。</p>
-  <p class="en-only">On 11 October 2024, the signing and unveiling ceremony was held in Lisbon. See the <a href="news/inauguration-lisbon-2024.html">news report</a>.</p>
+  <p class="en-only">On 11 October 2024, the signing and unveiling ceremony was held in Lisbon. See <a href="news/tecnico-ai-laboratory-2024.html">Técnico</a>, <a href="news/embassy-inauguration-2024.html">Embassy</a>, and <a href="news/inauguration-cup-2024.html">CUP</a> reports.</p>
+  <p class="zh-only">2024年10月11日于里斯本举行签约暨揭牌仪式。参见 <a href="news/tecnico-ai-laboratory-2024.html">Técnico 报道</a>、<a href="news/embassy-inauguration-2024.html">中国驻葡使馆</a>、<a href="news/inauguration-cup-2024.html">中石油大新闻网</a>。</p>
 </div>
 """
+    body = body + about_links_section()
     write("about.html", shell("about.html", 0, "About", body))
 
 

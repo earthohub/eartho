@@ -3,13 +3,7 @@
     "id": "forum-2026",
     "date": "2026-05-29",
     "source": "JRICE",
-    "tags": [
-      "forum",
-      "2026",
-      "中葡",
-      "climate",
-      "energy"
-    ],
+    "tags": ["forum", "2026", "中葡", "climate", "energy"],
     "event": "events/forum-2026.html",
     "zh": {
       "title": "2026 中葡气候与能源科技交流论坛",
@@ -21,20 +15,63 @@
     }
   },
   {
+    "id": "tecnico-ai-laboratory-2024",
+    "date": "2024-10-09",
+    "source": "Instituto Superior Técnico",
+    "sourceUrl": "https://tecnico.ulisboa.pt/en/news/artificial-intelligence-ai-for-climate-and-energy-tecnico-teams-up-with-chinese-university-on-new-laboratory/",
+    "tags": ["Técnico", "IST", "AI", "中葡", "合作"],
+    "zh": {
+      "title": "里斯本高等理工学院：与中国石油大学签署 AI for Climate and Energy 合作协议",
+      "summary": "2024年10月9日，IST 与中国石油大学（北京）在 Alameda 校区签署协议；中国驻葡萄牙大使赵本堂出席。",
+      "body": "2024年10月9日，里斯本高等理工学院（Instituto Superior Técnico）与中国石油大学（北京）签署建立「AI for Climate and Energy」实验室协议，仪式在 Alameda 校区主楼举行，中国驻葡萄牙大使赵本堂出席。\n\n英文全文见来源链接（Instituto Superior Técnico 官网报道，以下为原文摘录）。"
+    },
+    "en": {
+      "title": "Artificial Intelligence (AI) for climate and energy: Técnico teams up with Chinese university on new laboratory",
+      "summary": "9 October 2024 · Alameda campus · Ambassador Zhao Bentang attended.",
+      "body": "On 9 October, Instituto Superior Técnico and China University of Petroleum (CUPB) signed an agreement to create the ‘AI for Climate and Energy’ laboratory. The ceremony took place at Alameda campus, in the Main Building’s meeting room, in the presence of the Chinese Ambassador to Portugal, Zhao Bentang.\n\nThe collaboration between the two institutions began in 2014. “This protocol is a milestone in our partnership,” said CUPB Vice-President Bao Zhidong. In addition to the joint ‘AI for Climate and Energy’ laboratory, Liao Zonghu, who is leading this project alongside Leonardo Azevedo, a professor at Técnico and president of the Centro de Recursos Naturais e Ambiente (CERENA), also emphasised the goals of establishing a Forum for Economic Cooperation between China and Portuguese-speaking countries, as well as an International Forum on Clean Energy.\n\n‘This initiative will strengthen our joint efforts in education and research in carbon neutrality and the future of technology, which will contribute to the global fight against climate change’, said Bao Zhidong, referring to the partnership with Técnico. Regarding Técnico, the CUPB leader emphasised the ‘various research units’ and the ‘strong emphasis on international cooperation’.\n\nLeonardo Azevedo sees this project as the consolidation of ‘a long-standing relationship between the Department of Engineering in Mineral and Energy Resources at Técnico and the China University of Petroleum-Beijing. The main objective of the new institute is to create new methodologies, based on spatial data science and artificial intelligence, which will improve understanding of the Earth’s complex systems, such as climate and energy resources.’\n\nThe Chinese ambassador described the agreement as a ‘win-win’ collaboration in the field of energy. Zhao Bentang pointed out that ‘everyone should have access to the energy they can afford’ and that climate change is a ‘common concern around the world’. ‘Science has no borders and innovation has no limits,’ he concluded.\n\nThe president of Técnico, Rogério Colaço, took the opportunity to present the school and its historical context."
+    }
+  },
+  {
+    "id": "embassy-inauguration-2024",
+    "date": "2024-10-11",
+    "source": "Embassy of China in Portugal",
+    "sourceUrl": "http://pt.china-embassy.gov.cn/pot/sgdt/202412/t20241221_11514312.htm",
+    "tags": ["大使馆", "embassy", "赵本堂", "揭牌", "中葡"],
+    "zh": {
+      "title": "中国驻葡萄牙大使馆：赵本堂大使出席中葡气候与能源联合研究院签约暨揭牌仪式",
+      "summary": "2024年10月11日 · 中国驻葡萄牙大使馆官网",
+      "body": "2024年10月11日，中国驻葡萄牙大使赵本堂出席中国石油大学（北京）与里斯本高等理工学院共建中葡气候与能源联合研究院签约暨揭牌仪式并致辞。\n\n英文原文见来源链接。以下为使馆官网英文报道原文：\n\nOn October 11, 2024, the Ambassador of the People's Republic of China, Dr.Zhao Bentang attended the signing and launching ceremony of the Sino-Portuguese Joint Institute of Climate and Energy between China University of Petroleum (Beijing) and Lisbon Institute of Technology and delivered a speech. Prof. Rogerio Colaco, president of the Institute of Technology of the University of Lisbon, Prof. Bao Zhidong, Vice-rector of China University of Petroleum (Beijing), and relevant Chinese and Portuguese experts and scholars attended the event.\n\nAmbassador Dr. Zhao Bentang pointed out that in the context of global carbon neutrality, the importance of using high-tech means such as artificial intelligence to promote the development of clean energy and respond to climate change has become increasingly prominent, and the friendly cooperation between China and Portugal has contributed to Portugal's outstanding achievements in the field of clean energy. Ambassador Dr.Zhao Bentang encouraged young Chinese and Portuguese scientists to deepen friendly cooperation and write a new chapter in the 500-year traditional friendship between China and Portugal."
+    },
+    "en": {
+      "title": "Ambassador Zhao Bentang attended the signing and opening ceremony of Sino-Portuguese Joint Research Institute of Climate and Energy",
+      "summary": "11 October 2024 · Embassy of the People's Republic of China in Portugal",
+      "body": "On October 11, 2024, the Ambassador of the People's Republic of China, Dr.Zhao Bentang attended the signing and launching ceremony of the Sino-Portuguese Joint Institute of Climate and Energy between China University of Petroleum (Beijing) and Lisbon Institute of Technology and delivered a speech. Prof. Rogerio Colaco, president of the Institute of Technology of the University of Lisbon, Prof. Bao Zhidong, Vice-rector of China University of Petroleum (Beijing), and relevant Chinese and Portuguese experts and scholars attended the event.\n\nAmbassador Dr. Zhao Bentang pointed out that in the context of global carbon neutrality, the importance of using high-tech means such as artificial intelligence to promote the development of clean energy and respond to climate change has become increasingly prominent, and the friendly cooperation between China and Portugal has contributed to Portugal's outstanding achievements in the field of clean energy. Ambassador Dr. Zhao Bentang encouraged young Chinese and Portuguese scientists to deepen friendly cooperation and write a new chapter in the 500-year traditional friendship between China and Portugal."
+    }
+  },
+  {
+    "id": "inauguration-cup-2024",
+    "date": "2024-10-14",
+    "source": "中国石油大学（北京）",
+    "sourceUrl": "https://www.cup.edu.cn/news/sx/61d82efd486c414694b03bbb2466863f.htm",
+    "tags": ["中石油大", "CUP", "揭牌", "里斯本"],
+    "zh": {
+      "title": "中国石油大学（北京）：中葡气候与能源联合研究院在葡萄牙里斯本揭牌成立",
+      "summary": "发布时间：2024-10-14 · 国际合作与交流处、地球科学学院",
+      "body": "当地时间10月11日，中葡气候与能源联合研究院签约和揭牌仪式在葡萄牙里斯本高等理工学院（IST）举行。在中国驻葡萄牙大使赵本堂的见证下，中国石油大学（北京）副校长鲍志东、葡萄牙里斯本高等理工学院校长Rogério Colaço共同签署《葡萄牙里斯本高等理工学院与中国石油大学(北京)共建中葡气候与能源联合研究院备忘录》，并为中葡气候与能源联合研究院揭牌。\n\nRogério Colaço对中葡气候与能源联合研究院的成立表示祝贺，对两校青年教师的合作给予充分肯定，并期待中葡气候与能源领域的合作进一步促进两国友好交流。\n\n鲍志东表示，今年是中葡建交45周年，在共同应对全球气候变化的时代背景下，中葡两国携手开展在人工智能与气候能源领域的合作具有特殊重要意义。两校同为中葡两国能源领域领军高校，双方合作历史悠久，此次共同成立中葡气候与能源联合研究院是两校乃至中葡教育科技合作的又一里程碑，将极大促进双方在碳中和未来技术领域的人才培养和科学研究，共同为应对气候变化作出积极贡献。\n\n赵本堂发表了热情洋溢的致辞。他表示，葡萄牙和中国政府高度重视气候与能源领域的研究，中葡在能源领域开展的友好合作，将谱写中葡友谊新篇章。通过成立中葡气候与能源联合研究院，两校青年科学家开展科研合作，必将推动两国人民为全球走绿色、低碳、可持续发展之路作出贡献，希望中葡气候与能源联合研究院成为汇聚两国杰出科技人才和促进两国合作互利共赢的重要平台。\n\n在赵本堂的见证下，Rogério Colaço和鲍志东共同签署《葡萄牙里斯本高等理工学院与中国石油大学（北京）共建中葡气候与能源联合研究院协议》并为中葡气候与能源联合研究院揭牌。 葡萄牙里斯本高等理工学院矿物与能源学院、国际合作交流处、CERENA代表，中国驻葡萄牙大使馆，中国石油大学（北京）地球科学学院、国际合作与交流处、教务处代表陪同参加签约和揭牌仪式。"
+    },
+    "en": {
+      "title": "CUP Beijing: China-Portugal Joint Research Institute of Climate and Energy inaugurated in Lisbon",
+      "summary": "Published 14 October 2024",
+      "body": "See Chinese article for the full report from China University of Petroleum (Beijing)."
+    }
+  },
+  {
     "id": "inauguration-lisbon-2024",
     "date": "2024-10-22",
     "source": "中新社",
     "sourceUrl": "https://nft.cup.edu.cn/news_23.html",
-    "tags": [
-      "中葡",
-      "里斯本",
-      "揭牌",
-      "inauguration"
-    ],
-    "images": [
-      "images/news/news23_1.jpg",
-      "images/news/news23_2.jpg"
-    ],
+    "tags": ["中葡", "里斯本", "揭牌", "inauguration", "Xinhua"],
+    "images": ["images/news/news23_1.jpg", "images/news/news23_2.jpg"],
     "zh": {
       "title": "中新社：中葡气候与能源联合研究院在葡萄牙里斯本揭牌成立",
       "summary": "时间：2024-10-22",
@@ -43,7 +80,7 @@
     "en": {
       "title": "Xinhua: China-Portugal Joint Research Institute of Climate and Energy inaugurated in Lisbon, Portugal",
       "summary": "Date: 2024-10-22",
-      "body": "See Chinese article for the official report. Source: China University of Petroleum (Beijing) Blockchain Finance Research Center news archive, 22 October 2024."
+      "body": "See Chinese article for the official report. Source: China University of Petroleum (Beijing) news archive."
     }
   },
   {
@@ -51,11 +88,7 @@
     "date": "2024-12-06",
     "source": "中国石油大学（北京）",
     "sourceUrl": "https://nft.cup.edu.cn/news_24.html",
-    "tags": [
-      "research",
-      "international",
-      "科研"
-    ],
+    "tags": ["research", "international", "科研"],
     "zh": {
       "title": "廖宗湖教授团队获批国家重点研发计划 “政府间国际科技创新合作”重点专项项目",
       "summary": "2024-12-06",
