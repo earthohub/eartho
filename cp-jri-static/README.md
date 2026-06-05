@@ -33,19 +33,24 @@ bash package.sh
 
 ---
 
-## 放入您的论坛图片
+## 首页放很多会议照片
 
-把您提供的三张图复制到：
+1. 图片放进 **`images/home/`**（如 `01.jpg`、`02.jpg` …）
+2. 运行：`python3 build.py`
+3. 首页会出现 **「活动影像 / Events & Gallery」** 照片墙
 
-`cp-jri-static/images/events/`
+详见 `images/home/README.txt`。需要固定顺序或图注时，编辑 `data/home-gallery.json`。
 
-文件名：
+## 论坛专用图（论坛页）
 
-- `2026-forum-banner.jpg`
-- `2026-forum-poster.jpg`
-- `2026-forum-meeting.jpg`
-
+放进 **`images/events/`**：`2026-forum-banner.jpg`、`2026-forum-poster.jpg`、`2026-forum-meeting.jpg`  
 详见 `images/events/README.txt`。
+
+## 修正 2026 议程错字
+
+- 把 Word / PDF / 海报 **发到对话** 或 **上传到仓库** 后告诉我路径  
+- 或自己改 **`data/forum-2026.json`** 后运行 `build.py`  
+- 说明：**`data/forum-2026.README.txt`**
 
 ---
 
