@@ -1,7 +1,15 @@
 {
-  "emails": [
-    "zong@cup.edu.cn",
-    "liaozonghu@gmail.com"
+  "contacts": [
+    {
+      "name_en": "Prof. Zonghu Liao",
+      "name_zh": "廖宗湖 教授",
+      "emails": ["zong@cup.edu.cn", "liaozonghu@gmail.com"]
+    },
+    {
+      "name_en": "Prof. Leonardo Azevedo",
+      "name_zh": "Leonardo Azevedo 教授",
+      "emails": ["leonardo.azevedo@tecnico.ulisboa.pt"]
+    }
   ],
   "zh": {
     "address": "北京市昌平区府学路18号 中国石油大学（北京）",

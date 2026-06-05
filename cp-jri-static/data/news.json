@@ -3,7 +3,13 @@
     "id": "forum-2026",
     "date": "2026-05-29",
     "source": "JRICE",
-    "tags": ["forum", "2026", "中葡", "climate", "energy"],
+    "tags": [
+      "forum",
+      "2026",
+      "中葡",
+      "climate",
+      "energy"
+    ],
     "event": "events/forum-2026.html",
     "zh": {
       "title": "2026 中葡气候与能源科技交流论坛",
@@ -19,15 +25,23 @@
     "date": "2024-10-22",
     "source": "中新社",
     "sourceUrl": "https://nft.cup.edu.cn/news_23.html",
-    "tags": ["中葡", "里斯本", "揭牌", "inauguration"],
-    "images": ["images/news/news23_1.jpg", "images/news/news23_2.jpg"],
+    "tags": [
+      "中葡",
+      "里斯本",
+      "揭牌",
+      "inauguration"
+    ],
+    "images": [
+      "images/news/news23_1.jpg",
+      "images/news/news23_2.jpg"
+    ],
     "zh": {
       "title": "中新社：中葡气候与能源联合研究院在葡萄牙里斯本揭牌成立",
       "summary": "时间：2024-10-22",
       "body": "当地时间10月11日，中葡气候与能源联合研究院签约和揭牌仪式在葡萄牙里斯本高等理工学院举办。在中国驻葡萄牙大使赵本堂的见证下，葡萄牙里斯本高等理工学院校长Rogério Colaço和中国石油大学(北京)副校长鲍志东共同签署《葡萄牙里斯本高等理工学院与中国石油大学(北京)共建中葡气候与能源联合研究院备忘录》，并为中葡气候与能源联合研究院揭牌。\n\n从左至右依次为：Leonardo Azevedo、鲍志东、赵本堂、Rogério Colaço、廖宗湖\n\n在致辞中，Rogério Colaço对中葡气候与能源联合研究院的成立表示祝贺，对两校青年教师的合作给予充分肯定，并期待中葡两国在气候与能源领域的合作进一步促进两国友好交流。\n\n鲍志东表示，今年是中葡建交45周年，在共同应对全球气候变化的时代背景下，中葡两国携手开展在人工智能与气候能源领域的合作具有特殊重要意义。此次共同成立中葡气候与能源联合研究院是两校乃至中葡教育科技合作的又一里程碑，将极大促进双方在碳中和未来技术领域的人才培养和科学研究，共同为应对气候变化做出积极贡献。\n\n中葡两校参会成员与赵本堂合影\n\n赵本堂表示，葡萄牙和中国政府高度重视气候与能源领域的研究，中葡在能源领域开展的友好合作，将谱写中葡友谊新篇章。青年科学家的合作代表两国合作的未来和希望，也必将推动两国人民为全球走绿色、低碳、可持续发展之路做出贡献。"
     },
     "en": {
-      "title": "Xinhua: China-Portugal Joint Research Institute on Climate and Energy inaugurated in Lisbon, Portugal",
+      "title": "Xinhua: China-Portugal Joint Research Institute of Climate and Energy inaugurated in Lisbon, Portugal",
       "summary": "Date: 2024-10-22",
       "body": "See Chinese article for the official report. Source: China University of Petroleum (Beijing) Blockchain Finance Research Center news archive, 22 October 2024."
     }
@@ -37,7 +51,11 @@
     "date": "2024-12-06",
     "source": "中国石油大学（北京）",
     "sourceUrl": "https://nft.cup.edu.cn/news_24.html",
-    "tags": ["research", "international", "科研"],
+    "tags": [
+      "research",
+      "international",
+      "科研"
+    ],
     "zh": {
       "title": "廖宗湖教授团队获批国家重点研发计划 “政府间国际科技创新合作”重点专项项目",
       "summary": "2024-12-06",

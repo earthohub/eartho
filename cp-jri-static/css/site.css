@@ -439,3 +439,93 @@ a:hover {
   margin-top: 1.25rem;
   font-size: 0.9rem;
 }
+
+/* Lightbox */
+.gallery-item {
+  display: block;
+  cursor: zoom-in;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.gallery-item img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: 0;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.gallery-item:hover img {
+  opacity: 0.92;
+}
+
+.content-img-link {
+  display: block;
+  cursor: zoom-in;
+  margin: 1.5rem 0;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(15, 23, 42, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.lightbox[hidden] {
+  display: none !important;
+}
+
+.lightbox-img {
+  max-width: min(96vw, 1200px);
+  max-height: 90vh;
+  object-fit: contain;
+  border: none;
+  margin: 0;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 2.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Programme verbatim from PDF */
+.programme-document {
+  margin-top: 2rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.programme-page {
+  border-bottom: 1px solid var(--line);
+}
+
+.programme-page:last-child {
+  border-bottom: none;
+}
+
+.programme-verbatim {
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  font-family: var(--font-zh), var(--font);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #334155;
+  overflow-x: auto;
+}
