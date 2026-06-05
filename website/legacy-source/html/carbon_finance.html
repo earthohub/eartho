@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Carbon Finance">
+    <!-- keywords -->
+    <meta name="keywords" content="Carbon Finance">
+    <!-- Page Title -->
+    <title>中石大碳科技创新金融实训平台</title>    
+    <!-- Favicon -->
+    <link rel="icon" href="static/image/favicon.ico">
+    <!-- Bundle -->
+    <link rel="stylesheet" href="static/css/bundle.min.css">
+    <!-- Plugin Css -->
+    <link rel="stylesheet" href="static/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="static/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="static/css/swiper.min.css">
+
+    <link rel="stylesheet" href="static/css/cubeportfolio.min.css">
+    <!-- Revolution Slider CSS Files -->
+    <link rel="stylesheet" href="static/css/navigation.css">
+    <link rel="stylesheet" href="static/css/settings.css">
+    <!-- Slick CSS Files -->
+    <link rel="stylesheet" href="static/css/slick.css">
+    <link rel="stylesheet" href="static/css/slick-theme.css">
+    <!-- Select -->
+    <link rel="stylesheet" href="static/css/select2.min.css">
+    <!-- Style Sheet -->
+    <link rel="stylesheet" href="static/css/style.css">
+    <!-- Custom Style CSS File -->
+    <link rel="stylesheet" href="static/css/custom.css">
+</head>
+<style>
+    .topNav {
+    max-width: 1200px;
+    height: 26px;
+    line-height: 26px;
+    margin: 0 auto;
+}
+    .wraptopNav {
+        /* margin-top: -60px; */
+    width: 100%;
+    height: 26px;
+    /* background: #710000; */
+    overflow: hidden;
+    /* margin-bottom: 30px; */
+}
+    #lbg::before{
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 22px;
+    background: #fff;
+    margin: 0 -20px;
+    position: absolute;
+    left: 0;
+    top: 2px;
+}
+.navbar-top-default-gg{
+    /* position: absolute; */
+    position: fixed;
+    /* top: 0; */
+    z-index: 99;
+    height: 90px;
+    width: 100%;
+    transition: all 0.1s ease;
+    /* background-color: rgb(66,67,72); */
+}
+.navbar-ggo{
+    align-items: center;
+    /* -ms-flex-pack: justify;
+    justify-content: space-between; */
+    padding: 0.5rem 1rem;
+}
+
+#lbg::before{
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 22px;
+    background: #fff;
+    margin: 0 -20px;
+    position: absolute;
+    left: 0;
+    top: 2px;
+}
+</style>
+<body data-spy="scroll" data-target=".navbar-nav" data-offset="90">
+
+    <!-- document.getElementsByTagName("INPUT")[0].style.backgroundColor="rgb(255,25,0)"; -->
+
+<!-- Loader -->
+<div class="loader" id="loader-fade">
+    <div class="loader-container">
+        <ul class="loader-box">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+</div>
+<!-- Loader ends -->
+
+<!-- Header start -->
+<header>
+    <!-- <nav class=" topNav" style="background-color:rgb(73,70,75) ;width: 100%;">
+        <a href="http://www.cup.edu.cn">学校主页</a>
+        <a href="https://www.cup.edu.cn/sba/index.htm" id="lbg">经管院主页</a>
+        <a href="index.html">区块链金融研究中心</a></nav> -->
+<!-- <nav>asd</nav> -->
+
+
+    <nav id="navbg" class="navbar navbar-top-default-gg navbar-expand-lg static-nav transparent-bg nav-bottom-line">
+        <!-- <div class="wraptopNav" style="position: absolute; ">
+            <div class="topNav" style="font-size: smaller;">
+                <a href="http://www.cup.edu.cn">学校主页</a>
+                <a href="https://www.cup.edu.cn/sba/index.htm" id="lbg">经管院主页</a>
+                <a href="index.html">区块链金融研究中心</a>
+            </div>
+        </div> -->
+      <div class="wraptopNav container  topNav" style="width: 10%;top: 0;text-align: right;" id="navbgs">
+        <a href=""> </a></div>
+        <a id="xuezhu" style="color:rgb(255,255,255); font-size: 0.7em;" href="http://www.cup.edu.cn">学校主页</a>
+        <a id="shu1" style="color:rgb(255,255,255);">&nbsp;|&nbsp;</a>
+        <a id="jingzhu" style="color:rgb(255,255,255); font-size: 0.7em;" href="https://www.cup.edu.cn/sba/index.htm" id="lbg">经管院主页</a>
+        <a id="shu2" style="color:rgb(255,255,255);">&nbsp;|&nbsp;</a>
+        <a id="quzhong" style="color:rgb(255,255,255); font-size: 0.7em; margin-right: 1%;" href="index.html">区块链金融研究中心</a>
+      <!-- flex-flow:row nowrap;     css -->
+      
+      <div class="container">
+            <a class="logo" href="javascript:void(0)">
+                <img src="static/picture/logo.png" alt="logo" title="Logo" class="logo-default">
+                <img src="static/picture/logo2.png" alt="logo" title="Logo" class="logo-scrolled">
+            </a>
+            <div class="collapse navbar-collapse d-none d-lg-block">
+                <ul class="nav navbar-nav ml-auto mr-4">
+                    <li class="nav-item"> <a id="zhuye" href="#home" class="scroll nav-link">主页</a></li>
+                    <li class="nav-item"> <a id="guanyu" href="#aboutus" class="scroll nav-link">关于我们</a></li>
+                    <li class="nav-item"> <a id="tanchuang" href="#practice" class="scroll nav-link">碳创新创业</a></li>
+                    <li class="nav-item"> <a id="kechen" href="#course" class="scroll nav-link">课程</a></li>
+                    <li class="nav-item"> <a id="keyan" href="#research" class="scroll nav-link">科研</a></li>
+                    <li class="nav-item"> <a id="shizi" href="#faculty" class="scroll nav-link">师资团队</a></li>
+                </ul>
+            </div>
+
+            <a href="#contact" class="scroll btn-setting btn-scale btn-green text-white d-none d-lg-block">提交商业计划</a>
+
+            <!-- side menu open button -->
+            <a class="menu_bars d-inline-block menu-bars-setting" id="sidemenu_toggle">
+                <div class="menu-lines">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </a>
+        </div>
+    </nav>
+    <div class="side-menu">
+        <div class="inner-wrapper nav-icon">
+            <span class="btn-close" id="btn_sideNavClose"></span>
+            <nav class="side-nav w-100">
+                <div class="navbar-nav">
+                    <a href="#home" class="scroll nav-link">主页</a>
+                    <a href="#aboutus" class="scroll nav-link">关于我们</a>
+                    <a href="#practice" class="scroll nav-link">碳创新创业</a>
+                    <a href="#course" class="scroll nav-link">课程</a>
+                    <a href="#research" class="scroll nav-link">科研</a>
+                    <a href="#faculty" class="scroll nav-link">师资团队</a>
+                    <a class="menu-line"><i class="fa fa-angle-right font-14" aria-hidden="true"></i></a>
+                </div>
+            </nav>
+
+            <div class="side-footer text-white w-100">
+                
+                <p class="text-white">&copy; 2022 中国石油大学（北京）碳科技创新金融实训平台</p>
+            </div>
+        </div>
+    </div>
+    <a id="close_side_menu" href="javascript:void(0);"></a>
+    <!--Side Menu-->
+</header>
+<!-- Header end -->
+
+<!-- Main Section start -->
+<section id="home" class="p-0 no-transition h-100vh">
+    <h2 class="d-none">heading</h2>
+    <!--Main Slider-->
+    <div id="revo_thumbs_wrapper" class="rev_slider_wrapper fullwidthbanner-container">
+        <div id="secondary-banner" class="rev_slider fullwidthabanner" style="display:none;" data-version="5.4.1">
+            <ul>
+                <!-- SLIDE 1 -->
+                <li data-index="rs-01" data-transition="fade" data-slotamount="default" data-easein="Power3.easeInOut" data-easeout="Power3.easeInOut" data-masterspeed="2000" data-fsmasterspeed="1500" data-param1="">
+                    <!-- MAIN IMAGE -->
+                    <img src="static/picture/banner1.jpg" alt="" data-bgposition="center center" data-bgfit="cover" data-bgrepeat="no-repeat" class="rev-slidebg" data-bgparallax="0" data-no-retina="">
+                    <!-- LAYER NR. 1 -->
+                    <!--div class="tp-caption tp-resizeme rs-parallaxlevel-8 bg-blue blue-box" data-x="['center','center','center','center']" data-hoffset="['80','80','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['0','0','0','10']" data-whitespace="nowrap" data-width="['615px','615px','490px','292px']" data-height="['500px','500px','425px','261px']" data-responsive_offset="on" data-frames='[{"delay":319.921875,"speed":500,"frame":"0","from":"z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;","to":"o:1;","ease":"Power2.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]' data-textalign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 0;">
+
+                    </div-->
+                    <!-- LAYER NR. 2 -->
+                    <div class="tp-caption tp-resizeme" data-x="['left','left','center','center']" data-hoffset="['70','70','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['-105','-105','-105','-90']" data-fontsize="['55','55','55','35']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['left','left','center','center']" data-frames='[{"delay":0,"speed":2000,"frame":"0","from":"z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;","to":"o:1;","ease":"Power3.easeInOut"},{"delay":"wait","speed":300,"frame":"999","to":"auto:auto;","ease":"Power3.easeInOut"}]' data-start="1000" data-splitin="none" data-splitout="none" style="z-index:1; font-weight: 300; color: #ffffff;font-family: 'Raleway', sans-serif;text-transform:capitalize">碳金融科研
+                    </div>
+                    <div class="tp-caption tp-resizeme bg-green" data-x="['left','left','center','center']" data-hoffset="['75','75','5000','5000']" data-y="['middle','middle','middle','middle']" data-voffset="['-20','-20','-20','20']" data-width="['45px','45px','45px','45px']" data-height="['4px','4px','4px','4px']" data-whitespace="nowrap" data-type="image" data-responsive_offset="on" data-frames='[{"delay":319.921875,"speed":1500,"frame":"0","from":"z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;","to":"o:1;","ease":"Power2.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]' data-textalign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 0;">
+                        <div class="rs-looped rs-slideloop d-none d-md-block" data-speed="5" data-xs="-10" data-xe="10" data-ys="0" data-ye="0" data-origin="50% 50%"> </div>
+
+                    </div>
+                    <!-- LAYER NR. 3 -->
+                    <div class="tp-caption tp-resizeme" data-x="['left','left','center','center']" data-hoffset="['150','150','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['-30','-30','-30','-15']" data-fontsize="['55','55','55','35']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['left','left','center','center']" data-frames='[{"delay":1000,"speed":1500,"frame":"0","from":"x:-50px;opacity:0;","to":"o:1;","ease":"Power3.easeInOut"},{"delay":"wait","speed":300,"frame":"999","to":"auto:auto;","ease":"Power3.easeInOut"}]' data-start="1500" data-splitin="none" data-splitout="none" style="z-index:1; font-weight: 300; line-height: 60px; color: #ffffff;font-family: 'Raleway', sans-serif;text-transform:capitalize">碳科技创新创业
+
+                        <div class="rs-looped rs-slideloop d-none d-md-block" data-speed="5" data-xs="-10" data-xe="10" data-ys="0" data-ye="0" data-origin="50% 50%"> </div>
+                    </div>
+                    <!-- LAYER NR. 4 -->
+                    <div class="tp-caption tp-resizeme" data-x="['left','left','center','center']" data-hoffset="['70','70','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['40','40','40','50']" data-fontsize="['55','55','55','35']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['left','left','center','center']" data-frames='[{"delay":1500,"speed":1500,"frame":"0","from":"x:[100%];opacity:1;","mask":"x:[-100%];y:0;s:inherit;e:inherit;","to":"o:1;","ease":"Power4.easeInOut"},{"delay":"wait","speed":300,"frame":"999","to":"x:[100%];opacity:1;","mask":"x:[-100%];y:0;s:inherit;e:inherit;","ease":"Power4.easeInOut"}]' data-start="2000" data-splitin="none" data-splitout="none" style="z-index:1; font-weight: 500; line-height: 60px; color: #ffffff;font-family: 'Raleway', sans-serif;text-transform:capitalize">人才培养
+                    </div>
+                    <!-- LAYER NR. 5 -->
+                    <div class="tp-caption" data-x="['left','left','center','center']" data-hoffset="['70','70','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['130','130','130','120']" data-whitespace="nowrap" data-responsive_offset="['on','on','on','on']" data-width="['none','none','none','none']" data-textalign="['center','center','center','center']" data-type="text" data-transform_idle="o:1;" data-transform_in="y:[100%];z:0;rX:0deg;rY:0;rZ:0;sX:1;sY:1;skX:0;skY:0;opacity:0;s:2000;e:Power4.easeInOut;" data-transform_out="s:20;e:Power4.easeInOut;s:20;e:Power4.easeInOut;" data-start="1200" data-splitin="none" data-splitout="none">
+                         <!--div class="slide-action play d-flex align-items-center">
+                            <a class="color-white" data-fancybox="" href="javascript;">
+                                <span><i class="fa fa-play"></i></span></a>
+                             <h5 class="pl-2 pl-md-3 text-capitalize font-weight-normal font-primary color-white"> Play Video</h5>
+                        </div-->
+
+                    </div>
+                </li>
+                <!-- SLIDE 2 -->
+                <li id="next2" data-index="rs-02" data-transition="fade" data-slotamount="default" data-easein="Power3.easeInOut" data-easeout="Power3.easeInOut" data-masterspeed="2000" data-fsmasterspeed="1500" data-param1="">
+                    <!-- MAIN IMAGE -->
+                    <img src="static/picture/banner2.jpg" alt="" data-bgposition="center center" data-bgfit="cover" data-bgrepeat="no-repeat" class="rev-slidebg" data-bgparallax="7" data-no-retina="">
+                    <div class="bg-overlay bg-black opacity-7"></div>
+                    <div class="rs-background-video-layer" data-forcerewind="on" data-volume="mute" data-videowidth="100%" data-videoheight="100%" data-videowebm="consulting/video/video.mp4" data-videomp4="consulting/video/video.mp4" data-videopreload="auto" data-videoloop="loopandnoslidestop" data-forcecover="1" data-aspectratio="16:9" data-autoplay="true" data-autoplayonlyfirsttime="false"></div>
+
+                    <!--If you need youtube video-->
+                    <!--<div class="rs-background-video-layer"
+                    data-ytid="hEkiWaEp03k"
+                    data-volume="mute"
+                    data-forcerewind="on"
+                    data-nextslideatend="true"
+                    data-autoplay="true"
+                    data-autoplayonlyfirsttime="true"
+                    data-videoloop="loopandnoslidestop"
+                    data-videoattributes="version=3&enablejsapi=1&html5=1&hd=1&autoplay=1&wmode=opaque&showinfo=0&rel=0&
+                    origin=#"></div>-->
+
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['-160','-160','-140','-140']" data-fontsize="['60','60','60','45']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['center','center','center','center']" data-transform_idle="o:1;" data-transform_in="x:-50px;opacity:0;s:2000;e:Power3.easeOut;" data-transform_out="s:300;e:Power3.easeInOut;s:300;e:Power3.easeInOut;" data-start="1000" data-splitin="none" data-splitout="none" style="z-index:1; font-weight: 300; color: #ffffff;font-family: 'Raleway', sans-serif;text-transform:capitalize">我们提供
+                    </div>
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['-80','-80','-70','-70']" data-fontsize="['60','60','60','45']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['center','center','center','center']" data-transform_idle="o:1;" data-transform_in="z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="y:[100%];s:300;e:Power2.easeInOut;s:300;e:Power2.easeInOut;" data-mask_out="x:inherit;y:inherit;s:inherit;e:inherit;" data-start="1200" data-splitin="none" data-splitout="none" style="z-index:2; font-weight: 500; color: #ffffff;font-family: 'Raleway', sans-serif;text-transform:capitalize">碳科技创新创业实践
+                    </div>
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['5','5','0','0']" data-fontsize="['60','60','60','45']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['center','center','center','center']" data-transform_idle="o:1;" data-transform_in="y:[100%];z:0;rX:0deg;rY:0;rZ:0;sX:1;sY:1;skX:0;skY:0;opacity:0;s:2000;e:Power4.easeInOut;" data-transform_out="s:300;e:Power2.easeInOut;s:300;e:Power2.easeInOut;" data-start="1000" data-splitin="none" data-splitout="none" style="z-index:3; font-weight: 300; color: #ffffff;font-family: 'Raleway', sans-serif;text-transform:capitalize">与专业的课程
+                    </div>
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['80','80','70','60']" data-fontsize="['22','22','18','16']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['center','center','center','center']" data-transform_idle="o:1;" data-transform_in="z:0;rX:0deg;rY:0;rZ:0;sX:2;sY:2;skX:0;skY:0;opacity:0;s:1000;e:Power2.easeOut;" data-transform_out="s:300;e:Power3.easeInOut;s:300;e:Power3.easeInOut;" data-mask_in="x:0px;y:0px;s:inherit;e:inherit;" data-start="1500" data-splitin="none" data-splitout="none" style="z-index:4; font-weight: 200; color: #ffffff; line-height:30px; font-family: 'Raleway', sans-serif;text-transform:capitalize">助力碳科技创新，培养双碳人才
+                    </div>
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['160','160','140','140']" data-width="['160','160','160','160']" data-frames='[{"delay":600,"speed":2000,"frame":"0","from":"sX:1;sY:1;opacity:0;fb:40px;","to":"o:1;fb:0;","ease":"Power4.easeInOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;fb:0;","ease":"Power3.easeInOut"}]' data-textalign="['center','center','center','center']" style="z-index:5; max-width: 960px">
+                        <!--a href="javascript:void(0)" class="btn-setting btn-scale btn-blue text-white">learnsdf</a-->
+                    </div>
+
+                </li>
+                
+                <!-- SLIDE 4 -->
+                <li data-index="rs-04" data-transition="fade" data-slotamount="default" data-easein="Power3.easeInOut" data-easeout="Power3.easeInOut" data-masterspeed="2000" data-fsmasterspeed="1500" data-param1="">
+                    <!-- MAIN IMAGE -->
+                    <img src="static/picture/banner4.jpg" alt="" data-bgposition="center center" data-bgfit="cover" data-bgrepeat="no-repeat" class="rev-slidebg" data-bgparallax="0" data-no-retina="">
+                    <div class="bg-overlay bg-black opacity-7"></div>
+                    <!-- LAYER NR. 2 -->
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['-135','-135','-135','-120']" data-fontsize="['55','55','55','35']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['center','center','center','center']" data-frames='[{"delay":0,"speed":2000,"frame":"0","from":"z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;","to":"o:1;","ease":"Power3.easeInOut"},{"delay":"wait","speed":300,"frame":"999","to":"auto:auto;","ease":"Power3.easeInOut"}]' data-start="1000" data-splitin="none" data-splitout="none" style="z-index:1; font-weight: 500; color: #ff0000;font-family: 'Raleway', sans-serif;text-transform:capitalize">祝 贺
+                    </div>
+                    <!-- LAYER NR. 3 -->
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['-70','-70','-70','-55']" data-fontsize="['55','55','55','35']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['center','center','center','center']" data-frames='[{"delay":1000,"speed":1500,"frame":"0","from":"x:50px;opacity:0;","to":"o:1;","ease":"Power3.easeInOut"},{"delay":"wait","speed":300,"frame":"999","to":"auto:auto;","ease":"Power3.easeInOut"}]' data-start="1500" data-splitin="none" data-splitout="none" style="z-index:1; font-weight: 500; line-height: 60px; color: #ffffff;font-family: 'Raleway', sans-serif;text-transform:capitalize">“高效泡沫压裂”项目
+                    </div>
+                    <!-- LAYER NR. 4 -->
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['5','5','5','15']" data-fontsize="['55','55','55','35']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['center','center','center','center']" data-frames='[{"delay":1500,"speed":1500,"frame":"0","from":"x:[100%];opacity:1;","mask":"x:[-100%];y:0;s:inherit;e:inherit;","to":"o:1;","ease":"Power4.easeInOut"},{"delay":"wait","speed":300,"frame":"999","to":"x:[100%];opacity:1;","mask":"x:[-100%];y:0;s:inherit;e:inherit;","ease":"Power4.easeInOut"}]' data-start="2000" data-splitin="none" data-splitout="none" style="z-index:1; font-weight: 300; line-height: 60px; color: #00ff00;font-family: 'Raleway', sans-serif;text-transform:capitalize"><b>获得第八届能经大赛全国特等奖</b>
+                    </div>
+                    <!-- LAYER NR. 5 -->
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['75','75','75','75']" data-fontsize="['22','22','24','16']" data-whitespace="nowrap" data-responsive_offset="on" data-width="['none','none','none','none']" data-type="text" data-textalign="['center','center','center','center']" data-transform_idle="o:1;" data-transform_in="y:[100%];z:0;rX:0deg;rY:0;rZ:0;sX:1;sY:1;skX:0;skY:0;opacity:0;s:2000;e:Power4.easeInOut;" data-transform_out="s:20;e:Power4.easeInOut;s:20;e:Power4.easeInOut;" data-start="800" data-splitin="none" data-splitout="none" style="z-index:4; font-weight: 200; line-height: 60px; color: #ffffff;font-family: 'Raleway', sans-serif;text-transform:capitalize">碳金融推动碳科技创新与创业
+                    </div>
+                    <!-- LAYER NR. 6 -->
+                    <div class="tp-caption tp-resizeme" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['145','145','145','145']" data-width="['180','180','180','180']" data-frames='[{"delay":600,"speed":2000,"frame":"0","from":"sX:1;sY:1;opacity:0;fb:40px;","to":"o:1;fb:0;","ease":"Power4.easeInOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;fb:0;","ease":"Power3.easeInOut"}]' data-textalign="['center','center','center','center']" style="z-index:99; max-width: 960px">
+                        <!--a href="#aboutus" class="scroll btn-setting btn-scale btn-green text-white">查看详情</a-->
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--Main Slider ends -->
+</section>
+<!-- Main Section end -->
+
+<!-- About start -->
+<section id="aboutus" class="bg-light-gray3">
+    <div class="container">
+        <div class="row">
+            <div class="container">
+                <div class="main-title style-two d-flex justify-content-md-around align-items-center flex-column flex-md-row text-center text-md-left wow fadeIn" data-wow-delay="300ms">
+                    <div class="mb-4 mb-md-0">
+                        <h5> 我们致力于 </h5>
+                        <h2> 碳科技创新创业金融 </h2>
+
+                        <a href="javascript:void(0)" class="btn-setting btn-scale btn-blue text-white">>></a>
+                    </div>
+                    <div class="ml-md-4 pl-md-2">
+                        <p class="mb-4">碳金融是指旨在减少温室气体排放的各种金融制度安排和金融交易活动，既包括碳排放权及其衍生品的交易、低碳项目开发的投融资，也包括银行的绿色信贷以及其他相关金融中介活动。2020年9月中国明确提出2030年“碳达峰”与2060年“碳中和”目标，双碳成为国家重大战略，所以推动碳金融的发展，促进碳科技创新与创业，有重要的意义和发展机会。</p>
+                        <p class="mb-4">中国石油大学（北京）碳科技创新金融教育资源项目的核心定位和发展目标是：服务于国家双碳目标，促进我校能源类科技的创新研发及利用，通过进一步纳入校友、周围高校、以及能源行业企业和投资机构，围绕低碳技术创新建立起一个碳金融生态。本项目依托石油大学在新能源领域的技术，创建中国乃至全球有影响力的碳金融科研和低碳科技产业服务平台。</p>
+	       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- About ends -->
+
+<!-- Events start -->
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-title wow fadeIn" data-wow-delay="300ms">
+                    <h2> 最新活动 </h2>
+                    <p><b><h5><font color="red">恭喜团队获得2022年第八届全国大学生能源经济学术创意大赛研究生组全国特等奖！</font></h5></b></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="team-classic owl-team owl-carousel text-center wow fadeInUp">
+                    <div class="item">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/event1.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                <div class="team-overlay center-block">
+                                </div>
+                            </div>
+                            <div class="team-classic-content">
+                                
+                                <p class="color-black font-weight-normal font-16 text-capitalize">2022年5月15日，“双碳目标下的智能高效泡沫压裂领军者”团队获得第八届全国大学生能源经济学术创意大赛研究生组全国特等奖</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/event2.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                <div class="team-overlay center-block">
+                                    
+                                </div>
+                            </div>
+                            <div class="team-classic-content">
+                              
+                                <p class="color-black font-weight-normal font-16 text-capitalize">2022年4月24日，中国石油大学（北京）金融系成功举办首次元宇宙会议</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/event3.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                <div class="team-overlay center-block">
+                                    
+                                </div>
+                            </div>
+                            <div class="team-classic-content">
+                                
+                                <p class="color-black font-weight-normal font-16 text-capitalize">2022年5月26日，团队获得“青创北京”2022年“挑战杯”首都大学生创业计划竞赛主赛道金奖</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/event4.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                <div class="team-overlay center-block">
+                                    
+                                </div>
+                            </div>
+                            <div class="team-classic-content">
+                                
+                                <p class="color-black font-weight-normal font-16 text-capitalize">2022年4月19日，与上期所合作的能源金融实务课程业界专家到校开讲</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Activity ends -->
+
+<!-- Service start -->
+<section id="practice" class="half-section p-0 bg-change bg-green">
+    <h2 class="d-none">heading</h2>
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-md-12 p-lg-0 order-lg-2">
+                <div class="split-container-setting style-three text-center text-lg-left">
+                    <div class="main-title mb-5 text-lg-left wow fadeIn" data-wow-delay="300ms">
+                     
+                        <h2 class="mb-0"> <b>碳科技创新创业实践</b> </h2>
+                    </div>
+                    <p class="color-white mb-5">我们征集石油大学校内低碳和碳减排技术、碳金融产品开发与服务、新能源开发等方向的师生创新创业项目，进行项目培育和金融服务支持。在石油大学技术类院系支持下，凝聚石油大学跨院系力量，推动石油大学低碳技术的创新能力，帮助石油大学的科研成果更好地产业化。</p>
+	   <p class="color-white mb-5">我们指导的团队积极参加了“挑战杯”、“全国大学生能源经济学术创意大赛”等创业大赛。今年，我们的团队已经获得第八届全国大学生能源经济学术创意大赛研究生组全国特等奖和“青创北京”2022年“挑战杯”首都大学生创业计划竞赛主赛道金奖。</p>
+
+                    <!--a href="javascript:void(0)" class="btn-setting btn-transparent btn-hvr-blue color-white">learn more</a-->
+
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12 p-0">
+                <div class="hover-effect">
+                    <img alt="stats" src="static/picture/practice.jpg" class="about-img">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Service ends -->
+
+<!-- Stats start -->
+<section id="course" class="half-section p-0 bg-change bg-blue">
+    <h2 class="d-none">heading</h2>
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-md-12 p-0 order-lg-2">
+                <div class="hover-effect">
+                    <img alt="stats" src="static/picture/course.jpg" class="about-img">
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12 p-lg-0">
+                <div class="split-container-setting stats style-three">
+                    <div class="main-title mb-5 text-lg-left wow fadeIn" data-wow-delay="300ms">
+                       
+                        <h2> <b>碳金融课程</b> </h2>
+                    </div>
+                    <p class="color-white mb-5">碳科技创新金融教育资源项目与爱丁堡大学的碳金融教学国际合作正积极推进中。自2017年以来，我们先后获得了教育部和科技部外专基金的支持，与英国爱丁堡大学和美国俄克拉荷马州立大学，在能源金融、碳金融等领域进行了教学与科研的有效合作。</p>
+	   <p class="color-white mb-5">我们已经完成了《能源金融（Energy finance）》《能源金融、市场与政策（Energy finance、markets and policy）》《能源金融与数据分析（Energy finance and data analysis）》《碳金融与碳市场(Carbon finance and carbon markets)》等课程。其中《碳金融与碳市场》以学术论文写作和学术研究的前沿讲座为课程内容。我们目前正在开发《碳技术创业与融资》、《创业金融》和《碳金融重要问题研究》等课程。</p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Stats ends -->
+
+<!-- Service start -->
+<section id="research" class="half-section p-0 bg-change bg-green">
+    <h2 class="d-none">heading</h2>
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-md-12 p-lg-0 order-lg-2">
+                <div class="split-container-setting style-three text-center text-lg-left">
+                    <div class="main-title mb-5 text-lg-left wow fadeIn" data-wow-delay="300ms">
+                        <h2 class="mb-0"> <b>碳金融科研</b> </h2>
+                    </div>
+                    <p class="color-white mb-5">碳科技创新金融教育资源项目已经与爱丁堡大学的教授联合申请了“碳达峰碳中和关键技术研究与示范”重点专项《全球气候治理的关键问题与应对研究》和国家自然科学基金《气候变化背景下全球碳市场链接的有效路径研究》，这两个合作研究正在进行。</p>
+	   <p class="color-white mb-5"> 在此基础上，该项目计划进一步开展碳金融服务模式研究和低碳技术创新创业研究。碳金融的重要功能之一是要服务低碳项目投融资。因此，本项目计划进行碳金融服务科技模式和碳金融创新产品研究，包括风险投资、碳基金、碳技术交易和碳技术服务交易等的研究。此外，我们还计划开展低碳可持续发展技术相关的各种商业模式创新和发展机制、及低碳企业投融资路径研究。</p>
+
+                    <!--a href="javascript:void(0)" class="btn-setting btn-transparent btn-hvr-blue color-white">learn more</a-->
+
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12 p-0">
+                <div class="hover-effect">
+                    <img alt="stats" src="static/picture/research.jpg" class="about-img">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Service ends -->
+
+<!-- Team start -->
+<section id="faculty">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-title wow fadeIn" data-wow-delay="300ms">
+                    <!--h5> 这里有专业的 </h5-->
+                    <h2> 师资团队 </h2>
+                    <p>碳科技创新金融实践平台师资以石油大学金融系老师为主，同时引入了清华大学经管学院专家作为顾问</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="team-classic2 owl-team owl-carousel text-center wow fadeInUp">
+                    <div class="item">
+	     <a href="https://www.cup.edu.cn/sba/szdwgb/jrxgb/s4/177764.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team0.jpg" alt="team" class="img-responsive" data-no-retina="">
+                               
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">孙竹</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">教授</p>
+                            </div>
+                        </div>
+ 	     </a>
+                    </div>
+	   <div class="item">
+	     <a href="https://www.sem.tsinghua.edu.cn/info/1203/31977.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team1.jpg" alt="team" class="img-responsive" data-no-retina="">
+                               
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">张帏</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">清华大学副教授，顾问</p>
+                            </div>
+                        </div>
+ 	     </a>
+                    </div>
+                    <div class="item">
+	       <a href="https://www.cup.edu.cn/sba/szdwgb/yyjjxgb/m2/177731.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team2.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">梅应丹</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">副教授</p>
+                            </div>
+                        </div>
+	       </a>
+                    </div>
+                    <div class="item">
+	     <a href="https://www.cup.edu.cn/sba/szdwgb/jrxgb/q4/177765.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team3.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">齐明</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">副教授</p>
+                            </div>
+                        </div>
+	     </a>
+                    </div>
+                    <div class="item">
+	     <a href="https://www.cup.edu.cn/sba/szdwgb/jrxgb/g4/177771.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team4.jpg" alt="team" class="img-responsive" data-no-retina="">
+                               
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">高立</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">副教授</p>
+                            </div>
+                        </div>
+  	     </a>
+                    </div>
+
+                    <div class="item">
+	    <a href="https://www.cup.edu.cn/sba/szdwgb/jrxgb/l4/177767.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team5.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">刘明明</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">副教授</p>
+                            </div>
+                        </div>
+	     </a>
+                    </div>
+	   <div class="item">
+	    <a href="https://www.cup.edu.cn/sba/szdwgb/jrxgb/z4/177761.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team6.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">张媛媛</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">副教授</p>
+                            </div>
+                        </div>
+	    </a>
+                    </div>
+	   <div class="item">
+	    <a href="https://www.cup.edu.cn/sba/szdwgb/jrxgb/x4/177762.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team7.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">薛淑莲</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">讲师</p>
+                            </div>
+                        </div>
+	    </a>
+                    </div>
+                    <div class="item">
+	    <a href="https://www.cup.edu.cn/sba/szdwgb/jrxgb/p4/177766.htm" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team8.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">泮敏</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">讲师</p>
+                            </div>
+                        </div>
+	    </a>
+                    </div>
+                    <div class="item">
+	    <a href="" target="_blank">
+                        <div class="team-data-img wow fadeIn" data-wow-delay="350ms">
+                            <div class="image">
+                                <img src="static/picture/team9.jpg" alt="team" class="img-responsive" data-no-retina="">
+                                
+                            </div>
+                            <div class="team-classic-content">
+                                <h5 class="color-black font-weight-600 mb-2 text-capitalize">齐继国</h5>
+                                <p class="color-black font-weight-normal font-16 text-capitalize">清华大学博士</p>
+                            </div>
+                        </div>
+	    </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Team ends -->
+
+
+<!-- Brands starts -->
+<section class="bg-green brand-transform-padding">
+    <div class="section-padding">
+      <!--h2 class="d-none">heading</h2-->
+       <div class="container">
+        <div class="brand-carousel owl-carousel owl-theme">
+            
+        </div>
+    </div>
+    </div>
+</section>
+<!-- Brands ends -->
+
+<!-- Contact & Map starts -->
+<section id="contact" class="p-0 contact-transform position-absolute w-100">
+    <div class="container contact-shadow">
+        <div class="row mx-lg-0">
+            <div class="col-lg-6 col-md-6 col-sm-12 p-0">
+                <div class="contact-box box-shadow-contact">
+                     <div class="main-title text-center text-md-left mb-4">
+                            <h2 class="font-weight-normal">联系我们 </h2>
+                        </div>
+
+                     <div class="text-center text-md-left">
+
+	        <p>欢迎大家与我们联系！也欢迎在校师生和校友提交您的碳技术商业计划给我们！</p>
+	        <br><br>
+
+                         <!--Address-->
+                         <p class="mb-3">地址：北京市昌平区府学路18号北校区主楼B座<br>邮政编码：102249
+	        </p>
+	     
+
+                         <!--Phone-->
+                         <!--p class="mb-3"> Office Telephone : 001 01085379709 <br>
+                                Mobile : 001 63165370895 </p-->
+
+                         <!--Email-->
+                         <p class="mb-3"> Email: <a href="mailto:sunzhu@cup.edu.cn" class="color-black">sunzhu@cup.edu.cn</a> <br>
+                             提交商业计划: <a href="mailto:sunzhu@cup.edu.cn" class="color-black">sunzhu@cup.edu.cn</a> </p>
+	        <p>&nbsp</p><p></p> 
+	        
+
+
+                         <!--Timing-->
+                         <!--p class="mb-3">Mon-Sat: 9am to 6pm</p-->
+
+                         <!--Social Icon-->
+                         <div class="address-social black">
+                            <!--ul class="list-unstyled">
+                               <li><a class="facebook-bg-hvr ml-0" href="javascript:void(0);"><i class="fab fa-facebook-f" aria-hidden="true"></i></a></li>
+                               <li><a class="twitter-bg-hvr" href="javascript:void(0);"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
+                               <li><a class="google-bg-hvr" href="javascript:void(0);"><i class="fab fa-google" aria-hidden="true"></i></a></li>
+                               <li><a class="linkedin-bg-hvr" href="javascript:void(0);"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a></li>
+                               <li><a class="instagram-bg-hvr mr-0" href="javascript:void(0);"><i class="fab fa-instagram" aria-hidden="true"></i></a></li>
+                            </ul-->
+                         </div>
+                      </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 p-0 col-map box-shadow-map">
+                <div id="google-map" class="bg-light-gray map"></div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Contact & Map ends -->
+
+<!-- Footer starts -->
+<footer class="bg-light-gray footer-transform-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 text-center">
+                <p class="copyrights px-0 py-5" align="left">版权所有 &copy; 中国石油大学(北京) 地址：北京市昌平区府学路18号 <br>邮编：102249<br>京公网安备110402430032号</p>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Footer ends -->
+
+
+<!-- JavaScript -->
+<script src="static/js/bundle.min.js"></script>
+
+<!-- Plugin Js -->
+<script src="static/js/jquery.fancybox.min.js"></script>
+<script src="static/js/owl.carousel.min.js"></script>
+<script src="static/js/swiper.min.js"></script>
+<script src="static/js/jquery.cubeportfolio.min.js"></script>
+<script src="static/js/jquery.appear.js"></script>
+<script src="static/js/parallaxie.min.js"></script>
+<script src="static/js/wow.min.js"></script>
+<script src="static/js/select2.min.js"></script>
+<!-- Slick JS File -->
+<script src="static/js/slick.min.js"></script>
+
+<!-- REVOLUTION JS FILES -->
+<script src="static/js/jquery.themepunch.tools.min.js"></script>
+<script src="static/js/jquery.themepunch.revolution.min.js"></script>
+<!-- SLIDER REVOLUTION EXTENSIONS -->
+<script src="static/js/revolution.extension.actions.min.js"></script>
+<script src="static/js/revolution.extension.carousel.min.js"></script>
+<script src="static/js/revolution.extension.kenburn.min.js"></script>
+<script src="static/js/revolution.extension.layeranimation.min.js"></script>
+<script src="static/js/revolution.extension.migration.min.js"></script>
+<script src="static/js/revolution.extension.migration.min.js"></script>
+<script src="static/js/revolution.extension.parallax.min.js"></script>
+<script src="static/js/revolution.extension.slideanims.min.js"></script>
+<script src="static/js/revolution.extension.video.min.js"></script>
+
+<!-- Google Map Api -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgIfLQi8KTxTJahilcem6qHusV-V6XXjw"></script> -->
+<script src="static/js/maps.min.js"></script>
+
+<!--contact form-->
+<script src="static/js/contact_us.js"></script>
+
+<!-- custom script -->
+<script src="static/js/script.js"></script>
+<script>
+    window.onscroll=function(){
+        var this_a=this;
+        console.log(this.scrollY);       
+        var btns = document.getElementById("navbg");
+        if(this.scrollY > 600){
+        document.getElementById("zhuye").style.color="rgb(30,30,30)";
+        document.getElementById("zhuye").style.fontWeight=600;
+        document.getElementById("guanyu").style.color="rgb(30,30,30)";
+        document.getElementById("guanyu").style.fontWeight=600;
+        document.getElementById("tanchuang").style.color="rgb(30,30,30)";
+        document.getElementById("tanchuang").style.fontWeight=600;
+        document.getElementById("kechen").style.color="rgb(30,30,30)";
+        document.getElementById("kechen").style.fontWeight=600;
+        document.getElementById("keyan").style.color="rgb(30,30,30)";
+        document.getElementById("keyan").style.fontWeight=600;
+        document.getElementById("shizi").style.color="rgb(30,30,30)";
+        document.getElementById("shizi").style.fontWeight=600;
+        document.getElementById("navbg").style.backgroundColor="rgb(255,255,255)";
+        // document.getElementById("navbg").style.opacity=0.7;
+        document.getElementById("xuezhu").style.color="rgb(30,30,25)";
+        document.getElementById("jingzhu").style.color="rgb(30,30,25)";
+        document.getElementById("quzhong").style.color="rgb(30,30,25)";
+        document.getElementById("shu1").style.color="rgb(30,30,30)";
+        document.getElementById("shu2").style.color="rgb(30,30,30)";
+    }
+        if(this.scrollY < 600){
+        document.getElementById("quzhong").style.color="rgb(255,255,255)";
+        document.getElementById("shu1").style.color="rgb(255,255,255)";
+        document.getElementById("shu2").style.color="rgb(255,255,255)";
+        document.getElementById("xuezhu").style.color="rgb(255,255,255)";
+        document.getElementById("jingzhu").style.color="rgb(255,255,255)";
+        document.getElementById("quzhong").style.color="rgb(255,255,255)";
+        document.getElementById("zhuye").style.color="rgb(2,132,208)";
+        document.getElementById("navbg").style.backgroundColor="transparent";
+        // document.getElementById("navbg").style.opacity=0.7;
+        document.getElementById("zhuye").style.color="rgb(255,255,255)";
+        document.getElementById("zhuye").style.fontWeight=600;
+        document.getElementById("guanyu").style.color="rgb(255,255,255)";
+        document.getElementById("guanyu").style.fontWeight=600;
+        document.getElementById("tanchuang").style.color="rgb(255,255,255)";
+        document.getElementById("tanchuang").style.fontWeight=600;
+        document.getElementById("kechen").style.color="rgb(255,255,255)";
+        document.getElementById("kechen").style.fontWeight=600;
+        document.getElementById("keyan").style.color="rgb(255,255,255)";
+        document.getElementById("keyan").style.fontWeight=600;
+        document.getElementById("shizi").style.color="rgb(255,255,255)";
+        document.getElementById("shizi").style.fontWeight=600;
+    }
+    }
+    var btns = document.getElementById("navbg");
+   
+
+</script>
+</body>
+</html>
