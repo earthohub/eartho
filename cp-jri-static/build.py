@@ -12,6 +12,7 @@ CONTACT_FILE = ROOT / "data/contact.json"
 GALLERY_FILE = ROOT / "data/home-gallery.json"
 PROGRAMME_FILE = ROOT / "data/forum-2026-from-pdf.txt"
 ABOUT_LINKS_FILE = ROOT / "data/about-links.json"
+LEADERSHIP_FILE = ROOT / "data/leadership.json"
 HOME_IMG_DIR = ROOT / "images/home"
 IMG_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
@@ -279,6 +280,44 @@ def build_index() -> None:
 
 
 
+
+
+def leadership_section() -> str:
+    if not LEADERSHIP_FILE.exists():
+        return ""
+    people = json.loads(LEADERSHIP_FILE.read_text(encoding="utf-8"))
+    cards = []
+    for person in people:
+        photo = person["photo"]
+        cards.append(
+            f"""<article class="director-card">
+  <a href="{photo}" data-lightbox class="director-photo-link">
+    <img src="{photo}" alt="" loading="lazy">
+  </a>
+  <div class="director-body">
+    <p class="director-role"><span class="zh-only">{esc(person['role_zh'])}</span><span class="en-only">{esc(person['role_en'])}</span></p>
+    <h3 class="zh-only">{esc(person['zh']['name'])}</h3>
+    <h3 class="en-only">{esc(person['en']['name'])}</h3>
+    <p class="director-title zh-only">{esc(person['zh']['title'])}</p>
+    <p class="director-title en-only">{esc(person['en']['title'])}</p>
+    <p class="zh-only">{esc(person['zh']['bio'])}</p>
+    <p class="en-only">{esc(person['en']['bio'])}</p>
+    <p><a href="mailto:{esc(person['email'])}">{esc(person['email'])}</a></p>
+    <p class="photo-credit zh-only">{esc(person.get('photoCredit_zh',''))}</p>
+    <p class="photo-credit en-only">{esc(person.get('photoCredit_en',''))}</p>
+  </div>
+</article>"""
+        )
+    return f"""
+<section class="section directors-section">
+  <div class="wrap content wide">
+    <h2 class="en-only">Co-Directors</h2>
+    <h2 class="zh-only">联合院长</h2>
+    <div class="directors-grid">{"".join(cards)}</div>
+  </div>
+</section>
+"""
+
 def about_links_section() -> str:
     if not ABOUT_LINKS_FILE.exists():
         return ""
@@ -322,7 +361,7 @@ def build_about() -> None:
   <p class="zh-only">2024年10月11日于里斯本举行签约暨揭牌仪式。参见 <a href="news/tecnico-ai-laboratory-2024.html">Técnico 报道</a>、<a href="news/embassy-inauguration-2024.html">中国驻葡使馆</a>、<a href="news/inauguration-cup-2024.html">中石油大新闻网</a>。</p>
 </div>
 """
-    body = body + about_links_section()
+    body = body + leadership_section() + about_links_section()
     write("about.html", shell("about.html", 0, "About", body))
 
 
