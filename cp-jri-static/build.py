@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent
 CONTACT_FILE = ROOT / "data/contact.json"
 GALLERY_FILE = ROOT / "data/home-gallery.json"
 HOME_IMG_DIR = ROOT / "images/home"
-IMG_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+IMG_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".JPG", ".JPEG", ".PNG"}
 
 
 def load_contact() -> dict:
@@ -397,7 +397,10 @@ def build_forum(forum: dict) -> None:
   <p class="zh-only">{esc(zh['organizer'])}</p>
   <p class="en-only">{esc(en['guidance'])}</p>
   <p class="en-only">{esc(en['organizer'])}</p>
+  <p class="pdf-link" style="margin:1.5rem 0"><a href="../documents/2026_China_Portugal_Forum_V23-print.pdf" target="_blank" rel="noopener"><span class="zh-only">下载完整会议手册（PDF，以印刷稿为准）</span><span class="en-only">Download full Conference Programme (PDF)</span></a></p>
   <h2 style="margin-top:2.5rem">议程</h2>
+  <p class="zh-only" style="color:var(--muted);font-size:0.9rem">网页摘要如下；详细时间、嘉宾与环节以 PDF 会议手册为准。</p>
+  <p class="en-only" style="color:var(--muted);font-size:0.9rem">Summary below; detailed programme is in the PDF booklet.</p>
   {schedule_html}
 </div>
 """

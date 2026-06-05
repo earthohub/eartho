@@ -2,11 +2,11 @@
   "note": "Chinese text is verbatim from the provided forum poster. English fields are verbatim where shown on the poster.",
   "zh": {
     "title": "2026 中葡气候与能源科技交流论坛",
-    "subtitle": "绿色能源 | AI科学 | 青年合作",
-    "datetime": "2026年 5月 29日 14:00-18:00",
-    "venue": "主楼C308会议室",
-    "guidance": "指导单位：科技部国际科技合作中心",
-    "organizer": "主办单位：中国石油大学(北京)中葡气候与能源联合研究院",
+    "subtitle": "绿色能源  |  AI 科学  |  青年合作",
+    "datetime": "2026 年 5 月 29 日 14:00–18:00",
+    "venue": "中国石油大学（北京）C308 会议室",
+    "guidance": "指导支持单位：科技部国际科技合作中心",
+    "organizer": "主办单位：中国石油大学（北京）中葡气候与能源联合研究院",
     "images": {
       "banner": "images/events/2026-forum-banner.jpg",
       "poster": "images/events/2026-forum-poster.jpg",
@@ -39,17 +39,19 @@
       {
         "time": "17:35 - 18:00",
         "title": "国际青年合作展望",
-        "items": ["杨威（中石油大）、苏祖琪（全球气候创新中心）"]
+        "items": [
+          "杨威（中石油大）、苏祖琪（全球气候创新中心）"
+        ]
       }
     ]
   },
   "en": {
     "title": "2026 China-Portugal Science & Technology Forum on Climate and Energy",
-    "subtitle": "Green Energy | AI Science | Youth Cooperation",
-    "datetime": "29 May 2026, 14:00–18:00",
-    "venue": "Main Building, Room C308",
+    "subtitle": "Green Energy  |  AI for Science  |  Youth Collaboration",
+    "datetime": "May 29, 2026 | 14:00–18:00",
+    "venue": "C308 Conference Room, China University of Petroleum-Beijing",
     "guidance": "Guidance: China Science and Technology Exchange Center, MOST",
-    "organizer": "Organizer: China-Portugal Joint Research Institute of Climate and Energy, CUP",
+    "organizer": "Organizer: China–Portugal Joint Research Institute for Climate and Energy, CUP",
     "images": {
       "banner": "images/events/2026-forum-banner.jpg",
       "poster": "images/events/2026-forum-poster.jpg",
