@@ -1,0 +1,398 @@
+/* JRICE — public international site */
+:root {
+  --bg: #ffffff;
+  --surface: #f8fafc;
+  --text: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --brand: #0f2942;
+  --accent: #1d4ed8;
+  --max: 1080px;
+  --font: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-zh: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 17px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+}
+
+[data-lang="zh"] body {
+  font-family: var(--font-zh), var(--font);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.wrap {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Header */
+.site-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 4rem;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--brand);
+  line-height: 1.2;
+}
+
+.logo strong {
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.logo span {
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav a {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.nav a:hover,
+.nav a.active {
+  color: var(--brand);
+  background: var(--surface);
+  text-decoration: none;
+}
+
+.lang {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lang button {
+  border: none;
+  background: transparent;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.72rem;
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.lang button.active {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* Hero */
+.hero {
+  padding: 4.5rem 0 3.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.hero h1 {
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: var(--brand);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.hero .tagline {
+  font-size: 1.05rem;
+  color: var(--muted);
+  max-width: 36rem;
+  margin: 0 0 1.75rem;
+}
+
+.hero-actions a {
+  display: inline-block;
+  margin-right: 0.75rem;
+  margin-bottom: 0.5rem;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.btn-dark {
+  background: var(--brand);
+  color: #fff !important;
+}
+
+.btn-line {
+  border: 1px solid var(--line);
+  color: var(--brand) !important;
+}
+
+/* Sections */
+.section {
+  padding: 3.5rem 0;
+}
+
+.section h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+  font-weight: 600;
+}
+
+.grid-3 {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.card {
+  padding: 1.5rem 0;
+  border-top: 2px solid var(--brand);
+}
+
+.card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: var(--brand);
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+/* Page */
+.page-title {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.page-title h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: -0.02em;
+}
+
+.page-title .meta {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.content {
+  padding: 2.5rem 0 3.5rem;
+  max-width: 42rem;
+}
+
+.content.wide {
+  max-width: var(--max);
+}
+
+.content p {
+  margin: 0 0 1.15rem;
+  color: #334155;
+}
+
+.content img {
+  width: 100%;
+  height: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--line);
+}
+
+.img-missing {
+  padding: 2rem;
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+
+.source-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-left: 3px solid var(--line);
+  padding-left: 1rem;
+  margin-top: 2rem;
+}
+
+/* News */
+.search {
+  width: 100%;
+  max-width: 28rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.news-list li {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.news-list li.hidden {
+  display: none;
+}
+
+.news-list time {
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.news-list h3 {
+  margin: 0.35rem 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.news-list h3 a {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.news-list h3 a:hover {
+  color: var(--accent);
+}
+
+.news-list .src {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Schedule */
+.schedule-block {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.schedule-block h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+.schedule-block h4 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  color: var(--brand);
+}
+
+.schedule-block ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #334155;
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding: 2.5rem 0;
+  background: var(--surface);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.site-footer strong {
+  color: var(--brand);
+  display: block;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.1em;
+}
+
+[data-lang="en"] .zh-only {
+  display: none !important;
+}
+
+[data-lang="zh"] .en-only {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .nav {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+}

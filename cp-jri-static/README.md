@@ -1,55 +1,75 @@
-# 中葡气候与能源联合研究院 · 静态官网（SFTP 上传版）
+# JRICE 官网（静态 · SFTP 上传）
 
-可直接打包上传至服务器，无需 Node.js 运行环境。
+**JRICE** = China-Portugal Joint Research Institute on Climate and Energy（中葡气候与能源联合研究院）
 
-## 本地预览
+面向公众的宣传网站。纯 HTML，无需 Node.js。
 
-用浏览器打开 `index.html`，或使用简单 HTTP 服务：
+---
+
+## 下载网站（推荐）
+
+浏览器打开下面链接，会自动下载 ZIP：
+
+**https://github.com/earthohub/eartho/archive/refs/heads/cursor/institute-website-0363.zip**
+
+1. 解压 ZIP  
+2. 进入文件夹 **`cp-jri-static`**  
+3. 双击 **`index.html`** 预览（或见下方「上传服务器」）
+
+---
+
+## 上传服务器（FileZilla SFTP）
+
+将 **`cp-jri-static`** 里的**全部文件**（不是外层 ZIP 夹）上传到网站根目录 `public_html`。
+
+或在仓库里执行：
 
 ```bash
 cd cp-jri-static
-python3 -m http.server 8080
-# 访问 http://localhost:8080
+bash package.sh
 ```
 
-## 重新生成页面
+解压生成的 zip 后同样上传到根目录。
 
-编辑 `data/news.json`、`data/carbon-finance.json` 后运行：
+---
+
+## 放入您的论坛图片
+
+把您提供的三张图复制到：
+
+`cp-jri-static/images/events/`
+
+文件名：
+
+- `2026-forum-banner.jpg`
+- `2026-forum-poster.jpg`
+- `2026-forum-meeting.jpg`
+
+详见 `images/events/README.txt`。
+
+---
+
+## 修改内容后重新生成
 
 ```bash
+cd cp-jri-static
+# 编辑 data/news.json 或 data/forum-2026.json
 python3 build.py
 ```
 
-## 打包上传（FileZilla SFTP）
+---
 
-```bash
-./package.sh
-```
+## 站点结构
 
-将生成的 `cp-jri-website-YYYYMMDD.zip` 解压后，**把解压出的所有文件和文件夹**上传到网站根目录（如 `public_html`），不要多包一层目录。
-
-## 目录说明
-
-| 路径 | 说明 |
+| 页面 | 说明 |
 |------|------|
-| `index.html` 等 | 研究院主页、关于、研究、联系 |
-| `news/` | 可检索新闻列表与详情 |
-| `events/forum-2026.html` | 2026 中葡论坛议程 |
-| `departments/carbon-finance/` | 碳金融子部门 |
-| `departments/blockchain-finance/` | 区块链金融中心（原始材料说明） |
-| `images/forum/` | 论坛宣传图（可替换为您上传的海报） |
-| `materials/README.html` | 原 nft.cup.edu.cn 归档说明 |
+| 首页 | JRICE 简介与最新动态 |
+| About / 关于 | 研究院概况 |
+| Research / 研究 | 研究方向 |
+| News / 新闻 | 可搜索；引用原文报道 |
+| Forum 2026 | 论坛信息（原文议程） |
+| Contact / 联系 | 联系方式 |
 
-## 替换论坛图片
+**不包含**：碳金融、区块链金融中心、原始资料归档（已按您的要求移除）。
 
-将您的会议海报、日程图放入：
-
-- `images/forum/forum-2026-banner.png` — 首页/论坛横幅
-- `images/forum/forum-2026-poster.jpg` — 可选，完整日程海报
-- `images/forum/forum-2026-meeting.jpg` — 可选，会场照片
-
-替换后无需重新 build（除非改 HTML 结构）。
-
-## 原站材料
-
-区块链金融中心完整 HTML 在仓库 `website/legacy-source/`。丝绸藏品、数字支付栏目**未**纳入本站。
+区块链中心等原始 HTML 仍在仓库 `website/legacy-source/`，仅供内部存档。

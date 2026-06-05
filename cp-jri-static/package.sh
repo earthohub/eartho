@@ -1,13 +1,12 @@
 #!/bin/bash
-# 打包静态网站，便于 FileZilla SFTP 上传
 set -e
 cd "$(dirname "$0")"
 python3 build.py
-ZIP="cp-jri-website-$(date +%Y%m%d).zip"
-zip -r "$ZIP" \
-  index.html about.html research.html contact.html \
-  css js images data \
-  news events departments materials \
-  -x "*.py" -x "package.sh" -x "*.zip" -x "README.md"
+ZIP="jrice-website-$(date +%Y%m%d).zip"
+zip -r "$ZIP" index.html about.html research.html contact.html css js images data news events \
+  -x "*.py" -x "package.sh" -x "preview.sh" -x "*.zip" -x "README.md" -x "images/events/README.txt"
+echo ""
+echo "Download link (full repo zip):"
+echo "https://github.com/earthohub/eartho/archive/refs/heads/cursor/institute-website-0363.zip"
+echo ""
 echo "Created: $(pwd)/$ZIP"
-echo "Upload all contents inside the zip to your web server root (public_html)."

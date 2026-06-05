@@ -2,79 +2,51 @@
   {
     "id": "forum-2026",
     "date": "2026-05-29",
-    "tags": ["中葡", "论坛", "气候", "能源", "2026"],
+    "source": "JRICE",
+    "tags": ["forum", "2026", "中葡", "climate", "energy"],
+    "event": "events/forum-2026.html",
     "zh": {
       "title": "2026 中葡气候与能源科技交流论坛",
-      "summary": "5月29日在中国石油大学（北京）主楼 C308 举行，主题：绿色能源、AI 科学、青年合作。",
-      "body": "2026 中葡气候与能源科技交流论坛（China-Portugal Science & Technology Forum on Climate and Energy）将于 2026 年 5 月 29 日 14:00–18:00 在中国石油大学（北京）主楼 C308 会议室举行。\n\n指导单位：科技部国际科技合作中心\n主办单位：中国石油大学（北京）中葡气候与能源联合研究院\n\n详见「活动」栏目中的完整议程。"
+      "summary": "2026年 5月 29日 14:00-18:00 · 主楼C308会议室 · 绿色能源 | AI科学 | 青年合作"
     },
     "en": {
-      "title": "2026 China-Portugal Forum on Climate and Energy",
-      "summary": "May 29 at CUP Beijing, Room C308. Themes: green energy, AI for science, youth cooperation.",
-      "body": "The 2026 China-Portugal Science & Technology Forum on Climate and Energy will be held on 29 May 2026, 14:00–18:00, Room C308, Main Building, China University of Petroleum (Beijing).\n\nGuidance: China Science and Technology Exchange Center (MOST)\nOrganizer: China-Portugal Joint Research Institute on Climate and Energy, CUP\n\nSee the Events page for the full agenda."
-    },
-    "eventPage": "events/forum-2026.html",
-    "image": "images/forum/forum-2026-banner.png"
+      "title": "2026 China-Portugal Science & Technology Forum on Climate and Energy",
+      "summary": "29 May 2026, 14:00–18:00 · Main Building, Room C308 · Green Energy | AI Science | Youth Cooperation"
+    }
   },
   {
     "id": "inauguration-lisbon-2024",
     "date": "2024-10-22",
-    "tags": ["中葡", "揭牌", "里斯本", "气候", "能源"],
+    "source": "中新社",
+    "sourceUrl": "https://nft.cup.edu.cn/news_23.html",
+    "tags": ["中葡", "里斯本", "揭牌", "inauguration"],
+    "images": ["images/news/news23_1.jpg", "images/news/news23_2.jpg"],
     "zh": {
       "title": "中新社：中葡气候与能源联合研究院在葡萄牙里斯本揭牌成立",
-      "summary": "2024年10月11日，中葡气候与能源联合研究院签约和揭牌仪式在葡萄牙里斯本高等理工学院举办。",
-      "body": "当地时间10月11日，中葡气候与能源联合研究院签约和揭牌仪式在葡萄牙里斯本高等理工学院举办。在中国驻葡萄牙大使赵本堂的见证下，葡萄牙里斯本高等理工学院校长 Rogério Colaço 和中国石油大学（北京）副校长鲍志东共同签署《葡萄牙里斯本高等理工学院与中国石油大学（北京）共建中葡气候与能源联合研究院备忘录》，并为中葡气候与能源联合研究院揭牌。\n\n在致辞中，Rogério Colaço 对中葡气候与能源联合研究院的成立表示祝贺，对两校青年教师的合作给予充分肯定，并期待中葡两国在气候与能源领域的合作进一步促进两国友好交流。\n\n鲍志东表示，今年是中葡建交45周年，在共同应对全球气候变化的时代背景下，中葡两国携手开展在人工智能与气候能源领域的合作具有特殊重要意义。此次共同成立中葡气候与能源联合研究院是两校乃至中葡教育科技合作的又一里程碑，将极大促进双方在碳中和未来技术领域的人才培养和科学研究，共同为应对气候变化做出积极贡献。\n\n赵本堂表示，葡萄牙和中国政府高度重视气候与能源领域的研究，中葡在能源领域开展的友好合作，将谱写中葡友谊新篇章。青年科学家的合作代表两国合作的未来和希望，也必将推动两国人民为全球走绿色、低碳、可持续发展之路做出贡献。"
+      "summary": "时间：2024-10-22",
+      "body": "当地时间10月11日，中葡气候与能源联合研究院签约和揭牌仪式在葡萄牙里斯本高等理工学院举办。在中国驻葡萄牙大使赵本堂的见证下，葡萄牙里斯本高等理工学院校长Rogério Colaço和中国石油大学(北京)副校长鲍志东共同签署《葡萄牙里斯本高等理工学院与中国石油大学(北京)共建中葡气候与能源联合研究院备忘录》，并为中葡气候与能源联合研究院揭牌。\n\n从左至右依次为：Leonardo Azevedo、鲍志东、赵本堂、Rogério Colaço、廖宗湖\n\n在致辞中，Rogério Colaço对中葡气候与能源联合研究院的成立表示祝贺，对两校青年教师的合作给予充分肯定，并期待中葡两国在气候与能源领域的合作进一步促进两国友好交流。\n\n鲍志东表示，今年是中葡建交45周年，在共同应对全球气候变化的时代背景下，中葡两国携手开展在人工智能与气候能源领域的合作具有特殊重要意义。此次共同成立中葡气候与能源联合研究院是两校乃至中葡教育科技合作的又一里程碑，将极大促进双方在碳中和未来技术领域的人才培养和科学研究，共同为应对气候变化做出积极贡献。\n\n中葡两校参会成员与赵本堂合影\n\n赵本堂表示，葡萄牙和中国政府高度重视气候与能源领域的研究，中葡在能源领域开展的友好合作，将谱写中葡友谊新篇章。青年科学家的合作代表两国合作的未来和希望，也必将推动两国人民为全球走绿色、低碳、可持续发展之路做出贡献。"
     },
     "en": {
-      "title": "China-Portugal Joint Research Institute inaugurated in Lisbon",
-      "summary": "Signing and unveiling ceremony held at Instituto Superior Técnico, Lisbon on 11 October 2024.",
-      "body": "On 11 October 2024, the signing and unveiling ceremony was held at Instituto Superior Técnico (IST) in Lisbon. Ambassador Zhao Bentang witnessed the signing between IST President Rogério Colaço and CUP Vice President Bao Zhidong, and the unveiling of the joint institute plaque.\n\nThe institute marks a milestone in China–Portugal cooperation in climate, energy, AI, and carbon-neutrality technologies."
-    },
-    "images": ["images/news/news23_1.jpg", "images/news/news23_2.jpg"]
+      "title": "Xinhua: China-Portugal Joint Research Institute on Climate and Energy inaugurated in Lisbon, Portugal",
+      "summary": "Date: 2024-10-22",
+      "body": "See Chinese article for the official report. Source: China University of Petroleum (Beijing) Blockchain Finance Research Center news archive, 22 October 2024."
+    }
   },
   {
     "id": "national-rd-project-2024",
     "date": "2024-12-06",
-    "tags": ["科研", "国际合作", "气候", "能源"],
+    "source": "中国石油大学（北京）",
+    "sourceUrl": "https://nft.cup.edu.cn/news_24.html",
+    "tags": ["research", "international", "科研"],
     "zh": {
-      "title": "廖宗湖教授团队获批国家重点研发计划“政府间国际科技创新合作”重点专项",
-      "summary": "研究院相关团队在国际科技创新合作方面取得重要进展。",
-      "body": "廖宗湖教授团队获批国家重点研发计划“政府间国际科技创新合作”重点专项项目，与中葡气候与能源领域的国际合作研究密切相关。详情请参见校内新闻发布。"
+      "title": "廖宗湖教授团队获批国家重点研发计划 “政府间国际科技创新合作”重点专项项目",
+      "summary": "2024-12-06",
+      "body": "廖宗湖教授团队获批国家重点研发计划 “政府间国际科技创新合作”重点专项项目。"
     },
     "en": {
-      "title": "National key R&D project on international S&T cooperation approved",
-      "summary": "Prof. Liao Zonghu's team received a government international cooperation grant.",
-      "body": "The team led by Prof. Liao Zonghu was approved for a National Key R&D Programme project on government international science and technology cooperation, supporting China–Portugal climate and energy research."
-    }
-  },
-  {
-    "id": "energy-finance-forum-2023",
-    "date": "2023-09-18",
-    "tags": ["能源", "金融", "论坛"],
-    "zh": {
-      "title": "中国石油大学（北京）成功举办首届能源金融论坛",
-      "summary": "能源金融与气候能源交叉领域的学术交流活动。",
-      "body": "中国石油大学（北京）成功举办首届能源金融论坛，为能源、金融与气候政策研究搭建交流平台。"
-    },
-    "en": {
-      "title": "First Energy Finance Forum held at CUP Beijing",
-      "summary": "Academic exchange on energy finance and climate-energy topics.",
-      "body": "China University of Petroleum (Beijing) successfully held its first Energy Finance Forum."
-    }
-  },
-  {
-    "id": "gzfe-cup-cooperation-2023",
-    "date": "2023-05-16",
-    "tags": ["合作", "能源", "期货"],
-    "zh": {
-      "title": "广州期货交易所与中国石油大学（北京）签署战略合作协议",
-      "summary": "能源金融与碳金融合作网络的拓展。",
-      "body": "广州期货交易所与中国石油大学（北京）签署战略合作协议，推动能源金融领域产学研合作。"
-    },
-    "en": {
-      "title": "GFEX and CUP Beijing signed strategic cooperation agreement",
-      "summary": "Expanding the energy finance cooperation network.",
-      "body": "Guangzhou Futures Exchange and China University of Petroleum (Beijing) signed a strategic cooperation agreement."
+      "title": "Prof. Liao Zonghu's team approved for National Key R&D Programme international cooperation project",
+      "summary": "2024-12-06",
+      "body": "Prof. Liao Zonghu's team was approved for the National Key R&D Programme \"Government International Science and Technology Innovation Cooperation\" key project."
     }
   }
 ]
