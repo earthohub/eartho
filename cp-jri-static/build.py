@@ -253,6 +253,10 @@ def build_index() -> None:
     <h2 class="zh-only">最新动态</h2>
     <ul class="news-list">
       <li>
+        <time datetime="2026-05-31">2026-05-31</time>
+        <h3><a href="news/people-daily-forum-2026.html"><span class="zh-only">人民网：“2026中葡气候与能源科技交流论坛”在京举行</span><span class="en-only">People's Daily: 2026 China-Portugal Forum on Climate and Energy in Beijing</span></a></h3>
+      </li>
+      <li>
         <time datetime="2026-05-29">2026-05-29</time>
         <h3><a href="events/forum-2026.html"><span class="zh-only">2026 中葡气候与能源科技交流论坛</span><span class="en-only">2026 China-Portugal Science &amp; Technology Forum on Climate and Energy</span></a></h3>
       </li>

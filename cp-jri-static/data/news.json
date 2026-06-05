@@ -3,7 +3,13 @@
     "id": "forum-2026",
     "date": "2026-05-29",
     "source": "JRICE",
-    "tags": ["forum", "2026", "中葡", "climate", "energy"],
+    "tags": [
+      "forum",
+      "2026",
+      "中葡",
+      "climate",
+      "energy"
+    ],
     "event": "events/forum-2026.html",
     "zh": {
       "title": "2026 中葡气候与能源科技交流论坛",
@@ -15,11 +21,40 @@
     }
   },
   {
+    "id": "people-daily-forum-2026",
+    "date": "2026-05-31",
+    "source": "人民网-国际频道",
+    "sourceUrl": "https://world.people.com.cn/n1/2026/0531/c1002-40730938.html",
+    "tags": [
+      "人民网",
+      "论坛",
+      "2026",
+      "中葡",
+      "北京"
+    ],
+    "zh": {
+      "title": "“2026中葡气候与能源科技交流论坛”在京举行",
+      "summary": "2026年05月31日 · 来源：人民网-国际频道 · 记者李潇",
+      "body": "人民网北京5月29日电 （记者李潇）由中葡气候与能源联合研究院主办的“2026中葡气候与能源科技交流论坛”29日在北京举行。本届论坛旨在汇聚创新动力，服务全球可持续发展，进一步深化中国同葡萄牙在科技创新、绿色能源、人工智能及国际科研领域的交流与协作。中国石油大学（北京）副校长张广清、中葡气候与能源联合研究院院长廖宗湖、葡萄牙自然资源与环境研究中心主席莱昂纳多·阿泽维多等在开幕式上发言，联合国开发计划署（UNDP）、联合国粮农组织、美国环保协会、全球气候创新中心、世界资源研究所可持续转型中心等机构代表以及国内外高校、研究机构、企事业单位负责人等出席了论坛。\n\n张广清在讲话中表示，葡萄牙是中国在欧洲的重要合作伙伴，也是连接欧洲、葡语国家和全球南方的重要桥梁。近年来，中葡两国高校、科研机构和青年学者在教育、科学、能源、海洋、气候治理和创新创业等领域的合作不断深化。未来，我们能够在四个方向上共同努力：一是围绕气候变化、能源安全、碳减排和资源可持续利用等重大需求，开展高水平研究；二是推动人工智能在能源与气候研究中的应用；三是加强校企合作，推动绿色能源、低碳数据中心、智能能源管理和人工智能基础设施等领域的发展；四是将青年合作置于长期伙伴关系的核心位置，为联合培养、学生交流、国际实习、青年学者论坛和创新项目创造更多机会。\n\n廖宗湖在专题演讲中指出，当今世界正经历百年未有之大变局，全球能源系统亦发生系统性变革，“绿色能源、人工智能科学与青年合作”作为今年论坛的关键词，三者并不是彼此分离的关系，而是正在融合成为未来国际科技合作的一体化议程。中葡气候与能源联合研究院也不仅是一个联合研究机构，它正在成为一个连接科学研究、合作项目、产业场景和青年人才的中葡长期合作平台。未来，希望进一步依托中葡两国在绿色低碳、人工智能及青年人才领域的已有合作基础，通过产学研深度对话，构建国际化合作新机制，打造中葡绿色科技合作典范。\n\n莱昂纳多·阿泽维多认为，全球气候危机、国际政治冲突以及供应链日益脆弱等现状，正在深刻影响和改变全球能源和矿产的管理方式，并引发诸多风险与挑战。有关各方需要尽快采取务实行动，做好新时期能源管理与数字化转型，在确保供应链稳定的基础上，为包括全球南方在内的不同国家与地区创造切实可行的发展机遇。“值得一提的是，欧洲的葡萄牙和东方的中国，在可再生能源开发利用和电气化方面都取得了不俗的成就，为国际社会树立了可供借鉴的发展标杆。”\n\n论坛举行期间，中葡气候变化与能源联合研究院还向多位特邀专家咨询委员颁发了聘书，并与横琴粤澳深度合作区中葡科技交流合作中心、中关村软件园、澳门青创国际集团、全球气候创新中心等合作伙伴集中签署了中葡科技合作协议。"
+    },
+    "en": {
+      "title": "2026 China-Portugal Science & Technology Forum on Climate and Energy held in Beijing",
+      "summary": "31 May 2026 · People's Daily Online (International)",
+      "body": "See Chinese article for the full report from People's Daily Online. Source: https://world.people.com.cn/n1/2026/0531/c1002-40730938.html"
+    }
+  },
+  {
     "id": "tecnico-ai-laboratory-2024",
     "date": "2024-10-09",
     "source": "Instituto Superior Técnico",
     "sourceUrl": "https://tecnico.ulisboa.pt/en/news/artificial-intelligence-ai-for-climate-and-energy-tecnico-teams-up-with-chinese-university-on-new-laboratory/",
-    "tags": ["Técnico", "IST", "AI", "中葡", "合作"],
+    "tags": [
+      "Técnico",
+      "IST",
+      "AI",
+      "中葡",
+      "合作"
+    ],
     "zh": {
       "title": "里斯本高等理工学院：与中国石油大学签署 AI for Climate and Energy 合作协议",
       "summary": "2024年10月9日，IST 与中国石油大学（北京）在 Alameda 校区签署协议；中国驻葡萄牙大使赵本堂出席。",
@@ -36,7 +71,13 @@
     "date": "2024-10-11",
     "source": "Embassy of China in Portugal",
     "sourceUrl": "http://pt.china-embassy.gov.cn/pot/sgdt/202412/t20241221_11514312.htm",
-    "tags": ["大使馆", "embassy", "赵本堂", "揭牌", "中葡"],
+    "tags": [
+      "大使馆",
+      "embassy",
+      "赵本堂",
+      "揭牌",
+      "中葡"
+    ],
     "zh": {
       "title": "中国驻葡萄牙大使馆：赵本堂大使出席中葡气候与能源联合研究院签约暨揭牌仪式",
       "summary": "2024年10月11日 · 中国驻葡萄牙大使馆官网",
@@ -53,7 +94,12 @@
     "date": "2024-10-14",
     "source": "中国石油大学（北京）",
     "sourceUrl": "https://www.cup.edu.cn/news/sx/61d82efd486c414694b03bbb2466863f.htm",
-    "tags": ["中石油大", "CUP", "揭牌", "里斯本"],
+    "tags": [
+      "中石油大",
+      "CUP",
+      "揭牌",
+      "里斯本"
+    ],
     "zh": {
       "title": "中国石油大学（北京）：中葡气候与能源联合研究院在葡萄牙里斯本揭牌成立",
       "summary": "发布时间：2024-10-14 · 国际合作与交流处、地球科学学院",
@@ -70,8 +116,17 @@
     "date": "2024-10-22",
     "source": "中新社",
     "sourceUrl": "https://nft.cup.edu.cn/news_23.html",
-    "tags": ["中葡", "里斯本", "揭牌", "inauguration", "Xinhua"],
-    "images": ["images/news/news23_1.jpg", "images/news/news23_2.jpg"],
+    "tags": [
+      "中葡",
+      "里斯本",
+      "揭牌",
+      "inauguration",
+      "Xinhua"
+    ],
+    "images": [
+      "images/news/news23_1.jpg",
+      "images/news/news23_2.jpg"
+    ],
     "zh": {
       "title": "中新社：中葡气候与能源联合研究院在葡萄牙里斯本揭牌成立",
       "summary": "时间：2024-10-22",
@@ -88,7 +143,11 @@
     "date": "2024-12-06",
     "source": "中国石油大学（北京）",
     "sourceUrl": "https://nft.cup.edu.cn/news_24.html",
-    "tags": ["research", "international", "科研"],
+    "tags": [
+      "research",
+      "international",
+      "科研"
+    ],
     "zh": {
       "title": "廖宗湖教授团队获批国家重点研发计划 “政府间国际科技创新合作”重点专项项目",
       "summary": "2024-12-06",
