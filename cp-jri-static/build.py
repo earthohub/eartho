@@ -8,6 +8,63 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 
+
+CONTACT_FILE = ROOT / "data/contact.json"
+GALLERY_FILE = ROOT / "data/home-gallery.json"
+HOME_IMG_DIR = ROOT / "images/home"
+IMG_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+
+
+def load_contact() -> dict:
+    return json.loads(CONTACT_FILE.read_text(encoding="utf-8"))
+
+
+def emails_html() -> str:
+    emails = load_contact().get("emails", [])
+    return "<br>".join(f'<a href="mailto:{esc(e)}">{esc(e)}</a>' for e in emails)
+
+
+def home_gallery_items() -> list[dict]:
+    if GALLERY_FILE.exists():
+        data = json.loads(GALLERY_FILE.read_text(encoding="utf-8"))
+        if data.get("images"):
+            return data["images"]
+    if not HOME_IMG_DIR.exists():
+        return []
+    items = []
+    for f in sorted(HOME_IMG_DIR.iterdir()):
+        if f.suffix.lower() in IMG_EXT:
+            items.append({"src": f"images/home/{f.name}", "caption": ""})
+    return items
+
+
+def home_gallery_section() -> str:
+    items = home_gallery_items()
+    if not items:
+        return ""
+    cells = []
+    for it in items:
+        src = it["src"]
+        cap = it.get("caption", "")
+        cap_html = f'<figcaption>{esc(cap)}</figcaption>' if cap else ""
+        cells.append(
+            f'<figure class="gallery-item"><img src="{src}" alt="" loading="lazy">{cap_html}</figure>'
+        )
+    grid = "\n".join(cells)
+    return f"""
+<section class="section gallery-section">
+  <div class="wrap">
+    <h2 class="en-only">Events &amp; Gallery</h2>
+    <h2 class="zh-only">活动影像</h2>
+    <p class="gallery-hint en-only">Photos from JRICE events including the 2026 forum.</p>
+    <p class="gallery-hint zh-only">JRICE 活动及 2026 论坛现场图片。</p>
+    <div class="gallery-grid">{grid}</div>
+    <p class="gallery-more"><a href="events/forum-2026.html" class="en-only">2026 Forum →</a><a href="events/forum-2026.html" class="zh-only">2026 论坛 →</a></p>
+  </div>
+</section>
+"""
+
+
 NAV = [
     ("index.html", {"en": "Home", "zh": "首页"}),
     ("about.html", {"en": "About", "zh": "关于"}),
@@ -47,6 +104,7 @@ def nav(active: str, depth: int) -> str:
 
 def shell(active: str, depth: int, title: str, body: str) -> str:
     p = pfx(depth)
+    emails = emails_html()
     return f"""<!DOCTYPE html>
 <html lang="en" data-lang="en">
 <head>
@@ -83,7 +141,7 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
       <p class="zh-only">中葡气候与能源联合研究院</p>
     </div>
     <div>
-      <p><a href="mailto:zong@cup.edu.cn">zong@cup.edu.cn</a></p>
+      <p>{emails}</p>
       <p class="en-only">China University of Petroleum (Beijing)</p>
       <p class="zh-only">中国石油大学（北京）</p>
     </div>
@@ -154,6 +212,7 @@ def build_index() -> None:
     </div>
   </div>
 </section>
+{gallery}
 <section class="section" style="background:var(--surface);border-top:1px solid var(--line)">
   <div class="wrap">
     <h2 class="en-only">Latest</h2>
@@ -172,6 +231,8 @@ def build_index() -> None:
   </div>
 </section>
 """
+    gallery = home_gallery_section()
+    body = body.replace("{gallery}", gallery)
     write("index.html", shell("index.html", 0, "Home", body))
 
 
@@ -211,15 +272,19 @@ def build_research() -> None:
 
 
 def build_contact() -> None:
-    body = """
+    c = load_contact()
+    em = "<br>".join(f'<a href="mailto:{esc(e)}">{esc(e)}</a>' for e in c["emails"])
+    body = f"""
 <div class="wrap page-title">
   <h1 class="en-only">Contact</h1>
   <h1 class="zh-only">联系</h1>
 </div>
 <div class="wrap content">
-  <p><strong>Email</strong><br><a href="mailto:zong@cup.edu.cn">zong@cup.edu.cn</a></p>
-  <p class="zh-only"><strong>地址</strong><br>北京市昌平区府学路18号 中国石油大学（北京）</p>
-  <p class="en-only"><strong>Address</strong><br>No. 18 Fuxue Road, Changping, Beijing, China</p>
+  <p><strong>Email</strong><br>{em}</p>
+  <p class="zh-only"><strong>地址</strong><br>{esc(c['zh']['address'])}</p>
+  <p class="en-only"><strong>Address</strong><br>{esc(c['en']['address'])}</p>
+  <p class="zh-only"><strong>邮编</strong><br>{esc(c['zh']['postcode'])}</p>
+  <p class="en-only"><strong>Postcode</strong><br>{esc(c['en']['postcode'])}</p>
 </div>
 """
     write("contact.html", shell("contact.html", 0, "Contact", body))

@@ -396,3 +396,46 @@ a:hover {
     flex-wrap: nowrap;
   }
 }
+
+/* Home gallery */
+.gallery-section {
+  border-top: 1px solid var(--line);
+}
+
+.gallery-hint {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin: -0.5rem 0 1.25rem;
+}
+
+.gallery-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.gallery-item {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.gallery-item img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: 0;
+  border: none;
+}
+
+.gallery-item figcaption {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.gallery-more {
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+}
