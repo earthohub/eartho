@@ -1,7 +1,11 @@
-请将您提供的 2026 论坛图片放到本文件夹，并使用以下文件名（不要改名内容）：
-
-  2026-forum-banner.jpg   — 横幅宣传图
-  2026-forum-poster.jpg   — 含完整日程的海报
-  2026-forum-meeting.jpg  — 会场交流照片
-
-放好后刷新浏览器即可，无需重新 build。
+请将 2026 论坛现场照片放到本文件夹（jpg / png / webp）。
+
+当前已使用：
+  03.jpg
+  04.jpg
+  05.jpg
+
+放好后运行：python3 build.py
+（或 ./package.sh 打包）
+
+照片会自动显示在 events/forum-2026.html 页面，点击可放大。

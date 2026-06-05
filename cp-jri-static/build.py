@@ -14,6 +14,8 @@ PROGRAMME_FILE = ROOT / "data/forum-2026-from-pdf.txt"
 ABOUT_LINKS_FILE = ROOT / "data/about-links.json"
 LEADERSHIP_FILE = ROOT / "data/leadership.json"
 HOME_IMG_DIR = ROOT / "images/home"
+EVENTS_IMG_DIR = ROOT / "images/events"
+FORUM_PDF = ROOT / "documents/2026_China_Portugal_Forum_V23-online.pdf"
 IMG_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 
@@ -81,6 +83,43 @@ def home_gallery_section() -> str:
     <p class="gallery-hint zh-only">点击照片可放大查看。</p>
     <div class="gallery-grid">{"".join(cells)}</div>
     <p class="gallery-more"><a href="events/forum-2026.html" class="en-only">2026 Forum →</a><a href="events/forum-2026.html" class="zh-only">2026 论坛 →</a></p>
+  </div>
+</section>
+"""
+
+
+def forum_gallery_items() -> list[str]:
+    if not EVENTS_IMG_DIR.exists():
+        return []
+    skip = {"README.txt"}
+    files = []
+    for f in sorted(EVENTS_IMG_DIR.iterdir()):
+        if f.name in skip or f.suffix.lower() not in IMG_EXT:
+            continue
+        files.append(f"images/events/{f.name}")
+    return files
+
+
+def forum_gallery_section(depth: int = 1) -> str:
+    items = forum_gallery_items()
+    if not items:
+        return ""
+    p = pfx(depth)
+    cells = []
+    for src in items:
+        full = f"{p}{src}"
+        cells.append(
+            f'<a class="gallery-item" href="{full}" data-lightbox>'
+            f'<img src="{full}" alt="" loading="lazy"></a>'
+        )
+    return f"""
+<section class="section gallery-section">
+  <div class="wrap">
+    <h2 class="en-only">Forum Photos</h2>
+    <h2 class="zh-only">论坛影像</h2>
+    <p class="gallery-hint en-only">Click any photo to enlarge.</p>
+    <p class="gallery-hint zh-only">点击照片可放大查看。</p>
+    <div class="gallery-grid">{"".join(cells)}</div>
   </div>
 </section>
 """
@@ -472,18 +511,35 @@ def build_news_article(n: dict) -> None:
     write(f"news/{n['id']}.html", shell(f"news/{n['id']}.html", 1, n["en"]["title"][:30], body))
 
 
+def extract_forum_pdf() -> None:
+    if not FORUM_PDF.exists():
+        return
+    try:
+        import pypdf
+    except ImportError:
+        return
+    reader = pypdf.PdfReader(str(FORUM_PDF))
+    pages = []
+    for page in reader.pages:
+        pages.append((page.extract_text() or "").strip())
+    PROGRAMME_FILE.write_text("\f\n".join(p for p in pages if p) + "\n", encoding="utf-8")
+
+
+
 def build_forum() -> None:
     programme = programme_html()
+    gallery = forum_gallery_section(depth=1)
     body = f"""
 <div class="wrap page-title">
   <h1 class="zh-only">2026 中葡气候与能源科技交流论坛</h1>
   <h1 class="en-only">2026 China-Portugal Science &amp; Technology Forum on Climate and Energy</h1>
   <p class="meta">绿色能源  |  AI 科学  |  青年合作 · Green Energy | AI for Science | Youth Collaboration</p>
 </div>
+{gallery}
 <div class="wrap content wide">
-  <p class="pdf-link"><a href="../documents/2026_China_Portugal_Forum_V23-print.pdf" target="_blank" rel="noopener"><span class="zh-only">下载印刷版会议手册（PDF）</span><span class="en-only">Download Conference Programme (PDF)</span></a></p>
-  <p class="zh-only" style="color:var(--muted);font-size:0.9rem">以下为 <code>2026_China_Portugal_Forum_V23-print.pdf</code> 原文提取，未作润色。</p>
-  <p class="en-only" style="color:var(--muted);font-size:0.9rem">Verbatim text extracted from <code>2026_China_Portugal_Forum_V23-print.pdf</code> (unedited).</p>
+  <p class="pdf-link"><a href="../documents/2026_China_Portugal_Forum_V23-online.pdf" target="_blank" rel="noopener"><span class="zh-only">下载会议手册（PDF）</span><span class="en-only">Download Conference Programme (PDF)</span></a></p>
+  <p class="zh-only" style="color:var(--muted);font-size:0.9rem">以下为 <code>2026_China_Portugal_Forum_V23-online.pdf</code> 原文提取，未作润色。</p>
+  <p class="en-only" style="color:var(--muted);font-size:0.9rem">Verbatim text extracted from <code>2026_China_Portugal_Forum_V23-online.pdf</code> (unedited).</p>
   <div class="programme-document">{programme}</div>
 </div>
 """
@@ -491,6 +547,7 @@ def build_forum() -> None:
 
 
 def main() -> None:
+    extract_forum_pdf()
     news = json.loads((ROOT / "data/news.json").read_text(encoding="utf-8"))
     print("Building JRICE site…")
     build_index()
