@@ -7,6 +7,9 @@
   --line: #e2e8f0;
   --brand: #0f2942;
   --accent: #1d4ed8;
+  --red-cn: #c8102e;
+  --green-pt: #006847;
+  --top-accent-h: 6px;
   --max: 1080px;
   --font: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-zh: "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -25,10 +28,32 @@ html {
 
 body {
   margin: 0;
+  padding-top: var(--top-accent-h);
   font-family: var(--font);
   color: var(--text);
   background: var(--bg);
   line-height: 1.6;
+}
+
+/* Top of page: full-width red line + full-width green line */
+.top-accent {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-accent-red {
+  height: 3px;
+  background: var(--red-cn);
+}
+
+.top-accent-green {
+  height: 3px;
+  background: var(--green-pt);
 }
 
 [data-lang="zh"] body {
@@ -55,7 +80,7 @@ a:hover {
   border-bottom: 1px solid var(--line);
   background: var(--bg);
   position: sticky;
-  top: 0;
+  top: var(--top-accent-h);
   z-index: 50;
 }
 
@@ -538,7 +563,8 @@ a:hover {
 .directors-grid {
   display: grid;
   gap: 2.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  align-items: start;
 }
 
 .director-card {
@@ -553,15 +579,19 @@ a:hover {
   border: 1px solid var(--line);
   background: var(--surface);
   overflow: hidden;
-  max-width: 220px;
+  width: 220px;
+  height: 280px;
+  flex-shrink: 0;
 }
 
 .director-photo-link img {
   width: 100%;
-  height: auto;
+  height: 100%;
   margin: 0;
   border: none;
   display: block;
+  object-fit: cover;
+  object-position: center 15%;
 }
 
 .director-role {

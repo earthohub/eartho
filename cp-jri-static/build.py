@@ -191,6 +191,10 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
   <link rel="stylesheet" href="{p}css/site.css">
 </head>
 <body>
+<div class="top-accent" aria-hidden="true">
+  <span class="top-accent-red"></span>
+  <span class="top-accent-green"></span>
+</div>
 <header class="site-header">
   <div class="wrap header-row">
     <a class="logo" href="{p}index.html">
