@@ -1,4 +1,4 @@
-/* JRICE — embassy-style bands (flag stripe · red nav · navy banners) */
+/* JRICE — embassy-style bands (bilingual nav · navy banners) */
 :root {
   --bg: #ffffff;
   --surface: #f4f6f8;
@@ -8,9 +8,8 @@
   --brand: #003057;
   --accent: #0d6e8f;
   --green-pt: #046a38;
-  --red-pt: #9d2235;
+  --red-cn: #de2910;
   --nav-red: #9d2235;
-  --top-accent-h: 8px;
   --max: 1080px;
   --font: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-zh: "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -29,7 +28,6 @@ html {
 
 body {
   margin: 0;
-  padding-top: var(--top-accent-h);
   font-family: var(--font);
   color: var(--text);
   background: var(--bg);
@@ -38,27 +36,6 @@ body {
 
 [data-lang="zh"] body {
   font-family: var(--font-zh), var(--font);
-}
-
-/* Flag stripe — top of every page */
-.top-accent {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--top-accent-h);
-  z-index: 110;
-  display: flex;
-}
-
-.top-accent-green {
-  flex: 2;
-  background: var(--green-pt);
-}
-
-.top-accent-red {
-  flex: 3;
-  background: var(--red-pt);
 }
 
 a {
@@ -79,7 +56,7 @@ a:hover {
 /* Sticky header block */
 .site-top {
   position: sticky;
-  top: var(--top-accent-h);
+  top: 0;
   z-index: 100;
 }
 
@@ -143,15 +120,31 @@ a:hover {
   color: #fff;
 }
 
-/* Red navigation band — embassy style */
+/* Navigation band — China red (left) · Portugal green (right), host etiquette */
 .nav-bar {
-  background: var(--nav-red);
+  position: relative;
 }
 
-.nav-bar .wrap {
-  padding-left: 0;
-  padding-right: 0;
-  max-width: none;
+.nav-bar-flags {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: 0;
+}
+
+.nav-flag-cn {
+  flex: 1;
+  background: var(--red-cn);
+}
+
+.nav-flag-pt {
+  flex: 1;
+  background: var(--green-pt);
+}
+
+.nav-bar-inner {
+  position: relative;
+  z-index: 1;
 }
 
 .nav {
@@ -160,11 +153,6 @@ a:hover {
   list-style: none;
   margin: 0;
   padding: 0;
-  max-width: var(--max);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
 }
 
 .nav a {
@@ -328,6 +316,48 @@ a:hover {
 .content {
   padding: 2.5rem 0 3.5rem;
   max-width: 42rem;
+}
+
+/* About — plaque left, text right */
+.about-intro {
+  display: grid;
+  grid-template-columns: minmax(200px, 300px) 1fr;
+  gap: 2.25rem;
+  align-items: start;
+  padding: 2.5rem 0 3.5rem;
+  max-width: var(--max);
+}
+
+.about-plaque-link {
+  display: block;
+  cursor: zoom-in;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.about-plaque-link img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  margin: 0;
+  border: none;
+}
+
+.about-text p {
+  margin: 0 0 1.15rem;
+  color: #334155;
+}
+
+@media (max-width: 720px) {
+  .about-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .about-plaque {
+    max-width: 280px;
+  }
 }
 
 .content.wide {

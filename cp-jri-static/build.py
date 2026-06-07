@@ -17,6 +17,7 @@ HOME_IMG_DIR = ROOT / "images/home"
 EVENTS_IMG_DIR = ROOT / "images/events"
 FORUM_PDF = ROOT / "documents/2026_China_Portugal_Forum_V23-online.pdf"
 IMG_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+ABOUT_PLAQUE = ROOT / "images/about/institute-plaque.jpg"
 
 
 def load_institute() -> dict:
@@ -221,10 +222,6 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
   <link rel="stylesheet" href="{p}css/site.css">
 </head>
 <body>
-<div class="top-accent" aria-hidden="true">
-  <span class="top-accent-green"></span>
-  <span class="top-accent-red"></span>
-</div>
 <div class="site-top">
 <header class="site-header">
   <div class="wrap header-row">
@@ -240,7 +237,11 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
   </div>
 </header>
 <nav class="nav-bar" aria-label="Main">
-  <div class="wrap">
+  <div class="nav-bar-flags" aria-hidden="true">
+    <span class="nav-flag-cn"></span>
+    <span class="nav-flag-pt"></span>
+  </div>
+  <div class="wrap nav-bar-inner">
     <ul class="nav">{nav(active, depth)}</ul>
   </div>
 </nav>
@@ -281,6 +282,17 @@ def img_tag(src: str, depth: int, alt: str = "") -> str:
         f'<a href="{full}" data-lightbox class="content-img-link">'
         f'<img src="{full}" alt="{esc(alt)}" loading="lazy"></a>'
     )
+
+
+
+
+def about_plaque_html() -> str:
+    return """
+<div class="about-plaque">
+  <a href="images/about/institute-plaque.jpg" data-lightbox class="about-plaque-link">
+    <img src="images/about/institute-plaque.jpg" alt="" loading="lazy">
+  </a>
+</div>"""
 
 
 def build_index() -> None:
@@ -430,12 +442,15 @@ def about_links_section() -> str:
 def build_about() -> None:
     inst = institute_en()
     body = page_banner("About JRICE", "关于 JRICE", inst, "中葡气候与能源联合研究院") + f"""
-<div class="wrap content">
-  <p class="zh-only">JRICE（中葡气候与能源联合研究院）由中国石油大学（北京）与葡萄牙里斯本高等理工学院共建，面向气候变化、清洁能源与碳中和未来技术开展联合研究与人才培养。</p>
-  <p class="en-only">JRICE ({esc(inst)}) is co-established by China University of Petroleum (Beijing) and Instituto Superior Técnico (IST), Lisbon.</p>
-  <p class="zh-only">2024年10月11日，双方于里斯本举行签约暨揭牌仪式。详见 <a href="news/inauguration-lisbon-2024.html">新闻报道</a>。</p>
-  <p class="en-only">On 11 October 2024, the signing and unveiling ceremony was held in Lisbon. See <a href="news/tecnico-ai-laboratory-2024.html">Técnico</a>, <a href="news/embassy-inauguration-2024.html">Embassy</a>, and <a href="news/inauguration-cup-2024.html">CUP</a> reports.</p>
-  <p class="zh-only">2024年10月11日于里斯本举行签约暨揭牌仪式。参见 <a href="news/tecnico-ai-laboratory-2024.html">Técnico 报道</a>、<a href="news/embassy-inauguration-2024.html">中国驻葡使馆</a>、<a href="news/inauguration-cup-2024.html">中石油大新闻网</a>。</p>
+<div class="wrap about-intro">
+  {about_plaque_html()}
+  <div class="about-text">
+    <p class="zh-only">JRICE（中葡气候与能源联合研究院）由中国石油大学（北京）与葡萄牙里斯本高等理工学院共建，面向气候变化、清洁能源与碳中和未来技术开展联合研究与人才培养。</p>
+    <p class="en-only">JRICE ({esc(inst)}) is co-established by China University of Petroleum (Beijing) and Instituto Superior Técnico (IST), Lisbon.</p>
+    <p class="zh-only">2024年10月11日，双方于里斯本举行签约暨揭牌仪式。详见 <a href="news/inauguration-lisbon-2024.html">新闻报道</a>。</p>
+    <p class="en-only">On 11 October 2024, the signing and unveiling ceremony was held in Lisbon. See <a href="news/tecnico-ai-laboratory-2024.html">Técnico</a>, <a href="news/embassy-inauguration-2024.html">Embassy</a>, and <a href="news/inauguration-cup-2024.html">CUP</a> reports.</p>
+    <p class="zh-only">2024年10月11日于里斯本举行签约暨揭牌仪式。参见 <a href="news/tecnico-ai-laboratory-2024.html">Técnico 报道</a>、<a href="news/embassy-inauguration-2024.html">中国驻葡使馆</a>、<a href="news/inauguration-cup-2024.html">中石油大新闻网</a>。</p>
+  </div>
 </div>
 """
     body = body + leadership_section() + about_links_section()
