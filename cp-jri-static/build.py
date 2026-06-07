@@ -175,6 +175,36 @@ def nav(active: str, depth: int) -> str:
     return "\n".join(out)
 
 
+
+
+def page_banner(
+    title_en: str,
+    title_zh: str,
+    meta_en: str = "",
+    meta_zh: str = "",
+    back_href: str = "",
+    back_en: str = "",
+    back_zh: str = "",
+    date: str = "",
+) -> str:
+    back = ""
+    if back_href:
+        back = f"""<p class="banner-back"><a href="{esc(back_href)}"><span class="zh-only">{esc(back_zh)}</span><span class="en-only">{esc(back_en)}</span></a></p>"""
+    date_line = f'<time datetime="{date}">{date}</time>' if date else ""
+    meta = ""
+    if meta_en or meta_zh:
+        meta = f"""<p class="meta en-only">{esc(meta_en)}</p><p class="meta zh-only">{esc(meta_zh)}</p>"""
+    return f"""<div class="page-banner">
+  <div class="wrap">
+    {back}
+    {date_line}
+    <h1 class="en-only">{esc(title_en)}</h1>
+    <h1 class="zh-only">{esc(title_zh)}</h1>
+    {meta}
+  </div>
+</div>"""
+
+
 def shell(active: str, depth: int, title: str, body: str) -> str:
     p = pfx(depth)
     inst = load_institute()
@@ -195,6 +225,7 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
   <span class="top-accent-green"></span>
   <span class="top-accent-red"></span>
 </div>
+<div class="site-top">
 <header class="site-header">
   <div class="wrap header-row">
     <a class="logo" href="{p}index.html">
@@ -202,13 +233,18 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
       <span class="en-only">{esc(inst['name_en'])}</span>
       <span class="zh-only">{esc(inst['name_zh'])}</span>
     </a>
-    <nav><ul class="nav">{nav(active, depth)}</ul></nav>
     <div class="lang">
       <button type="button" data-lang="en" class="active">EN</button>
       <button type="button" data-lang="zh">中文</button>
     </div>
   </div>
 </header>
+<nav class="nav-bar" aria-label="Main">
+  <div class="wrap">
+    <ul class="nav">{nav(active, depth)}</ul>
+  </div>
+</nav>
+</div>
 {body}
 <footer class="site-footer">
   <div class="wrap footer-row">
@@ -250,7 +286,7 @@ def img_tag(src: str, depth: int, alt: str = "") -> str:
 def build_index() -> None:
     inst = institute_en()
     body = f"""
-<section class="hero">
+<section class="page-banner hero-banner">
   <div class="wrap">
     <p class="en-only tagline">International research cooperation on climate change, clean energy, and sustainable development.</p>
     <p class="zh-only tagline">面向气候变化、清洁能源与可持续发展的国际合作研究。</p>
@@ -291,7 +327,7 @@ def build_index() -> None:
   </div>
 </section>
 {{gallery}}
-<section class="section" style="background:var(--surface);border-top:1px solid var(--line)">
+<section class="section section-alt">
   <div class="wrap">
     <h2 class="en-only">Latest</h2>
     <h2 class="zh-only">最新动态</h2>
@@ -299,6 +335,10 @@ def build_index() -> None:
       <li>
         <time datetime="2026-05-31">2026-05-31</time>
         <h3><a href="news/people-daily-forum-2026.html"><span class="zh-only">人民网：“2026中葡气候与能源科技交流论坛”在京举行</span><span class="en-only">People's Daily: 2026 China-Portugal Forum on Climate and Energy in Beijing</span></a></h3>
+      </li>
+      <li>
+        <time datetime="2026-05-29">2026-05-29</time>
+        <h3><a href="news/cerena-forum-2026.html"><span class="zh-only">CERENA：中葡气候与能源科技论坛</span><span class="en-only">CERENA: China-Portugal Forum on Climate and Energy</span></a></h3>
       </li>
       <li>
         <time datetime="2026-05-29">2026-05-29</time>
@@ -375,7 +415,7 @@ def about_links_section() -> str:
 </li>"""
         )
     return f"""
-<section class="section" style="background:var(--surface);border-top:1px solid var(--line)">
+<section class="section section-alt">
   <div class="wrap content wide">
     <h2 class="en-only">Related coverage</h2>
     <h2 class="zh-only">相关报道</h2>
@@ -389,13 +429,7 @@ def about_links_section() -> str:
 
 def build_about() -> None:
     inst = institute_en()
-    body = f"""
-<div class="wrap page-title">
-  <h1 class="en-only">About JRICE</h1>
-  <h1 class="zh-only">关于 JRICE</h1>
-  <p class="meta en-only">{esc(inst)}</p>
-  <p class="meta zh-only">中葡气候与能源联合研究院</p>
-</div>
+    body = page_banner("About JRICE", "关于 JRICE", inst, "中葡气候与能源联合研究院") + f"""
 <div class="wrap content">
   <p class="zh-only">JRICE（中葡气候与能源联合研究院）由中国石油大学（北京）与葡萄牙里斯本高等理工学院共建，面向气候变化、清洁能源与碳中和未来技术开展联合研究与人才培养。</p>
   <p class="en-only">JRICE ({esc(inst)}) is co-established by China University of Petroleum (Beijing) and Instituto Superior Técnico (IST), Lisbon.</p>
@@ -409,11 +443,8 @@ def build_about() -> None:
 
 
 def build_research() -> None:
-    body = """
-<div class="wrap page-title">
-  <h1 class="en-only">Research</h1>
-  <h1 class="zh-only">研究</h1>
-</div>
+    body = page_banner("Research", "研究") + """
+
 <div class="wrap content wide">
   <div class="grid-3">
     <div class="card"><h3 class="en-only">Climate Science</h3><h3 class="zh-only">气候科学</h3><p class="en-only">Climate systems, impacts, and adaptation.</p><p class="zh-only">气候系统、影响与适应。</p></div>
@@ -427,11 +458,8 @@ def build_research() -> None:
 
 def build_contact() -> None:
     c = load_contact()
-    body = f"""
-<div class="wrap page-title">
-  <h1 class="en-only">Contact</h1>
-  <h1 class="zh-only">联系</h1>
-</div>
+    body = page_banner("Contact", "联系") + f"""
+
 <div class="wrap content">
   {contacts_html()}
   <p class="zh-only"><strong>地址</strong><br>{esc(c['zh']['address'])}</p>
@@ -465,13 +493,13 @@ def build_news_index(news: list) -> None:
   <p><span class="zh-only">{esc(n['zh'].get('summary',''))}</span><span class="en-only">{esc(n['en'].get('summary',''))}</span></p>
 </li>"""
         )
-    body = f"""
-<div class="wrap page-title">
-  <h1 class="en-only">News</h1>
-  <h1 class="zh-only">新闻</h1>
-  <p class="meta en-only">Search and browse JRICE-related news and cited reports.</p>
-  <p class="meta zh-only">检索与浏览 JRICE 相关新闻及引用报道。</p>
-</div>
+    body = page_banner(
+        "News",
+        "新闻",
+        "Search and browse JRICE-related news and cited reports.",
+        "检索与浏览 JRICE 相关新闻及引用报道。",
+    ) + f"""
+
 <div class="wrap content wide">
   <input class="search" type="search" id="news-search" placeholder="Search / 搜索…" autocomplete="off">
   <ul class="news-list" id="news-list">
@@ -498,13 +526,14 @@ def build_news_article(n: dict) -> None:
   <span class="zh-only">来源：{esc(n.get('source',''))} · <a href="{esc(n['sourceUrl'])}">{esc(n['sourceUrl'])}</a></span>
   <span class="en-only">Source: {esc(n.get('source',''))} · <a href="{esc(n['sourceUrl'])}">{esc(n['sourceUrl'])}</a></span>
 </p>"""
-    body = f"""
-<div class="wrap page-title">
-  <p><a href="index.html">← News</a></p>
-  <time datetime="{n['date']}">{n['date']}</time>
-  <h1 class="zh-only">{esc(n['zh']['title'])}</h1>
-  <h1 class="en-only">{esc(n['en']['title'])}</h1>
-</div>
+    body = page_banner(
+        n["en"]["title"],
+        n["zh"]["title"],
+        date=n["date"],
+        back_href="index.html",
+        back_en="← News",
+        back_zh="← 新闻",
+    ) + f"""
 <div class="wrap content">
   {imgs}
   <div class="zh-only">{paras_zh}</div>
@@ -533,12 +562,13 @@ def extract_forum_pdf() -> None:
 def build_forum() -> None:
     programme = programme_html()
     gallery = forum_gallery_section(depth=1)
-    body = f"""
-<div class="wrap page-title">
-  <h1 class="zh-only">2026 中葡气候与能源科技交流论坛</h1>
-  <h1 class="en-only">2026 China-Portugal Science &amp; Technology Forum on Climate and Energy</h1>
-  <p class="meta">绿色能源  |  AI 科学  |  青年合作 · Green Energy | AI for Science | Youth Collaboration</p>
-</div>
+    body = page_banner(
+        "2026 China-Portugal Science & Technology Forum on Climate and Energy",
+        "2026 中葡气候与能源科技交流论坛",
+        "Green Energy | AI for Science | Youth Collaboration",
+        "绿色能源 | AI 科学 | 青年合作",
+    ) + f"""
+
 {gallery}
 <div class="wrap content wide">
   <p class="pdf-link"><a href="../documents/2026_China_Portugal_Forum_V23-online.pdf" target="_blank" rel="noopener"><span class="zh-only">下载会议手册（PDF）</span><span class="en-only">Download Conference Programme (PDF)</span></a></p>

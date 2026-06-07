@@ -1,14 +1,15 @@
-/* JRICE — public international site */
+/* JRICE — embassy-style bands (flag stripe · red nav · navy banners) */
 :root {
   --bg: #ffffff;
-  --surface: #f8fafc;
-  --text: #0f172a;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --brand: #0f2942;
-  --accent: #1d4ed8;
+  --surface: #f4f6f8;
+  --text: #1a1a1a;
+  --muted: #5c6670;
+  --line: #dde3ea;
+  --brand: #003057;
+  --accent: #0d6e8f;
   --green-pt: #046a38;
-  --red-pt: #c8102e;
+  --red-pt: #9d2235;
+  --nav-red: #9d2235;
   --top-accent-h: 8px;
   --max: 1080px;
   --font: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -35,16 +36,19 @@ body {
   line-height: 1.6;
 }
 
-/* Top flag stripe (ref. Portuguese MFA embassy sites: green 2/5 · red 3/5) */
+[data-lang="zh"] body {
+  font-family: var(--font-zh), var(--font);
+}
+
+/* Flag stripe — top of every page */
 .top-accent {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: var(--top-accent-h);
-  z-index: 100;
+  z-index: 110;
   display: flex;
-  flex-direction: row;
 }
 
 .top-accent-green {
@@ -55,10 +59,6 @@ body {
 .top-accent-red {
   flex: 3;
   background: var(--red-pt);
-}
-
-[data-lang="zh"] body {
-  font-family: var(--font-zh), var(--font);
 }
 
 a {
@@ -76,13 +76,17 @@ a:hover {
   padding: 0 1.5rem;
 }
 
-/* Header */
-.site-header {
-  border-bottom: 1px solid var(--line);
-  background: var(--bg);
+/* Sticky header block */
+.site-top {
   position: sticky;
   top: var(--top-accent-h);
-  z-index: 50;
+  z-index: 100;
+}
+
+/* White header — logo + language */
+.site-header {
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
 }
 
 .header-row {
@@ -90,64 +94,38 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  min-height: 4rem;
+  min-height: 4.25rem;
 }
 
 .logo {
   display: flex;
   flex-direction: column;
   text-decoration: none;
-  color: var(--brand);
-  line-height: 1.2;
+  color: var(--text);
+  line-height: 1.25;
 }
 
 .logo strong {
-  font-size: 1.15rem;
-  letter-spacing: 0.12em;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
   font-weight: 700;
+  color: var(--brand);
 }
 
 .logo span {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--muted);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   font-weight: 400;
-}
-
-.nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.nav a {
-  display: block;
-  padding: 0.5rem 0.85rem;
-  font-size: 0.82rem;
-  color: var(--muted);
-  text-decoration: none;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 500;
-}
-
-.nav a:hover,
-.nav a.active {
-  color: var(--brand);
-  background: var(--surface);
-  text-decoration: none;
+  max-width: 26rem;
 }
 
 .lang {
   display: flex;
-  gap: 0;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 2px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .lang button {
@@ -158,7 +136,6 @@ a:hover {
   cursor: pointer;
   color: var(--muted);
   font-weight: 600;
-  letter-spacing: 0.05em;
 }
 
 .lang button.active {
@@ -166,27 +143,108 @@ a:hover {
   color: #fff;
 }
 
-/* Hero */
-.hero {
-  padding: 4.5rem 0 3.5rem;
-  background: var(--surface);
-  border-bottom: 1px solid var(--line);
+/* Red navigation band — embassy style */
+.nav-bar {
+  background: var(--nav-red);
 }
 
-.hero h1 {
-  font-size: clamp(1.75rem, 4vw, 2.35rem);
+.nav-bar .wrap {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: none;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: var(--max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.nav a {
+  display: block;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.nav a:hover,
+.nav a.active {
+  background: rgba(0, 0, 0, 0.14);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Navy page banner — embassy hero band */
+.page-banner {
+  background: var(--brand);
+  color: #fff;
+  padding: 2.25rem 0 2.5rem;
+}
+
+.page-banner h1 {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.65rem, 3.5vw, 2.15rem);
   font-weight: 600;
-  margin: 0 0 0.75rem;
-  color: var(--brand);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  color: #fff;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
 }
 
-.hero .tagline {
+.page-banner .meta {
+  margin: 0.65rem 0 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.page-banner time {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.04em;
+}
+
+.page-banner .banner-back {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+
+.page-banner .banner-back a {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.page-banner .banner-back a:hover {
+  color: #fff;
+}
+
+/* Homepage hero — same navy band, taller */
+.hero-banner {
+  padding: 3.5rem 0 3.25rem;
+}
+
+.hero-banner .tagline {
   font-size: 1.05rem;
-  color: var(--muted);
-  max-width: 36rem;
-  margin: 0 0 1.75rem;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 38rem;
+  margin: 0 0 1.5rem;
+}
+
+.hero-banner h1 {
+  font-size: clamp(1.85rem, 4vw, 2.45rem);
+  margin-bottom: 0;
+}
+
+.hero-actions {
+  margin-top: 1.75rem;
 }
 
 .hero-actions a {
@@ -194,22 +252,32 @@ a:hover {
   margin-right: 0.75rem;
   margin-bottom: 0.5rem;
   padding: 0.65rem 1.2rem;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  border-radius: 4px;
+  border-radius: 2px;
   text-decoration: none;
 }
 
 .btn-dark {
-  background: var(--brand);
-  color: #fff !important;
+  background: #fff;
+  color: var(--brand) !important;
+}
+
+.btn-dark:hover {
+  background: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
 }
 
 .btn-line {
-  border: 1px solid var(--line);
-  color: var(--brand) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  color: #fff !important;
+}
+
+.btn-line:hover {
+  border-color: #fff;
+  text-decoration: none;
 }
 
 /* Sections */
@@ -233,8 +301,10 @@ a:hover {
 }
 
 .card {
-  padding: 1.5rem 0;
-  border-top: 2px solid var(--brand);
+  padding: 1.35rem 1.15rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--brand);
+  background: var(--bg);
 }
 
 .card h3 {
@@ -249,23 +319,10 @@ a:hover {
   color: var(--muted);
 }
 
-/* Page */
-.page-title {
-  padding: 3rem 0 2rem;
+.section-alt {
+  background: var(--surface);
+  border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-}
-
-.page-title h1 {
-  margin: 0 0 0.5rem;
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--brand);
-  letter-spacing: -0.02em;
-}
-
-.page-title .meta {
-  color: var(--muted);
-  font-size: 0.95rem;
 }
 
 .content {
@@ -289,19 +346,10 @@ a:hover {
   border: 1px solid var(--line);
 }
 
-.img-missing {
-  padding: 2rem;
-  background: var(--surface);
-  border: 1px dashed var(--line);
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin: 1rem 0;
-}
-
 .source-note {
   font-size: 0.8rem;
   color: var(--muted);
-  border-left: 3px solid var(--line);
+  border-left: 3px solid var(--nav-red);
   padding-left: 1rem;
   margin-top: 2rem;
 }
@@ -312,7 +360,7 @@ a:hover {
   max-width: 28rem;
   padding: 0.7rem 1rem;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 2px;
   font-size: 0.95rem;
   margin-bottom: 2rem;
 }
@@ -335,7 +383,6 @@ a:hover {
 .news-list time {
   font-size: 0.75rem;
   color: var(--muted);
-  letter-spacing: 0.05em;
 }
 
 .news-list h3 {
@@ -358,35 +405,9 @@ a:hover {
   color: var(--muted);
 }
 
-/* Schedule */
-.schedule-block {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--line);
-}
-
-.schedule-block h3 {
-  margin: 0 0 0.35rem;
-  font-size: 0.8rem;
-  color: var(--accent);
-  letter-spacing: 0.05em;
-}
-
-.schedule-block h4 {
-  margin: 0 0 0.75rem;
-  font-size: 1.1rem;
-  color: var(--brand);
-}
-
-.schedule-block ul {
-  margin: 0;
-  padding-left: 1.2rem;
-  color: #334155;
-}
-
 /* Footer */
 .site-footer {
-  border-top: 1px solid var(--line);
+  border-top: 4px solid var(--nav-red);
   padding: 2.5rem 0;
   background: var(--surface);
   font-size: 0.85rem;
@@ -417,13 +438,16 @@ a:hover {
 
 @media (max-width: 640px) {
   .nav {
-    width: 100%;
     overflow-x: auto;
     flex-wrap: nowrap;
   }
+
+  .logo span {
+    max-width: 14rem;
+  }
 }
 
-/* Home gallery */
+/* Gallery */
 .gallery-section {
   border-top: 1px solid var(--line);
 }
@@ -440,33 +464,6 @@ a:hover {
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
-.gallery-item {
-  margin: 0;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  overflow: hidden;
-}
-
-.gallery-item img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  margin: 0;
-  border: none;
-}
-
-.gallery-item figcaption {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.gallery-more {
-  margin-top: 1.25rem;
-  font-size: 0.9rem;
-}
-
-/* Lightbox */
 .gallery-item {
   display: block;
   cursor: zoom-in;
@@ -488,6 +485,11 @@ a:hover {
   opacity: 0.92;
 }
 
+.gallery-more {
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+}
+
 .content-img-link {
   display: block;
   cursor: zoom-in;
@@ -498,7 +500,7 @@ a:hover {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(15, 23, 42, 0.92);
+  background: rgba(0, 20, 40, 0.92);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -529,7 +531,7 @@ a:hover {
   cursor: pointer;
 }
 
-/* Programme verbatim from PDF */
+/* Programme */
 .programme-document {
   margin-top: 2rem;
   border: 1px solid var(--line);
@@ -554,6 +556,11 @@ a:hover {
   word-wrap: break-word;
   color: #334155;
   overflow-x: auto;
+}
+
+.pdf-link a {
+  color: var(--brand);
+  font-weight: 600;
 }
 
 /* Co-directors */
@@ -582,24 +589,23 @@ a:hover {
   overflow: hidden;
   width: 220px;
   height: 280px;
-  flex-shrink: 0;
 }
 
 .director-photo-link img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
   margin: 0;
   border: none;
   display: block;
-  object-fit: cover;
-  object-position: center 15%;
 }
 
 .director-role {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--accent);
+  color: var(--nav-red);
   font-weight: 600;
   margin: 0;
 }

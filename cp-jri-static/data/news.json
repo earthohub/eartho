@@ -44,6 +44,31 @@
     }
   },
   {
+    "id": "cerena-forum-2026",
+    "date": "2026-05-29",
+    "source": "CERENA / Instituto Superior Técnico",
+    "sourceUrl": "https://cerena.tecnico.ulisboa.pt/events/china-portugal-science-and-technology-forum-climate-and-energy",
+    "tags": [
+      "CERENA",
+      "Técnico",
+      "IST",
+      "forum",
+      "2026",
+      "Portugal",
+      "中葡"
+    ],
+    "zh": {
+      "title": "CERENA：中葡气候与能源科技论坛",
+      "summary": "2026年5月29日 · 中国科学技术交流中心 · Leonardo Azevedo 与 João Narciso 参会",
+      "body": "2026年5月29日，中葡气候与能源科技论坛将在中国科学技术交流中心（北京）举行。\n\n论坛旨在汇聚创新动力，服务全球可持续发展，聚焦绿色能源、AI 垂直应用与 AI 基础设施等主题，构建中葡绿色科技合作新机制与合作典范。\n\nCERENA 研究员 Leonardo Azevedo 与 João Narciso 将参会。该论坛是中国石油大学（北京）与里斯本高等理工学院长期合作的成果之一——双方合作可追溯至 2014 年，并于 2024 年共建「AI for Climate Energy」实验室，由中石油大廖宗湖与 Leonardo Azevedo 共同牵头。\n\n英文原文见来源链接（CERENA / Instituto Superior Técnico）。"
+    },
+    "en": {
+      "title": "China-Portugal Science and Technology Forum on Climate and Energy",
+      "summary": "29 May 2026 · China Science and Technology Exchange Center · CERENA researchers Leonardo Azevedo and João Narciso",
+      "body": "On 29th May 2026, the China-Portugal Science and Technology Forum on Climate and Energy will take place in Beijing in China's Science and Technology Exchange Center.\n\nThis Forum aims to mobilize innovation for global sustainable development, focusing on themes such as green energy, vertical AI applications, and AI infrastructure. It aims to build a new international cooperation mechanism and a model for China–Portugal green technology collaboration.\n\nThe Forum counts on the participation of CERENA's researchers Leonardo Azevedo and João Narciso, being a result of the cooperation between China University of Petroleum-Beijing (CUPB) and Instituto Superior Técnico that dates back to 2014. This cooperation gave rise to the \"AI for Climate Energy\" laboratory, in 2024, which is co-led by Liao Zonghu of CUPB and Leonardo Azevedo."
+    }
+  },
+  {
     "id": "tecnico-ai-laboratory-2024",
     "date": "2024-10-09",
     "source": "Instituto Superior Técnico",
