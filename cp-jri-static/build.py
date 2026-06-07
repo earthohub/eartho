@@ -18,6 +18,7 @@ EVENTS_IMG_DIR = ROOT / "images/events"
 FORUM_PDF = ROOT / "documents/2026_China_Portugal_Forum_V23-online.pdf"
 IMG_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 ABOUT_PLAQUE = ROOT / "images/about/institute-plaque.jpg"
+BRAND_LOGO = ROOT / "images/brand/jrice-logo.png"
 
 
 def load_institute() -> dict:
@@ -226,9 +227,7 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
 <header class="site-header">
   <div class="wrap header-row">
     <a class="logo" href="{p}index.html">
-      <strong>JRICE</strong>
-      <span class="en-only">{esc(inst['name_en'])}</span>
-      <span class="zh-only">{esc(inst['name_zh'])}</span>
+      <img src="{p}images/brand/jrice-logo.png" alt="{esc('JRICE — ' + inst['name_en'])}" class="logo-img">
     </a>
     <div class="lang">
       <button type="button" data-lang="en" class="active">EN</button>

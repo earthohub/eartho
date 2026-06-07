@@ -7,6 +7,6 @@ zip -r "$ZIP" index.html about.html research.html contact.html css js images dat
   -x "*.py" -x "package.sh" -x "preview.sh" -x "*.zip" -x "README.md" -x "images/events/README.txt"
 echo ""
 echo "Download link (full repo zip):"
-echo "https://github.com/earthohub/eartho/archive/refs/heads/cursor/institute-website-0363.zip"
+echo "https://github.com/earthohub/eartho/archive/refs/heads/cursor/top-accent-strip-0363.zip"
 echo ""
 echo "Created: $(pwd)/$ZIP"
