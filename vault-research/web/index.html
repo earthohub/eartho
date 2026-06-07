@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hyperliquid User Vaults 私人投研面板</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0f1117;
+        --card: #171b24;
+        --card-border: #2a3140;
+        --text: #e9edf5;
+        --muted: #9fa9bc;
+        --green: #55d6a7;
+        --yellow: #f0c75e;
+        --red: #ff6b6b;
+        --blue: #6da8ff;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+      }
+      .subtitle {
+        margin-top: 8px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .meta-grid {
+        margin-top: 20px;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      .pill {
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: var(--card);
+      }
+      .pill .label {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .pill .value {
+        margin-top: 8px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .section {
+        margin-top: 28px;
+      }
+      .method {
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        background: var(--card);
+        padding: 14px 16px;
+        line-height: 1.65;
+      }
+      .cards {
+        margin-top: 14px;
+        display: grid;
+        gap: 12px;
+      }
+      .card {
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        background: var(--card);
+        padding: 14px;
+      }
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+      }
+      .rank {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(130deg, #34435f, #1e2636);
+        border: 1px solid #42557a;
+        font-weight: 700;
+      }
+      .name {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .style {
+        color: var(--blue);
+        margin-top: 4px;
+        font-size: 13px;
+      }
+      .address {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        word-break: break-all;
+      }
+      .metric-grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 8px;
+      }
+      .metric {
+        border: 1px solid #273048;
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      .metric .k {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .metric .v {
+        margin-top: 6px;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .reasons {
+        margin: 10px 0 0;
+        padding-left: 18px;
+        line-height: 1.55;
+      }
+      .reasons li {
+        margin: 2px 0;
+      }
+      .risk-flags {
+        margin: 8px 0 0;
+        padding-left: 18px;
+        color: var(--yellow);
+        line-height: 1.5;
+      }
+      .depositor-flags {
+        margin: 8px 0 0;
+        padding-left: 18px;
+        color: #9ad3ff;
+        line-height: 1.5;
+      }
+      .positive {
+        color: var(--green);
+      }
+      .negative {
+        color: var(--red);
+      }
+      .warning {
+        color: var(--yellow);
+      }
+      a {
+        color: #8dc0ff;
+      }
+      .footnote {
+        margin-top: 24px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      code {
+        background: #111626;
+        border: 1px solid #28314b;
+        border-radius: 6px;
+        padding: 2px 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hyperliquid User Vaults 私人投研面板</h1>
+      <p class="subtitle">
+        使用“量化基金/投行”风格的多因子框架，在开放 user vault
+        中筛选可投策略。该页面由本地脚本自动更新，可反复复用。
+      </p>
+
+      <div id="meta" class="meta-grid"></div>
+
+      <section class="section">
+        <h2>筛选与评分方法</h2>
+        <div id="method" class="method"></div>
+      </section>
+
+      <section class="section">
+        <h2>Top 10 投资策略（可投）</h2>
+        <div id="cards" class="cards"></div>
+      </section>
+
+      <p class="footnote">
+        更新方法：在仓库根目录执行
+        <code>node vault-research/scripts/update-analysis.mjs</code>，然后刷新本页面。<br />
+        本分析为数据驱动筛选，不构成投资建议；实盘前建议二次尽调（交易风格、容量冲击、风控规则、链上操作风险）。
+      </p>
+    </div>
+
+    <script src="./latest-analysis.js"></script>
+    <script>
+      const INFO_API_URL = "https://api.hyperliquid.xyz/info";
+
+      function pct(value, opts = {}) {
+        if (value === null || value === undefined || Number.isNaN(value)) return "N/A";
+        if (opts.capLarge) {
+          if (value > 5) return ">500%";
+          if (value < -0.95) return "<-95%";
+        }
+        return (value * 100).toFixed(2) + "%";
+      }
+
+      function num(value, digits = 2) {
+        if (value === null || value === undefined || Number.isNaN(value)) return "N/A";
+        return Number(value).toLocaleString("en-US", {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits,
+        });
+      }
+
+      function usd(value) {
+        if (value === null || value === undefined || Number.isNaN(value)) return "N/A";
+        return Number(value).toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 0,
+        });
+      }
+
+      function signedClass(value) {
+        if (value === null || value === undefined) return "";
+        if (value > 0) return "positive";
+        if (value < 0) return "negative";
+        return "";
+      }
+
+      function toNumber(value, fallback = 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : fallback;
+      }
+
+      function median(values) {
+        if (!values.length) return null;
+        const sorted = [...values].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        if (sorted.length % 2 === 0) {
+          return (sorted[mid - 1] + sorted[mid]) / 2;
+        }
+        return sorted[mid];
+      }
+
+      function hasDepositorMetrics(metrics) {
+        if (!metrics) return false;
+        const hasDailyPnl =
+          metrics.depositorMedianDailyPnlUsd !== undefined ||
+          metrics.depositorMedianDailyPnl30 !== undefined;
+        const hasInvestAmount =
+          metrics.depositorMedianInvestedAmountUsd !== undefined ||
+          metrics.depositorMedianInvestmentAmountUsd !== undefined ||
+          metrics.depositorMedianInvestAmountUsd !== undefined ||
+          metrics.depositorMedianDailyPnlAmountUsd !== undefined ||
+          metrics.depositorMedianInvestAmount30 !== undefined;
+        return (
+          (metrics.depositorPositivePnlRatio !== undefined ||
+            metrics.depositorPositiveRatio30 !== undefined) &&
+          (metrics.depositorEquityWeightedPositiveRatio !== undefined ||
+            metrics.depositorPositiveCapitalRatio30 !== undefined) &&
+          (metrics.depositorLongTenureCapitalShare !== undefined ||
+            metrics.depositorLongTenureCapitalRatio90 !== undefined) &&
+          hasDailyPnl &&
+          hasInvestAmount
+        );
+      }
+
+      function calcDepositorMetricsFromFollowers(
+        followers,
+        minDepositorDays = 30,
+        longDepositorDays = 90,
+      ) {
+        const list = Array.isArray(followers) ? followers : [];
+        let eligibleFollowers = 0;
+        let positiveFollowers = 0;
+        let eligibleEquity = 0;
+        let positiveEquity = 0;
+        let longTenureEquity = 0;
+        let deepLossFollowers = 0;
+        const dailyPnls = [];
+        const investAmounts = [];
+
+        for (const follower of list) {
+          const days = toNumber(follower.daysFollowing, 0);
+          if (days < minDepositorDays) continue;
+          const pnl = toNumber(follower.allTimePnl, 0);
+          const equity = Math.max(0, toNumber(follower.vaultEquity, 0));
+          const initialCapitalApprox = equity - pnl;
+
+          eligibleFollowers += 1;
+          dailyPnls.push(pnl / Math.max(days, 1));
+          if (pnl > 0) positiveFollowers += 1;
+          if (days >= longDepositorDays) longTenureEquity += equity;
+
+          eligibleEquity += equity;
+          if (pnl > 0) positiveEquity += equity;
+          if (initialCapitalApprox > 0) {
+            investAmounts.push(initialCapitalApprox);
+          }
+          if (initialCapitalApprox > 1e-9 && pnl / initialCapitalApprox < -0.3) {
+            deepLossFollowers += 1;
+          }
+        }
+
+        return {
+          depositorEligibleFollowers: eligibleFollowers,
+          depositorPositivePnlRatio:
+            eligibleFollowers > 0 ? positiveFollowers / eligibleFollowers : null,
+          depositorEquityWeightedPositiveRatio:
+            eligibleEquity > 0 ? positiveEquity / eligibleEquity : null,
+          depositorLongTenureCapitalShare:
+            eligibleEquity > 0 ? longTenureEquity / eligibleEquity : null,
+          depositorMedianDailyPnlUsd: median(dailyPnls),
+          depositorMedianInvestAmountUsd: median(investAmounts),
+          depositorDeepLossRatio:
+            eligibleFollowers > 0 ? deepLossFollowers / eligibleFollowers : null,
+        };
+      }
+
+      async function hydrateDepositorMetricsIfMissing(analysis) {
+        if (!analysis || analysis.__depositorHydrationAttempted) return;
+        analysis.__depositorHydrationAttempted = true;
+        const minDepositorDays = toNumber(analysis.meta?.filters?.minDepositorDays, 30);
+        const longDepositorDays = toNumber(analysis.meta?.filters?.longDepositorDays, 90);
+        const missingStrategies = (analysis.topStrategies ?? []).filter(
+          (strategy) => !hasDepositorMetrics(strategy.metrics),
+        );
+        if (!missingStrategies.length) return;
+
+        await Promise.all(
+          missingStrategies.map(async (strategy) => {
+            try {
+              const response = await fetch(INFO_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  type: "vaultDetails",
+                  vaultAddress: strategy.vaultAddress,
+                }),
+              });
+              if (!response.ok) return;
+              const details = await response.json();
+              const patched = calcDepositorMetricsFromFollowers(
+                details.followers,
+                minDepositorDays,
+                longDepositorDays,
+              );
+              Object.assign(strategy.metrics, patched, {
+                depositorPositiveRatio30: patched.depositorPositivePnlRatio,
+                depositorPositiveCapitalRatio30:
+                  patched.depositorEquityWeightedPositiveRatio,
+                depositorLongTenureCapitalRatio90:
+                  patched.depositorLongTenureCapitalShare,
+                depositorMedianDailyPnl30: patched.depositorMedianDailyPnlUsd,
+                depositorMedianInvestedAmountUsd:
+                  patched.depositorMedianInvestAmountUsd,
+                depositorMedianInvestmentAmountUsd:
+                  patched.depositorMedianInvestAmountUsd,
+                depositorMedianDailyPnlAmountUsd:
+                  patched.depositorMedianInvestAmountUsd,
+                depositorMedianInvestAmount30:
+                  patched.depositorMedianInvestAmountUsd,
+              });
+            } catch (error) {
+              // ignore and keep existing metrics as-is
+            }
+          }),
+        );
+      }
+
+      async function render() {
+        const analysis = window.VAULT_ANALYSIS;
+        if (!analysis || !analysis.meta) {
+          document.body.innerHTML =
+            "<p style='padding:20px'>未找到分析数据，请先运行更新脚本。</p>";
+          return;
+        }
+        await hydrateDepositorMetricsIfMissing(analysis);
+
+        const meta = analysis.meta;
+        const metaDiv = document.getElementById("meta");
+        metaDiv.innerHTML = [
+          ["数据更新时间", new Date(meta.generatedAt).toLocaleString()],
+          ["原始策略总数", meta.universeCounts.rawVaultRows],
+          ["开放 user vault 数", meta.universeCounts.openUserVaults],
+          ["通过可投过滤", meta.universeCounts.investableAfterFilters],
+          ["最小 TVL", usd(meta.filters.minTvlUsd)],
+          ["最小跟踪天数", meta.filters.minTrackDays + " 天"],
+        ]
+          .map(
+            ([label, value]) =>
+              `<div class="pill"><div class="label">${label}</div><div class="value">${value}</div></div>`,
+          )
+          .join("");
+
+        const methodDiv = document.getElementById("method");
+        methodDiv.innerHTML = `
+          <div><strong>方法：</strong>${meta.methodology.style}</div>
+          <div><strong>主因子：</strong><ul>${meta.methodology.factors.map((x) => `<li>${x}</li>`).join("")}</ul></div>
+          <div><strong>稳健化处理：</strong><ul>${(meta.methodology.normalization ?? [])
+            .map((x) => `<li>${x}</li>`)
+            .join("")}</ul></div>
+          <div><strong>惩罚规则：</strong><ul>${meta.methodology.penalties
+            .map((x) => `<li>${x}</li>`)
+            .join("")}</ul></div>
+        `;
+
+        const cards = document.getElementById("cards");
+        cards.innerHTML = analysis.topStrategies
+          .map((strategy) => {
+            const m = strategy.metrics;
+            const depositorPositiveRatio =
+              m.depositorPositivePnlRatio ?? m.depositorPositiveRatio30;
+            const depositorPositiveCapitalRatio =
+              m.depositorEquityWeightedPositiveRatio ??
+              m.depositorPositiveCapitalRatio30;
+            const depositorLongTenureRatio =
+              m.depositorLongTenureCapitalShare ??
+              m.depositorLongTenureCapitalRatio90;
+            const depositorMedianInvestAmount =
+              m.depositorMedianInvestedAmountUsd ??
+              m.depositorMedianInvestmentAmountUsd ??
+              m.depositorMedianInvestAmountUsd ??
+              m.depositorMedianDailyPnlAmountUsd ??
+              m.depositorMedianInvestAmount30;
+            const depositorDeepLossRatio = m.depositorDeepLossRatio;
+            return `
+            <article class="card">
+              <div class="card-head">
+                <div style="display:flex;gap:10px;">
+                  <div class="rank">#${strategy.rank}</div>
+                  <div>
+                    <div class="name">${strategy.name}</div>
+                    <div class="style">${strategy.style}</div>
+                    <div class="address">Vault: ${
+                      strategy.vaultAddress
+                    } | <a target="_blank" rel="noreferrer" href="https://app.hyperliquid.xyz/vault/${strategy.vaultAddress}">查看官方页面</a></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="metric-grid">
+                <div class="metric"><div class="k">综合评分</div><div class="v">${num(m.score, 4)}</div></div>
+                <div class="metric"><div class="k">TVL</div><div class="v">${usd(m.tvlUsd)}</div></div>
+                <div class="metric"><div class="k">APR</div><div class="v ${signedClass(m.apr)}">${pct(m.apr)}</div></div>
+                <div class="metric"><div class="k">最大回撤</div><div class="v negative">${pct(
+                  m.maxDrawdown,
+                )}</div></div>
+                <div class="metric"><div class="k">Sharpe 代理</div><div class="v">${num(
+                  m.sharpeProxy,
+                  2,
+                )}</div></div>
+                <div class="metric"><div class="k">Sortino 代理</div><div class="v">${num(
+                  m.sortinoProxy,
+                  2,
+                )}</div></div>
+                <div class="metric"><div class="k">Calmar</div><div class="v">${num(
+                  m.calmarRatio,
+                  2,
+                )}</div></div>
+                <div class="metric"><div class="k">近1日 / 1周 / 1月</div><div class="v"><span class="${signedClass(
+                  m.dayReturn,
+                )}">${pct(m.dayReturn)}</span> / <span class="${signedClass(m.weekReturn)}">${pct(
+                  m.weekReturn,
+                )}</span> / <span class="${signedClass(m.monthReturn)}">${pct(m.monthReturn)}</span></div></div>
+                <div class="metric"><div class="k">跟踪周期</div><div class="v">${num(
+                  m.trackDays,
+                  0,
+                )} 天 (${m.observations} 点)</div></div>
+                <div class="metric"><div class="k">关注数</div><div class="v">${m.followerCount}</div></div>
+                <div class="metric"><div class="k">跟随者正收益占比(30+天)</div><div class="v">${pct(
+                  depositorPositiveRatio,
+                )}</div></div>
+                <div class="metric"><div class="k">资金加权正收益占比</div><div class="v">${pct(
+                  depositorPositiveCapitalRatio,
+                )}</div></div>
+                <div class="metric"><div class="k">长期跟随资金占比(90+天)</div><div class="v">${pct(
+                  depositorLongTenureRatio,
+                )}</div></div>
+                <div class="metric"><div class="k">跟随者中位日PnL / 中位总投资金额(USD)</div><div class="v">${num(
+                  m.depositorMedianDailyPnlUsd ?? m.depositorMedianDailyPnl30,
+                  2,
+                )} / ${num(
+                  depositorMedianInvestAmount,
+                  2,
+                )}</div></div>
+                <div class="metric"><div class="k">跟随者深亏占比</div><div class="v ${signedClass(
+                  depositorDeepLossRatio !== null && depositorDeepLossRatio > 0
+                    ? -1
+                    : 0,
+                )}">${pct(depositorDeepLossRatio)}</div></div>
+              </div>
+
+              <ul class="reasons">
+                ${strategy.investmentThesis.map((reason) => `<li>${reason}</li>`).join("")}
+              </ul>
+              ${
+                strategy.riskFlags?.length
+                  ? `<ul class="risk-flags">${strategy.riskFlags
+                      .map((flag) => `<li>风险提示：${flag}</li>`)
+                      .join("")}</ul>`
+                  : ""
+              }
+              ${
+                strategy.depositorNotes?.length
+                  ? `<ul class="depositor-flags">${strategy.depositorNotes
+                      .map((note) => `<li>跟随者层观察：${note}</li>`)
+                      .join("")}</ul>`
+                  : ""
+              }
+            </article>
+          `;
+          })
+          .join("");
+      }
+
+      render();
+    </script>
+  </body>
+</html>
