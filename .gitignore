@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Polymarket monitor local append-only history
+polymarket_monitor/data_store/

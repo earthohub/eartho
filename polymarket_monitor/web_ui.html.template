@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Polymarket 概率监测</title>
+  <style>
+    :root { font-family: system-ui, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    body { margin: 0; background: #0f1419; color: #e6edf3; }
+    header { padding: 1rem 1.25rem; background: #161b22; border-bottom: 1px solid #30363d; }
+    h1 { margin: 0; font-size: 1.15rem; font-weight: 600; }
+    .sub { margin: 0.35rem 0 0; font-size: 0.85rem; color: #8b949e; }
+    #status { margin-top: 0.5rem; font-size: 0.9rem; color: #d29922; white-space: pre-wrap; }
+    #status.err { color: #f85149; }
+    main { padding: 1rem 1.25rem 2rem; }
+    .chart-wrap { margin: 1rem 0; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 0.75rem; }
+    .chart-wrap h2 { margin: 0 0 0.5rem; font-size: 0.95rem; color: #c9d1d9; }
+    canvas { display: block; width: 100%; height: 320px; }
+    #cBtc { height: 220px; }
+    .legend { font-size: 0.72rem; color: #8b949e; margin-top: 0.35rem; max-height: 120px; overflow-y: auto; }
+    table.grid { border-collapse: collapse; width: 100%; min-width: 920px; font-size: 0.82rem; margin-top: 1rem; }
+    th, td { border: 1px solid #30363d; padding: 0.4rem 0.5rem; text-align: left; }
+    th { background: #21262d; color: #c9d1d9; font-weight: 600; white-space: nowrap; }
+    tr:nth-child(even) { background: #12181f; }
+    tr.row-alert { background: #3d2a00; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.flags { font-size: 0.78rem; color: #d29922; }
+    .muted { color: #8b949e; }
+    .warn { color: #f85149; }
+    footer { padding: 0 1.25rem 1.5rem; font-size: 0.76rem; color: #6e7681; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="hdr-title">Polymarket 概率监测</h1>
+    <p class="sub" id="hdr-sub">正在连接数据接口…</p>
+    <p id="status">首次拉取 /api.json 可能需 30–120 秒（多市场并行）。曲线为约 1 小时粒度；历史追加保存在 data_store/snapshots.jsonl。</p>
+  </header>
+  <main>
+    <div class="chart-wrap">
+      <h2>Yes 隐含概率（CLOB 小时级）</h2>
+      <canvas id="cProb" width="1200" height="320"></canvas>
+      <div class="legend" id="legProb"></div>
+    </div>
+    <div class="chart-wrap">
+      <h2>BTC / USD（CoinGecko，公开 API 约 365 天内）</h2>
+      <canvas id="cBtc" width="1200" height="220"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <h2>本地快照记录的中间价（每次成功拉取后追加一行）</h2>
+      <canvas id="cLocal" width="1200" height="260"></canvas>
+      <div class="legend" id="legLocal"></div>
+    </div>
+    <h2 style="font-size:1rem;margin:1.2rem 0 0.4rem">当前数值快照</h2>
+    <div style="overflow-x:auto">
+    <table class="grid">
+      <thead>
+        <tr>
+          <th>行权 / 分组</th><th>Yes 中间价</th><th>价差</th><th>24h 成交量</th>
+          <th>Δp5m</th><th>Δp15m</th><th>Δp1h</th><th>v15/m</th><th>a15</th><th>z15</th><th>标记</th>
+        </tr>
+      </thead>
+      <tbody id="markets-body"><tr><td colspan="11" class="muted">等待数据…</td></tr></tbody>
+    </table>
+    </div>
+    <div id="lead-wrap"></div>
+  </main>
+  <footer>
+    数据来自 Polymarket Gamma / CLOB 与 CoinGecko；不构成投资建议。自动刷新间隔：<strong>__REFRESH_SEC__</strong> 秒。
+    <span id="store-path" class="muted"></span>
+  </footer>
+  <script>
+(function() {
+  const REFRESH_MS = __REFRESH_MS__;
+  const API = '/api.json';
+  const COLORS = ['#58a6ff','#f778ba','#56d364','#d29922','#a371f7','#79c0ff','#ffa657','#ff7b72','#7ee787','#39d353','#db61a2','#79d8a8','#d2a8ff','#ff9bce','#56d4dd','#e3b341','#8b949e','#6e7681'];
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function cell(v, nd) {
+    if (v == null) return '—';
+    if (typeof v === 'boolean') return v ? '是' : '否';
+    if (typeof v === 'number') {
+      if (nd <= 0) return Math.round(v).toLocaleString('en-US');
+      let t = v.toFixed(nd).replace(/\.?0+$/, '');
+      return t === '-0' ? '0' : t;
+    }
+    return esc(String(v));
+  }
+
+  function drawTimeSeries(canvas, seriesList, yLabel) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.fillStyle = '#161b22';
+    ctx.fillRect(0,0,w,h);
+    const padL = 56, padR = 12, padT = 10, padB = 28;
+    const allPts = [];
+    for (const S of seriesList) {
+      for (const p of (S.points || [])) allPts.push(p);
+    }
+    if (!allPts.length) {
+      ctx.fillStyle = '#8b949e';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('无数据', padL, h/2);
+      return;
+    }
+    let tMin = Infinity, tMax = -Infinity, vMin = Infinity, vMax = -Infinity;
+    for (const p of allPts) {
+      tMin = Math.min(tMin, p.t); tMax = Math.max(tMax, p.t);
+      vMin = Math.min(vMin, p.p); vMax = Math.max(vMax, p.p);
+    }
+    if (vMax === vMin) { vMin -= 0.02; vMax += 0.02; }
+    const dx = w - padL - padR, dy = h - padT - padB;
+    function xOf(t) { return padL + (t - tMin) / (tMax - tMin || 1) * dx; }
+    function yOf(v) { return padT + (1 - (v - vMin) / (vMax - vMin || 1)) * dy; }
+    ctx.strokeStyle = '#30363d';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + dy * i / 4;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+    }
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(yLabel, 4, padT + 12);
+    seriesList.forEach((S, si) => {
+      const pts = S.points || [];
+      if (pts.length < 2) return;
+      ctx.strokeStyle = COLORS[si % COLORS.length];
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      pts.forEach((p, i) => {
+        const x = xOf(p.t), y = yOf(p.p);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    });
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '10px sans-serif';
+    const d0 = new Date(tMin * 1000), d1 = new Date(tMax * 1000);
+    ctx.fillText(d0.toLocaleString('zh-CN', {hour12:false}) + ' → ' + d1.toLocaleString('zh-CN', {hour12:false}), padL, h - 8);
+  }
+
+  function renderTable(payload) {
+    const ev = payload.event || {};
+    document.getElementById('hdr-title').textContent = (ev.title || 'Polymarket 监测') + ' — 概率监测';
+    document.getElementById('hdr-sub').innerHTML =
+      'slug: <code>' + esc(ev.slug || '') + '</code> · Unix: <strong>' + esc(String(payload.as_of_unix||0)) +
+      '</strong> · BTC: <code>' + esc(payload.btc_reference||'') + '</code>';
+    const markets = payload.markets || [];
+    let rows = '';
+    if (!markets.length) rows = "<tr><td colspan='11' class='muted'>暂无</td></tr>";
+    else for (const m of markets) {
+      const flags = (m.alerts || '').trim();
+      rows += '<tr class="' + (flags ? 'row-alert':'') + '">' +
+        '<td>'+esc(m.groupItemTitle||'')+'</td>' +
+        '<td class="num">'+cell(m.mid_yes,4)+'</td>' +
+        '<td class="num">'+cell(m.spread,4)+'</td>' +
+        '<td class="num">'+cell(m.volume24hr_clob,0)+'</td>' +
+        '<td class="num">'+cell(m.dp_5m,4)+'</td>' +
+        '<td class="num">'+cell(m.dp_15m,4)+'</td>' +
+        '<td class="num">'+cell(m.dp_1h,4)+'</td>' +
+        '<td class="num">'+cell(m.velocity_15m_per_min,6)+'</td>' +
+        '<td class="num">'+cell(m.acceleration_15m,6)+'</td>' +
+        '<td class="num">'+cell(m.zscore_15m_delta,2)+'</td>' +
+        '<td class="flags">'+(flags?esc(flags):'—')+'</td></tr>';
+    }
+    document.getElementById('markets-body').innerHTML = rows;
+    const ll = payload.lead_lag || {};
+    let llh = '';
+    if (ll.error) llh = "<p class='warn'>"+esc(String(ll.error))+"</p>";
+    else if (ll.correlations_by_step) {
+      let lr = '';
+      for (const item of ll.correlations_by_step) {
+        const st = Number(item.step);
+        const stShow = (st >= 0 ? '+' : '') + st;
+        const rs = (typeof item.r === 'number') ? item.r.toFixed(3) : '—';
+        lr += '<tr><td class="num">'+stShow+'</td><td class="num">'+rs+'</td></tr>';
+      }
+      llh = "<h2 style='font-size:1rem;margin-top:1rem'>与 BTC 粗相关</h2><table class='grid'><thead><tr><th>步长</th><th>r</th></tr></thead><tbody>"+lr+"</tbody></table>";
+    }
+    document.getElementById('lead-wrap').innerHTML = llh;
+  }
+
+  function renderCharts(ch) {
+    const legP = document.getElementById('legProb');
+    legP.textContent = '';
+    if (!ch || ch.error) {
+      legP.textContent = ch && ch.error ? ('图表错误: ' + ch.error) : '';
+      return;
+    }
+    legP.textContent = ch.interval_note || '';
+    const prob = (ch.prob_clob_hourly || []).filter(function(s){ return (s.points||[]).length >= 2; });
+    drawTimeSeries(document.getElementById('cProb'), prob, 'p');
+    let leg = '';
+    prob.forEach(function(s,i){ leg += '<span style="color:'+COLORS[i%COLORS.length]+'">■ </span>'+esc(s.label||s.id)+' &nbsp; '; });
+    if (leg) legP.innerHTML = esc(ch.interval_note || '') + '<div style="margin-top:6px">' + leg + '</div>';
+
+    const btc = [{label:'BTC', points: ch.btc_usd_hourly || []}];
+    const cBtc = document.getElementById('cBtc');
+    if ((ch.btc_usd_hourly||[]).length < 2) {
+      const bx = cBtc.getContext('2d');
+      bx.fillStyle = '#161b22';
+      bx.fillRect(0,0,cBtc.width,cBtc.height);
+      bx.fillStyle = '#f85149';
+      bx.font = '14px sans-serif';
+      bx.fillText(ch.btc_error || '无 BTC 数据', 8, 28);
+    } else drawTimeSeries(cBtc, btc, 'USD');
+
+    const loc = (ch.local_snapshot_lines || []).filter(function(s){ return (s.points||[]).length >= 2; });
+    drawTimeSeries(document.getElementById('cLocal'), loc, 'p');
+    let leg2 = '';
+    loc.forEach(function(s,i){ leg2 += '<span style="color:'+COLORS[i%COLORS.length]+'">■ </span>'+esc(s.label||s.id)+' &nbsp; '; });
+    document.getElementById('legLocal').innerHTML = leg2;
+    document.getElementById('store-path').textContent = ch.local_store_path ? (' · 本地文件: ' + ch.local_store_path) : '';
+  }
+
+  async function load() {
+    const st = document.getElementById('status');
+    st.className = '';
+    st.textContent = '正在拉取 /api.json …';
+    try {
+      const ctrl = new AbortController();
+      const tid = setTimeout(function(){ ctrl.abort(); }, 240000);
+      const r = await fetch(API, { signal: ctrl.signal });
+      clearTimeout(tid);
+      const txt = await r.text();
+      let payload;
+      try { payload = JSON.parse(txt); } catch (pe) {
+        throw new Error('HTTP '+r.status+' 非 JSON: ' + txt.slice(0,200));
+      }
+      if (!r.ok) {
+        const err = (payload && (payload.error || payload.trace))
+          ? String(payload.error || '') + "\n" + String(payload.trace || '')
+          : txt;
+        throw new Error('HTTP '+r.status+': ' + err.slice(0, 4000));
+      }
+      renderTable(payload);
+      renderCharts(payload.charts || {});
+      st.textContent = '已更新。下次刷新间隔 ' + (REFRESH_MS/1000) + ' 秒。';
+    } catch (e) {
+      st.className = 'err';
+      st.textContent = '加载失败：' + (e && e.message ? e.message : String(e));
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    load();
+    setInterval(load, REFRESH_MS);
+  });
+})();
+  </script>
+</body>
+</html>
