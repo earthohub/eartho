@@ -1,0 +1,4 @@
+{
+  "_comment": "可选。若填写 images 数组，则按此顺序显示并可用 caption；若留空，build 会自动扫描 images/home/ 下所有图片。",
+  "images": []
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "institute-launch",
+    "date": "2025-09-01",
+    "featured": true,
+    "images": [],
+    "zh": {
+      "title": "研究院官方网站上线",
+      "summary": "中葡气候与能源联合研究院新版官方网站正式发布，将持续发布学术动态与合作信息。",
+      "body": "欢迎访问中葡气候与能源联合研究院官方网站。本站将集中展示研究院概况、研究方向与新闻动态，为合作伙伴与公众提供统一的信息入口。"
+    },
+    "en": {
+      "title": "Institute website launched",
+      "summary": "The new official website of the China-Portugal Joint Research Institute on Climate and Energy is now live.",
+      "body": "Welcome to the official website of the China-Portugal Joint Research Institute on Climate and Energy. This site presents our profile, research areas, and news updates in one place."
+    }
+  },
+  {
+    "id": "inauguration-lisbon-2024",
+    "date": "2024-10-22",
+    "featured": true,
+    "images": ["/images/news23_1.jpg", "/images/news23_2.jpg"],
+    "zh": {
+      "title": "中新社：中葡气候与能源联合研究院在葡萄牙里斯本揭牌成立",
+      "summary": "2024年10月11日，中葡气候与能源联合研究院签约和揭牌仪式在葡萄牙里斯本高等理工学院举办。",
+      "body": "当地时间10月11日，中葡气候与能源联合研究院签约和揭牌仪式在葡萄牙里斯本高等理工学院举办。在中国驻葡萄牙大使赵本堂的见证下，葡萄牙里斯本高等理工学院校长 Rogério Colaço 和中国石油大学（北京）副校长鲍志东共同签署《葡萄牙里斯本高等理工学院与中国石油大学（北京）共建中葡气候与能源联合研究院备忘录》，并为中葡气候与能源联合研究院揭牌。\n\n从左至右依次为：Leonardo Azevedo、鲍志东、赵本堂、Rogério Colaço、廖宗湖\n\n在致辞中，Rogério Colaço 对中葡气候与能源联合研究院的成立表示祝贺，对两校青年教师的合作给予充分肯定，并期待中葡两国在气候与能源领域的合作进一步促进两国友好交流。\n\n鲍志东表示，今年是中葡建交45周年，在共同应对全球气候变化的时代背景下，中葡两国携手开展在人工智能与气候能源领域的合作具有特殊重要意义。此次共同成立中葡气候与能源联合研究院是两校乃至中葡教育科技合作的又一里程碑，将极大促进双方在碳中和未来技术领域的人才培养和科学研究，共同为应对气候变化做出积极贡献。\n\n赵本堂表示，葡萄牙和中国政府高度重视气候与能源领域的研究，中葡在能源领域开展的友好合作，将谱写中葡友谊新篇章。青年科学家的合作代表两国合作的未来和希望，也必将推动两国人民为全球走绿色、低碳、可持续发展之路做出贡献。"
+    },
+    "en": {
+      "title": "China-Portugal Joint Research Institute on Climate and Energy inaugurated in Lisbon",
+      "summary": "On 11 October 2024, the institute’s signing and unveiling ceremony was held at Instituto Superior Técnico in Lisbon, Portugal.",
+      "body": "On 11 October 2024 local time, the signing and unveiling ceremony of the China-Portugal Joint Research Institute on Climate and Energy was held at Instituto Superior Técnico (IST) in Lisbon. Witnessed by Chinese Ambassador to Portugal Zhao Bentang, IST President Rogério Colaço and China University of Petroleum (Beijing) Vice President Bao Zhidong signed a memorandum on establishing the joint institute and unveiled its plaque.\n\nIn his remarks, President Colaço congratulated the establishment of the institute, commended cooperation among young faculty from both universities, and looked forward to further China–Portugal collaboration in climate and energy.\n\nVice President Bao noted that 2024 marks the 45th anniversary of diplomatic relations between China and Portugal. Against the backdrop of jointly addressing global climate change, cooperation in AI and climate-energy fields is of special significance. The new institute is another milestone in educational and scientific collaboration and will advance talent development and research on carbon-neutrality technologies.\n\nAmbassador Zhao emphasized that both governments attach great importance to climate and energy research. Cooperation among young scientists represents the future of bilateral relations and will contribute to a green, low-carbon and sustainable development path worldwide."
+    }
+  }
+]
