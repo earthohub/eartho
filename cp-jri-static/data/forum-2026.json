@@ -1,0 +1,61 @@
+{
+  "note": "Chinese text is verbatim from the provided forum poster. English fields are verbatim where shown on the poster.",
+  "zh": {
+    "title": "2026 中葡气候与能源科技交流论坛",
+    "subtitle": "绿色能源  |  AI 科学  |  青年合作",
+    "datetime": "2026 年 5 月 29 日 14:00–18:00",
+    "venue": "中国石油大学（北京）C308 会议室",
+    "guidance": "指导支持单位：科技部国际科技合作中心",
+    "organizer": "主办单位：中国石油大学（北京）中葡气候与能源联合研究院",
+    "images": {
+      "banner": "images/events/2026-forum-banner.jpg",
+      "poster": "images/events/2026-forum-poster.jpg",
+      "meeting": "images/events/2026-forum-meeting.jpg"
+    },
+    "schedule": [
+      {
+        "time": "14:00 - 14:45",
+        "title": "开幕式与签约",
+        "items": [
+          "开幕致辞：张广清副校长（中石油大）、吴燕滨（联合国工发组织 ITPO 北京原主任）",
+          "专家委员会成立、科技合作协议签约（横琴粤澳深度合作区中国-葡萄牙科技交流中心、中关村软件园、全球气候创新中心等）"
+        ]
+      },
+      {
+        "time": "14:45 - 15:15",
+        "title": "中葡机构建设",
+        "items": [
+          "中葡气候与能源联合研究院建设进展与规划 — 廖宗湖（院长）、钟欢（横琴中葡中心）"
+        ]
+      },
+      {
+        "time": "15:30 - 17:35",
+        "title": "专题交流与产业合作",
+        "items": [
+          "能源+AI for Science（专家报告）：里斯本大学 Leonardo Azevedo、João Narciso；都灵理工 Alessandro Decarlis；北工大李方昱；同济程亦兴 等",
+          "能源+AI 基础设施（企业交流）：中科院智能、中国电子节能协会、百度、中海油、并行科技 等"
+        ]
+      },
+      {
+        "time": "17:35 - 18:00",
+        "title": "国际青年合作展望",
+        "items": [
+          "杨威（中石油大）、苏祖琪（全球气候创新中心）"
+        ]
+      }
+    ]
+  },
+  "en": {
+    "title": "2026 China-Portugal Science & Technology Forum on Climate and Energy",
+    "subtitle": "Green Energy  |  AI for Science  |  Youth Collaboration",
+    "datetime": "May 29, 2026 | 14:00–18:00",
+    "venue": "C308 Conference Room, China University of Petroleum-Beijing",
+    "guidance": "Guidance: China Science and Technology Exchange Center, MOST",
+    "organizer": "Organizer: China–Portugal Joint Research Institute for Climate and Energy, CUP",
+    "images": {
+      "banner": "images/events/2026-forum-banner.jpg",
+      "poster": "images/events/2026-forum-poster.jpg",
+      "meeting": "images/events/2026-forum-meeting.jpg"
+    }
+  }
+}

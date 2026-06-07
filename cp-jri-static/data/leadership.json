@@ -1,0 +1,40 @@
+[
+  {
+    "id": "liao-zonghu",
+    "role_zh": "中方院长",
+    "role_en": "Chinese Co-Director",
+    "photo": "images/leadership/liao-zonghu.jpg",
+    "photoCredit_zh": "图片来源：中国石油大学（北京）经济管理学院官网",
+    "photoCredit_en": "Photo: CUP Beijing School of Business Administration",
+    "zh": {
+      "name": "廖宗湖 教授",
+      "title": "中葡气候与能源联合研究院中方院长",
+      "bio": "中国石油大学（北京）教授、博士生导师，中葡气候与能源联合研究院中方院长，区块链金融研究中心主任。美国俄克拉荷马大学能源学院硕士、博士。主要研究领域为油气构造地质，并关注人工智能、区块链技术与金融科技在能源行业的交叉应用。曾获批国家自然科学基金国际（地区）合作项目、国家重点研发计划“政府间国际科技创新合作”重点专项等。"
+    },
+    "en": {
+      "name": "Prof. Zonghu Liao",
+      "title": "Chinese Co-Director, China-Portugal Joint Research Institute of Climate and Energy",
+      "bio": "Professor and doctoral supervisor at China University of Petroleum (Beijing); Chinese Co-Director of JRICE; Director of the Blockchain Finance Research Center. Ph.D. from the University of Oklahoma. Research areas include petroleum structural geology, artificial intelligence, blockchain, and fintech applications in the energy sector."
+    },
+    "email": "zong@cup.edu.cn"
+  },
+  {
+    "id": "leonardo-azevedo",
+    "role_zh": "葡方院长",
+    "role_en": "Portuguese Co-Director",
+    "photo": "images/leadership/leonardo-azevedo.jpg",
+    "photoCredit_zh": "图片来源：CERENA / Instituto Superior Técnico",
+    "photoCredit_en": "Photo: CERENA / Instituto Superior Técnico",
+    "zh": {
+      "name": "Leonardo Azevedo 教授",
+      "title": "中葡气候与能源联合研究院葡方院长",
+      "bio": "里斯本高等理工学院（Instituto Superior Técnico）教授，葡萄牙自然资源与环境研究中心（CERENA）主席。与廖宗湖教授共同领导「AI for Climate and Energy」合作实验室。主要研究方向为空间数据科学、地球物理数据与地下模型融合、自然资源系统不确定性评估等，致力于运用人工智能与空间数据科学提升对气候与能源等复杂地球系统的认识。"
+    },
+    "en": {
+      "name": "Prof. Leonardo Azevedo",
+      "title": "Portuguese Co-Director, China-Portugal Joint Research Institute of Climate and Energy",
+      "bio": "Full Professor at Instituto Superior Técnico and President of CERENA (Centro de Recursos Naturais e Ambiente). Co-leads the AI for Climate and Energy laboratory with Prof. Zonghu Liao. Research focuses on spatial data science, geostatistical geophysical inversion, and uncertainty assessment in natural systems, including climate and energy resources."
+    },
+    "email": "leonardo.azevedo@tecnico.ulisboa.pt"
+  }
+]
