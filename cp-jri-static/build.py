@@ -192,8 +192,8 @@ def shell(active: str, depth: int, title: str, body: str) -> str:
 </head>
 <body>
 <div class="top-accent" aria-hidden="true">
-  <span class="top-accent-red"></span>
   <span class="top-accent-green"></span>
+  <span class="top-accent-red"></span>
 </div>
 <header class="site-header">
   <div class="wrap header-row">

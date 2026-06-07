@@ -7,9 +7,9 @@
   --line: #e2e8f0;
   --brand: #0f2942;
   --accent: #1d4ed8;
-  --red-cn: #c8102e;
-  --green-pt: #006847;
-  --top-accent-h: 6px;
+  --green-pt: #046a38;
+  --red-pt: #c8102e;
+  --top-accent-h: 8px;
   --max: 1080px;
   --font: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-zh: "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -35,25 +35,26 @@ body {
   line-height: 1.6;
 }
 
-/* Top of page: full-width red line + full-width green line */
+/* Top flag stripe (ref. Portuguese MFA embassy sites: green 2/5 · red 3/5) */
 .top-accent {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  height: var(--top-accent-h);
   z-index: 100;
   display: flex;
-  flex-direction: column;
-}
-
-.top-accent-red {
-  height: 3px;
-  background: var(--red-cn);
+  flex-direction: row;
 }
 
 .top-accent-green {
-  height: 3px;
+  flex: 2;
   background: var(--green-pt);
+}
+
+.top-accent-red {
+  flex: 3;
+  background: var(--red-pt);
 }
 
 [data-lang="zh"] body {
