@@ -135,8 +135,11 @@ module.exports = {
         optimizer: {
           enabled: true,
           runs: 200
-        }
-        //evmVersion: "byzantium"
+        },
+        // Pin to "shanghai" so emitted bytecode stays compatible with the
+        // local Ganache (v7.x) EVM. Newer solc releases default to "cancun"/
+        // "prague", whose opcodes Ganache does not support (invalid opcode on deploy).
+        evmVersion: "shanghai"
       }
     }
   },

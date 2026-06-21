@@ -1,0 +1,20 @@
+{
+  "name": "eartho-contracts",
+  "version": "1.0.0",
+  "description": "Eartho token and NFT swap contracts for coordinate NFT on Earth",
+  "scripts": {
+    "compile": "truffle compile",
+    "test": "truffle test",
+    "migrate": "truffle migrate"
+  },
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.15",
+    "bignumber.js": "^9.1.2",
+    "dotenv": "^16.4.5",
+    "truffle-plugin-verify": "^0.6.7"
+  },
+  "devDependencies": {
+    "truffle": "^5.11.5"
+  }
+}
