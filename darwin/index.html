@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>像素风塔防游戏 - 完整修复版</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0b0b10;
+      color: #fff;
+      font-family: Consolas, monospace;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      user-select: none;
+    }
+
+    #ui-bar {
+      height: 40px;
+      background: #15151f;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 14px;
+      box-shadow: 0 2px 4px #000;
+    }
+
+    #ui-bar span {
+      margin-right: 20px;
+    }
+
+    #wave-controls {
+      text-align: center;
+      padding: 5px;
+      background: #101018;
+      box-shadow: 0 2px 4px #000 inset;
+    }
+
+    #wave-controls button {
+      padding: 5px 10px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    #wave-controls button:hover:not(:disabled) {
+      background: #505070;
+    }
+
+    #wave-controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #game-container {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #base-area, #spawn-area {
+      width: 120px;
+      height: 360px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #base {
+      width: 64px;
+      height: 64px;
+      background:
+        linear-gradient(#3cff8f 0 20%, #1f8f4a 20% 40%, #145f32 40% 100%);
+      box-shadow:
+        0 0 0 3px #000,
+        0 0 10px #3cff8f;
+      image-rendering: pixelated;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 11px;
+      text-align: center;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #spawn-point {
+      width: 48px;
+      height: 48px;
+      background:
+        radial-gradient(circle at 30% 30%, #ff9ab5, #e91e63 60%, #5a0a2a 100%);
+      box-shadow:
+        0 0 0 3px #000,
+        0 0 10px #e91e63;
+      border-radius: 6px;
+      image-rendering: pixelated;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 10px;
+      text-align: center;
+    }
+
+    #grid-container {
+      width: 640px;
+      height: 360px;
+      background: #05050a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 0 4px #222, 0 0 20px #000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(12, 40px);
+      grid-template-rows: repeat(8, 40px);
+      gap: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      background-size: cover;
+      image-rendering: pixelated;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .cell:hover {
+      outline: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .grass-dark {
+      background: #1e4620;
+    }
+
+    .grass-light {
+      background: #2e6b2f;
+    }
+
+    .tower {
+      width: 30px;
+      height: 30px;
+      margin: 5px auto;
+      image-rendering: pixelated;
+      position: relative;
+      box-shadow: 0 0 0 3px #000;
+      animation: towerIdle 0.8s infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes towerIdle {
+      from { transform: translateY(0); }
+      to { transform: translateY(-1px); }
+    }
+
+    .tower-arrow {
+      background:
+        linear-gradient(#f7e27a 0 40%, #f1c40f 40% 70%, #8e5b0a 70% 100%);
+      clip-path: polygon(50% 0, 90% 40%, 70% 40%, 70% 100%, 30% 100%, 30% 40%, 10% 40%);
+    }
+
+    .tower-cannon {
+      background:
+        radial-gradient(circle at 50% 30%, #eee 0 20%, #999 20% 40%, #555 40% 100%);
+      border-radius: 4px;
+    }
+
+    .tower-ice {
+      background:
+        linear-gradient(#b3ffff 0 40%, #4dd0e1 40% 70%, #006064 70% 100%);
+      clip-path: polygon(50% 0, 90% 40%, 70% 100%, 30% 100%, 10% 40%);
+    }
+
+    .tower-fire {
+      background:
+        radial-gradient(circle at 50% 0, #ffeb3b 0 20%, #ff5722 20% 60%, #4a1a0a 60% 100%);
+      border-radius: 50% 50% 40% 40%;
+    }
+
+    .tower-magic {
+      background:
+        conic-gradient(from 0deg, #9b59b6, #8e44ad, #3498db, #9b59b6);
+      border-radius: 50%;
+    }
+
+    #enemy-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .enemy {
+      width: 26px;
+      height: 26px;
+      position: absolute;
+      border-radius: 4px;
+      image-rendering: pixelated;
+      box-shadow: 0 0 0 3px #000;
+      animation: enemyShake 0.4s infinite alternate;
+      transition: filter 0.15s;
+    }
+
+    .enemy.frozen {
+      filter: hue-rotate(180deg) brightness(1.2);
+    }
+
+    .enemy.burning::before {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 120, 0, 0.5), transparent 70%);
+      animation: burnPulse 0.5s infinite alternate;
+    }
+
+    @keyframes burnPulse {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
+    @keyframes enemyShake {
+      from { transform: translate(-1px, 0); }
+      to { transform: translate(1px, 0); }
+    }
+
+    .enemy-normal {
+      background:
+        linear-gradient(#ffcc80 0 40%, #fb8c00 40% 70%, #6d4c41 70% 100%);
+    }
+
+    .enemy-fast {
+      background:
+        linear-gradient(90deg, #ffeb3b 0 40%, #ff9800 40% 100%);
+      border-radius: 13px;
+    }
+
+    .enemy-tank {
+      background:
+        linear-gradient(#8d6e63 0 30%, #5d4037 30% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 8px #4e342e;
+    }
+
+    .enemy-shield {
+      background:
+        radial-gradient(circle at 50% 30%, #e1f5fe 0 30%, #03a9f4 30% 70%, #01579b 70% 100%);
+      border-radius: 50%;
+    }
+
+    .enemy-bomber {
+      background:
+        radial-gradient(circle at 50% 30%, #ff8a80 0 30%, #e53935 30% 70%, #b71c1c 70% 100%);
+      position: relative;
+    }
+
+    .enemy-bomber::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 10px;
+      background: #333;
+      top: -4px;
+      left: 10px;
+      border-radius: 3px;
+      box-shadow: 0 0 4px #000;
+    }
+
+    .hp-bar {
+      position: absolute;
+      top: -6px;
+      left: 2px;
+      width: 22px;
+      height: 4px;
+      background: #222;
+      border: 1px solid #000;
+    }
+
+    .hp-fill {
+      height: 100%;
+      background: #4caf50;
+      width: 100%;
+      transition: width 0.1s;
+    }
+
+    .bullet {
+      width: 8px;
+      height: 8px;
+      position: absolute;
+      border-radius: 50%;
+      box-shadow: 0 0 8px currentColor;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .bullet-arrow { background: #ffeb3b; color: #ffeb3b; }
+    .bullet-cannon { background: #ff9800; color: #ff9800; width: 10px; height: 10px; }
+    .bullet-ice { background: #80deea; color: #80deea; }
+    .bullet-fire { background: #ff5722; color: #ff5722; }
+    .bullet-magic { background: #ce93d8; color: #ce93d8; }
+
+    #build-menu, #upgrade-menu {
+      position: absolute;
+      background: #181824;
+      padding: 8px;
+      border: 1px solid #555;
+      color: #fff;
+      border-radius: 4px;
+      font-size: 12px;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 0 10px #000;
+    }
+
+    #build-menu button, #upgrade-menu button {
+      width: 180px;
+      margin: 2px 0;
+      padding: 4px 6px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    #build-menu button:hover:not(:disabled),
+    #upgrade-menu button:hover:not(:disabled) {
+      background: #505070;
+    }
+
+    #build-menu button:disabled,
+    #upgrade-menu button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    #game-over {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(5,5,15,0.95);
+      padding: 20px 30px;
+      color: white;
+      font-size: 20px;
+      display: none;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 0 20px #000;
+      z-index: 2000;
+    }
+
+    #game-over button {
+      margin-top: 10px;
+      padding: 5px 15px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #666;
+      cursor: pointer;
+    }
+
+    #game-over button:hover {
+      background: #505070;
+    }
+
+    #hint {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      padding: 4px;
+      background: #0d0d14;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="ui-bar">
+    <span id="gold">金币: 500</span>
+    <span id="base-hp">基地HP: 100/100</span>
+    <span id="wave">波次: 0</span>
+    <span id="enemies-left">敌人: 0</span>
+  </div>
+
+  <div id="wave-controls">
+    <button id="start-wave-btn">开始下一波</button>
+  </div>
+
+  <div id="hint">点击空地建造防御塔 · 点击已有塔升级 · 敌人从右侧进入，向左进攻基地</div>
+
+  <div id="game-container">
+    <div id="base-area">
+      <div id="base">基地</div>
+    </div>
+
+    <div id="grid-container">
+      <div id="grid"></div>
+      <div id="enemy-layer"></div>
+    </div>
+
+    <div id="spawn-area">
+      <div id="spawn-point">入口</div>
+    </div>
+  </div>
+
+  <div id="build-menu">
+    <div style="margin-bottom:4px;">选择塔类型</div>
+    <button class="build-btn" data-type="arrow">箭塔：快攻单体（80）</button>
+    <button class="build-btn" data-type="cannon">炮塔：范围爆炸（120）</button>
+    <button class="build-btn" data-type="ice">冰塔：减速控制（100）</button>
+    <button class="build-btn" data-type="fire">火塔：持续灼烧（120）</button>
+    <button class="build-btn" data-type="magic">魔法塔：穿透护盾（150）</button>
+  </div>
+
+  <div id="upgrade-menu">
+    <div id="upgrade-info" style="margin-bottom:4px;"></div>
+    <button id="upgrade-btn">升级</button>
+  </div>
+
+  <div id="game-over">
+    <div id="game-over-text"></div>
+    <button onclick="location.reload()">重新开始</button>
+  </div>
+
+  <script>
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new AudioCtx();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function tone({ freq = 440, duration = 0.1, type = "square", volume = 0.2, slide = null } = {}) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.value = volume;
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      const now = audioCtx.currentTime;
+      if (slide) osc.frequency.linearRampToValueAtTime(slide, now + duration);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      osc.start();
+      osc.stop(now + duration + 0.02);
+    }
+
+    function noise({ duration = 0.15, volume = 0.2 } = {}) {
+      if (!audioCtx) return;
+      const bufferSize = Math.max(1, Math.floor(audioCtx.sampleRate * duration));
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const src = audioCtx.createBufferSource();
+      const gain = audioCtx.createGain();
+      gain.gain.value = volume;
+      src.buffer = buffer;
+      src.connect(gain);
+      gain.connect(audioCtx.destination);
+      src.start();
+    }
+
+    const sound = {
+      build: () => tone({ freq: 600, slide: 900, duration: 0.12 }),
+      upgrade: () => {
+        tone({ freq: 500, duration: 0.08 });
+        setTimeout(() => tone({ freq: 800, duration: 0.12 }), 80);
+      },
+      arrow: () => tone({ freq: 1200, duration: 0.05 }),
+      cannon: () => noise({ duration: 0.2, volume: 0.25 }),
+      ice: () => tone({ freq: 900, type: "sine", duration: 0.08 }),
+      fire: () => tone({ freq: 300, type: "sawtooth", duration: 0.12 }),
+      magic: () => tone({ freq: 1000, slide: 1400, duration: 0.1 }),
+      hit: () => tone({ freq: 250, duration: 0.05 }),
+      die: () => noise({ duration: 0.12 }),
+      wave: () => {
+        tone({ freq: 400 });
+        setTimeout(() => tone({ freq: 600 }), 120);
+        setTimeout(() => tone({ freq: 800 }), 240);
+      },
+      baseHit: () => tone({ freq: 120, type: "sawtooth", duration: 0.2, volume: 0.3 })
+    };
+
+    const GRID_W = 12;
+    const GRID_H = 8;
+    const CELL = 40;
+    const MAX_WAVES = 15;
+
+    const grid = document.getElementById("grid");
+    const gridContainer = document.getElementById("grid-container");
+    const enemyLayer = document.getElementById("enemy-layer");
+    const buildMenu = document.getElementById("build-menu");
+    const upgradeMenu = document.getElementById("upgrade-menu");
+    const upgradeInfo = document.getElementById("upgrade-info");
+    const upgradeBtn = document.getElementById("upgrade-btn");
+    const startWaveBtn = document.getElementById("start-wave-btn");
+    const gameOverEl = document.getElementById("game-over");
+    const gameOverText = document.getElementById("game-over-text");
+
+    const baseState = { maxHP: 100, currentHP: 100 };
+    const ui = {
+      gold: 500,
+      wave: 0,
+      goldEl: document.getElementById("gold"),
+      hpEl: document.getElementById("base-hp"),
+      waveEl: document.getElementById("wave"),
+      enemiesEl: document.getElementById("enemies-left")
+    };
+
+    const cells = [];
+    const towers = [];
+    const enemies = [];
+    const bullets = [];
+    let selectedCell = null;
+    let selectedTower = null;
+    let waveActive = false;
+    let spawnQueue = [];
+    let spawnTimer = 0;
+    let gameOver = false;
+    let lastTime = 0;
+
+    const towerTypes = {
+      arrow: {
+        css: "tower-arrow",
+        bullet: "bullet-arrow",
+        sound: sound.arrow,
+        levels: [
+          { attack: 10, range: 2.5, speed: 800, cost: 80 },
+          { attack: 18, range: 2.7, speed: 700, cost: 120 },
+          { attack: 28, range: 2.9, speed: 650, cost: 160 },
+          { attack: 40, range: 3.1, speed: 600, cost: 220 },
+          { attack: 55, range: 3.3, speed: 550, cost: 300 }
+        ]
+      },
+      cannon: {
+        css: "tower-cannon",
+        bullet: "bullet-cannon",
+        sound: sound.cannon,
+        aoe: true,
+        aoeRadius: 1.2,
+        levels: [
+          { attack: 20, range: 2.2, speed: 1200, cost: 120 },
+          { attack: 35, range: 2.4, speed: 1100, cost: 180 },
+          { attack: 55, range: 2.6, speed: 1000, cost: 240 },
+          { attack: 80, range: 2.8, speed: 900, cost: 320 },
+          { attack: 110, range: 3.0, speed: 800, cost: 400 }
+        ]
+      },
+      ice: {
+        css: "tower-ice",
+        bullet: "bullet-ice",
+        sound: sound.ice,
+        slow: 0.45,
+        slowDuration: 2000,
+        levels: [
+          { attack: 5, range: 2.5, speed: 1000, cost: 100 },
+          { attack: 8, range: 2.7, speed: 950, cost: 150 },
+          { attack: 12, range: 2.9, speed: 900, cost: 200 },
+          { attack: 16, range: 3.1, speed: 850, cost: 260 },
+          { attack: 20, range: 3.3, speed: 800, cost: 320 }
+        ]
+      },
+      fire: {
+        css: "tower-fire",
+        bullet: "bullet-fire",
+        sound: sound.fire,
+        burn: 4,
+        burnDuration: 3000,
+        levels: [
+          { attack: 8, range: 2.3, speed: 900, cost: 120 },
+          { attack: 14, range: 2.5, speed: 850, cost: 170 },
+          { attack: 22, range: 2.7, speed: 800, cost: 230 },
+          { attack: 32, range: 2.9, speed: 750, cost: 300 },
+          { attack: 45, range: 3.1, speed: 700, cost: 380 }
+        ]
+      },
+      magic: {
+        css: "tower-magic",
+        bullet: "bullet-magic",
+        sound: sound.magic,
+        pierceShield: true,
+        levels: [
+          { attack: 15, range: 2.4, speed: 950, cost: 150 },
+          { attack: 25, range: 2.6, speed: 900, cost: 210 },
+          { attack: 38, range: 2.8, speed: 850, cost: 280 },
+          { attack: 55, range: 3.0, speed: 800, cost: 360 },
+          { attack: 75, range: 3.2, speed: 750, cost: 450 }
+        ]
+      }
+    };
+
+    const enemyTypes = {
+      normal: { css: "enemy-normal", hp: 55, speed: 28, gold: 12, damage: 8 },
+      fast: { css: "enemy-fast", hp: 35, speed: 48, gold: 16, damage: 6 },
+      tank: { css: "enemy-tank", hp: 180, speed: 18, gold: 28, damage: 15 },
+      shield: { css: "enemy-shield", hp: 70, shield: 50, speed: 24, gold: 30, damage: 10 },
+      bomber: { css: "enemy-bomber", hp: 45, speed: 32, gold: 22, damage: 25, explode: true }
+    };
+
+    function refreshUI() {
+      ui.goldEl.textContent = "金币: " + Math.floor(ui.gold);
+      ui.hpEl.textContent = "基地HP: " + Math.floor(baseState.currentHP) + "/" + baseState.maxHP;
+      ui.waveEl.textContent = "波次: " + ui.wave + (ui.wave >= MAX_WAVES ? " (最终)" : "");
+      ui.enemiesEl.textContent = "敌人: " + enemies.length + (spawnQueue.length ? "+" + spawnQueue.length : "");
+      startWaveBtn.disabled = waveActive || gameOver || ui.wave >= MAX_WAVES;
+      startWaveBtn.textContent = ui.wave >= MAX_WAVES && !waveActive && enemies.length === 0
+        ? "全部通关!"
+        : waveActive ? "波次进行中..." : "开始下一波";
+    }
+
+    function createGrid() {
+      for (let y = 0; y < GRID_H; y++) {
+        for (let x = 0; x < GRID_W; x++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          cell.classList.add((x + y) % 2 === 0 ? "grass-dark" : "grass-light");
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+          cell.addEventListener("click", (e) => onCellClick(x, y, e));
+          grid.appendChild(cell);
+          cells.push({ x, y, el: cell, tower: null });
+        }
+      }
+    }
+
+    function getCell(x, y) {
+      if (x < 0 || y < 0 || x >= GRID_W || y >= GRID_H) return null;
+      return cells[y * GRID_W + x];
+    }
+
+    function gridToPixel(x, y) {
+      const offsetX = (gridContainer.clientWidth - GRID_W * CELL) / 2;
+      const offsetY = (gridContainer.clientHeight - GRID_H * CELL) / 2;
+      return {
+        px: offsetX + x * CELL + CELL / 2,
+        py: offsetY + y * CELL + CELL / 2
+      };
+    }
+
+    function hideMenus() {
+      buildMenu.style.display = "none";
+      upgradeMenu.style.display = "none";
+      selectedCell = null;
+      selectedTower = null;
+    }
+
+    function showMenuAt(menu, x, y) {
+      const rect = gridContainer.getBoundingClientRect();
+      menu.style.display = "block";
+      menu.style.left = Math.min(rect.left + x, window.innerWidth - menu.offsetWidth - 8) + "px";
+      menu.style.top = Math.min(rect.top + y, window.innerHeight - menu.offsetHeight - 8) + "px";
+    }
+
+    function updateBuildMenuButtons() {
+      buildMenu.querySelectorAll(".build-btn").forEach((btn) => {
+        const type = btn.dataset.type;
+        const cost = towerTypes[type].levels[0].cost;
+        btn.disabled = ui.gold < cost;
+        btn.textContent = btn.textContent.replace(/（\d+）$/, `（${cost}）`);
+      });
+    }
+
+    function onCellClick(x, y, e) {
+      if (gameOver) return;
+      ensureAudio();
+      const cell = getCell(x, y);
+      if (!cell) return;
+
+      if (cell.tower) {
+        selectedTower = cell.tower;
+        selectedCell = null;
+        const stats = getTowerStats(cell.tower);
+        const maxLv = towerTypes[cell.tower.type].levels.length;
+        upgradeInfo.textContent = `${towerLabel(cell.tower.type)} Lv${cell.tower.level} | 攻${stats.attack} 距${stats.range.toFixed(1)}`;
+        if (cell.tower.level < maxLv) {
+          const next = towerTypes[cell.tower.type].levels[cell.tower.level];
+          upgradeBtn.textContent = `升级到 Lv${cell.tower.level + 1}（${next.cost}）`;
+          upgradeBtn.disabled = ui.gold < next.cost;
+          upgradeBtn.style.display = "block";
+        } else {
+          upgradeBtn.textContent = "已满级";
+          upgradeBtn.disabled = true;
+          upgradeBtn.style.display = "block";
+        }
+        buildMenu.style.display = "none";
+        showMenuAt(upgradeMenu, e.clientX - gridContainer.getBoundingClientRect().left, e.clientY - gridContainer.getBoundingClientRect().top);
+        return;
+      }
+
+      selectedCell = cell;
+      selectedTower = null;
+      upgradeMenu.style.display = "none";
+      updateBuildMenuButtons();
+      showMenuAt(buildMenu, e.clientX - gridContainer.getBoundingClientRect().left, e.clientY - gridContainer.getBoundingClientRect().top);
+    }
+
+    function towerLabel(type) {
+      return { arrow: "箭塔", cannon: "炮塔", ice: "冰塔", fire: "火塔", magic: "魔法塔" }[type] || type;
+    }
+
+    function getTowerStats(tower) {
+      return towerTypes[tower.type].levels[tower.level - 1];
+    }
+
+    function buildTower(type) {
+      if (!selectedCell || selectedCell.tower || gameOver) return;
+      const def = towerTypes[type];
+      const stats = def.levels[0];
+      if (ui.gold < stats.cost) return;
+
+      ui.gold -= stats.cost;
+      const towerEl = document.createElement("div");
+      towerEl.className = "tower " + def.css;
+      selectedCell.el.appendChild(towerEl);
+
+      const tower = {
+        type,
+        level: 1,
+        x: selectedCell.x,
+        y: selectedCell.y,
+        el: towerEl,
+        cell: selectedCell,
+        cooldown: 0
+      };
+      selectedCell.tower = tower;
+      towers.push(tower);
+      sound.build();
+      hideMenus();
+      refreshUI();
+    }
+
+    function upgradeTower() {
+      if (!selectedTower || gameOver) return;
+      const def = towerTypes[selectedTower.type];
+      if (selectedTower.level >= def.levels.length) return;
+      const next = def.levels[selectedTower.level];
+      if (ui.gold < next.cost) return;
+
+      ui.gold -= next.cost;
+      selectedTower.level++;
+      sound.upgrade();
+      hideMenus();
+      refreshUI();
+    }
+
+    function makeWavePlan(wave) {
+      const plan = [];
+      const count = 4 + wave * 2;
+      const types = ["normal"];
+      if (wave >= 2) types.push("fast");
+      if (wave >= 4) types.push("tank");
+      if (wave >= 6) types.push("shield");
+      if (wave >= 8) types.push("bomber");
+
+      for (let i = 0; i < count; i++) {
+        const type = types[Math.floor(Math.random() * types.length)];
+        const row = Math.floor(Math.random() * GRID_H);
+        const hpScale = 1 + wave * 0.12;
+        const interval = Math.max(350, 900 - Math.min(wave * 30, 400));
+        plan.push({ type, row, hpScale, delay: i === 0 ? 400 : interval });
+      }
+      return plan;
+    }
+
+    function startWave() {
+      if (waveActive || gameOver || ui.wave >= MAX_WAVES) return;
+      ensureAudio();
+      ui.wave++;
+      waveActive = true;
+      spawnQueue = makeWavePlan(ui.wave);
+      spawnTimer = 0;
+      sound.wave();
+      hideMenus();
+      refreshUI();
+    }
+
+    function spawnEnemy(entry) {
+      const def = enemyTypes[entry.type];
+      const el = document.createElement("div");
+      el.className = "enemy " + def.css;
+      const hpBar = document.createElement("div");
+      hpBar.className = "hp-bar";
+      const hpFill = document.createElement("div");
+      hpFill.className = "hp-fill";
+      hpBar.appendChild(hpFill);
+      el.appendChild(hpBar);
+      enemyLayer.appendChild(el);
+
+      const maxHP = Math.round(def.hp * entry.hpScale);
+      const enemy = {
+        type: entry.type,
+        x: GRID_W + 0.5,
+        y: entry.row + 0.5,
+        hp: maxHP,
+        maxHP,
+        shield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
+        maxShield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
+        speed: def.speed,
+        gold: def.gold + Math.floor(ui.wave * 1.5),
+        damage: def.damage,
+        explode: !!def.explode,
+        el,
+        hpFill,
+        slowUntil: 0,
+        burnUntil: 0,
+        burnTick: 0,
+        dead: false
+      };
+      enemies.push(enemy);
+      updateEnemyPosition(enemy);
+      refreshUI();
+    }
+
+    function updateEnemyPosition(enemy) {
+      const { px, py } = gridToPixel(enemy.x, enemy.y);
+      enemy.el.style.left = (px - 13) + "px";
+      enemy.el.style.top = (py - 13) + "px";
+      const ratio = Math.max(0, enemy.hp / enemy.maxHP);
+      enemy.hpFill.style.width = (ratio * 100) + "%";
+      enemy.hpFill.style.background = ratio > 0.5 ? "#4caf50" : ratio > 0.25 ? "#ff9800" : "#f44336";
+      enemy.el.classList.toggle("frozen", performance.now() < enemy.slowUntil);
+      enemy.el.classList.toggle("burning", performance.now() < enemy.burnUntil);
+    }
+
+    function dist(ax, ay, bx, by) {
+      return Math.hypot(ax - bx, ay - by);
+    }
+
+    function findTarget(tower, stats) {
+      let best = null;
+      let bestScore = -Infinity;
+      for (const enemy of enemies) {
+        if (enemy.dead) continue;
+        const d = dist(tower.x + 0.5, tower.y + 0.5, enemy.x, enemy.y);
+        if (d > stats.range) continue;
+        const score = enemy.x * 10 - d;
+        if (score > bestScore) {
+          bestScore = score;
+          best = enemy;
+        }
+      }
+      return best;
+    }
+
+    function shootBullet(tower, target, def, stats) {
+      const from = gridToPixel(tower.x + 0.5, tower.y + 0.5);
+      const to = gridToPixel(target.x, target.y);
+      const el = document.createElement("div");
+      el.className = "bullet " + def.bullet;
+      enemyLayer.appendChild(el);
+
+      bullets.push({
+        x: from.px,
+        y: from.py,
+        tx: to.px,
+        ty: to.py,
+        speed: 420,
+        tower,
+        target,
+        def,
+        stats,
+        el,
+        done: false
+      });
+      def.sound();
+    }
+
+    function applyDamage(enemy, amount, sourceType) {
+      if (enemy.dead) return;
+      const def = towerTypes[sourceType];
+      let dmg = amount;
+
+      if (enemy.shield > 0 && !def.pierceShield) {
+        const absorbed = Math.min(enemy.shield, dmg);
+        enemy.shield -= absorbed;
+        dmg -= absorbed;
+      }
+
+      if (dmg > 0) enemy.hp -= dmg;
+      sound.hit();
+      updateEnemyPosition(enemy);
+
+      if (def.slow) enemy.slowUntil = performance.now() + def.slowDuration;
+      if (def.burn) {
+        enemy.burnUntil = performance.now() + def.burnDuration;
+        enemy.burnTick = performance.now();
+      }
+
+      if (enemy.hp <= 0) killEnemy(enemy);
+    }
+
+    function killEnemy(enemy) {
+      if (enemy.dead) return;
+      enemy.dead = true;
+      ui.gold += enemy.gold;
+      sound.die();
+      enemy.el.remove();
+      const idx = enemies.indexOf(enemy);
+      if (idx >= 0) enemies.splice(idx, 1);
+      refreshUI();
+    }
+
+    function damageBase(amount) {
+      baseState.currentHP -= amount;
+      sound.baseHit();
+      document.getElementById("base").style.boxShadow = "0 0 0 3px #000, 0 0 20px #ff1744";
+      setTimeout(() => {
+        document.getElementById("base").style.boxShadow = "0 0 0 3px #000, 0 0 10px #3cff8f";
+      }, 200);
+      refreshUI();
+      if (baseState.currentHP <= 0) endGame(false);
+    }
+
+    function endGame(won) {
+      gameOver = true;
+      waveActive = false;
+      gameOverText.textContent = won
+        ? "恭喜通关！你成功守住了基地！"
+        : "基地被摧毁，游戏结束";
+      gameOverEl.style.display = "block";
+      refreshUI();
+    }
+
+    function updateTowers(dt) {
+      for (const tower of towers) {
+        const def = towerTypes[tower.type];
+        const stats = getTowerStats(tower);
+        tower.cooldown -= dt;
+        if (tower.cooldown > 0) continue;
+        const target = findTarget(tower, stats);
+        if (!target) continue;
+        tower.cooldown = stats.speed;
+        shootBullet(tower, target, def, stats);
+      }
+    }
+
+    function updateBullets(dt) {
+      for (let i = bullets.length - 1; i >= 0; i--) {
+        const b = bullets[i];
+        const dx = b.tx - b.x;
+        const dy = b.ty - b.y;
+        const len = Math.hypot(dx, dy);
+        const step = b.speed * dt / 1000;
+        if (len <= step || b.target.dead) {
+          if (!b.target.dead) {
+            if (b.def.aoe) {
+              for (const enemy of enemies) {
+                if (enemy.dead) continue;
+                if (dist(b.target.x, b.target.y, enemy.x, enemy.y) <= b.def.aoeRadius) {
+                  applyDamage(enemy, b.stats.attack, b.tower.type);
+                }
+              }
+            } else {
+              applyDamage(b.target, b.stats.attack, b.tower.type);
+            }
+          }
+          b.el.remove();
+          bullets.splice(i, 1);
+          continue;
+        }
+        b.x += (dx / len) * step;
+        b.y += (dy / len) * step;
+        b.el.style.left = (b.x - 4) + "px";
+        b.el.style.top = (b.y - 4) + "px";
+      }
+    }
+
+    function updateEnemies(dt, now) {
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemy = enemies[i];
+        if (enemy.dead) continue;
+
+        let speed = enemy.speed;
+        if (now < enemy.slowUntil) speed *= 0.45;
+
+        enemy.x -= (speed * dt) / 1000 / CELL;
+        updateEnemyPosition(enemy);
+
+        if (now < enemy.burnUntil && now - enemy.burnTick >= 500) {
+          enemy.burnTick = now;
+          enemy.hp -= towerTypes.fire.burn;
+          updateEnemyPosition(enemy);
+          if (enemy.hp <= 0) {
+            killEnemy(enemy);
+            continue;
+          }
+        }
+
+        if (enemy.x < -0.3) {
+          const dmg = enemy.explode ? enemy.damage * 1.5 : enemy.damage;
+          enemy.el.remove();
+          enemies.splice(i, 1);
+          damageBase(dmg);
+        }
+      }
+    }
+
+    function updateSpawning(dt) {
+      if (!waveActive) return;
+      if (spawnQueue.length === 0) {
+        if (enemies.length === 0) {
+          waveActive = false;
+          if (ui.wave >= MAX_WAVES) endGame(true);
+          else refreshUI();
+        }
+        return;
+      }
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        const next = spawnQueue.shift();
+        spawnEnemy(next);
+        spawnTimer = next.delay || 600;
+      }
+    }
+
+    function gameLoop(ts) {
+      if (!lastTime) lastTime = ts;
+      const dt = Math.min(ts - lastTime, 50);
+      lastTime = ts;
+
+      if (!gameOver) {
+        updateSpawning(dt);
+        updateEnemies(dt, ts);
+        updateTowers(dt);
+        updateBullets(dt);
+        refreshUI();
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    buildMenu.querySelectorAll(".build-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        buildTower(btn.dataset.type);
+      });
+    });
+
+    upgradeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      upgradeTower();
+    });
+
+    startWaveBtn.addEventListener("click", startWave);
+
+    document.addEventListener("click", (e) => {
+      if (!buildMenu.contains(e.target) && !upgradeMenu.contains(e.target) && !e.target.classList.contains("cell")) {
+        hideMenus();
+      }
+      ensureAudio();
+    });
+
+    createGrid();
+    refreshUI();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
