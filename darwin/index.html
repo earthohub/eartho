@@ -710,7 +710,7 @@
     <span id="gold">金币: 500</span>
     <span id="base-hp">基地HP: 100/100</span>
     <span id="level-info">关卡: 1/50</span>
-    <span id="wave-info">波次: 0/6</span>
+    <span id="wave-info">波次: 0/4</span>
     <span id="difficulty-label">难度: -</span>
     <span id="enemies-left">敌人: 0</span>
   </div>
@@ -728,7 +728,7 @@
     <button id="resume-btn" class="ctrl-btn" style="display:none;">继续</button>
   </div>
 
-  <div id="hint">每关抵挡 6 波即可通关 · 通关解锁下一关 · 换关时清除防御塔并获得更多初始金币</div>
+  <div id="hint">每关抵挡 4 波即可通关 · 通关解锁下一关 · 换关时清除防御塔并获得更多初始金币</div>
 
   <div id="game-container">
     <div id="base-area">
@@ -766,7 +766,7 @@
 
   <div id="difficulty-screen">
     <h1>Darwin 塔防</h1>
-    <p>共 50 关 · 每关抵挡 6 波通关 · 通关解锁下一关 · 第 11 关起出现障碍地形</p>
+    <p>共 50 关 · 每关抵挡 4 波通关 · 通关解锁下一关 · 第 11 关起出现障碍地形</p>
     <div class="difficulty-btns">
       <button data-diff="easy">简单</button>
       <button data-diff="normal">普通</button>
@@ -802,12 +802,12 @@
       return gain;
     }
 
-    function envGain(target, attack, decay, sustain, release, peak) {
+    function envGain(param, attack, decay, sustain, release, peak) {
       const now = audioCtx.currentTime;
-      target.gain.setValueAtTime(0.0001, now);
-      target.gain.exponentialRampToValueAtTime(Math.max(peak, 0.0002), now + attack);
-      target.gain.exponentialRampToValueAtTime(Math.max(sustain, 0.0001), now + attack + decay);
-      target.gain.exponentialRampToValueAtTime(0.0001, now + attack + decay + release);
+      param.setValueAtTime(0.0001, now);
+      param.exponentialRampToValueAtTime(Math.max(peak, 0.0002), now + attack);
+      param.exponentialRampToValueAtTime(Math.max(sustain, 0.0001), now + attack + decay);
+      param.exponentialRampToValueAtTime(0.0001, now + attack + decay + release);
     }
 
     function playNoiseBurst({
@@ -875,6 +875,16 @@
       osc.stop(now + duration + release + 0.05);
     }
 
+    let lastHitSound = 0;
+    let lastCombatSound = 0;
+
+    function safeSound(fn) {
+      try {
+        if (!audioCtx) return;
+        fn();
+      } catch (_) { /* ignore audio errors */ }
+    }
+
     const sound = {
       build: () => {
         playTone({ freq: 180, type: "triangle", duration: 0.08, volume: 0.35, attack: 0.002, decay: 0.04, release: 0.06 });
@@ -885,10 +895,12 @@
         setTimeout(() => playTone({ freq: 780, duration: 0.22, volume: 0.2, attack: 0.005, decay: 0.1, release: 0.12 }), 70);
         setTimeout(() => playTone({ freq: 1040, duration: 0.25, volume: 0.16, attack: 0.005, decay: 0.12, release: 0.14 }), 140);
       },
-      arrow: () => {
+      arrow: () => safeSound(() => {
+        const now = performance.now();
+        if (now - lastCombatSound < 70) return;
+        lastCombatSound = now;
         playNoiseBurst({ duration: 0.07, volume: 0.14, freq: 1800, type: "bandpass", attack: 0.001, decay: 0.02, release: 0.04 });
-        playTone({ freq: 900, slide: 420, duration: 0.05, volume: 0.1, type: "triangle", attack: 0.001, decay: 0.02, release: 0.03 });
-      },
+      }),
       cannon: () => {
         playTone({ freq: 95, type: "sine", duration: 0.35, volume: 0.55, attack: 0.003, decay: 0.12, release: 0.22, filterFreq: 280 });
         playNoiseBurst({ duration: 0.45, volume: 0.42, freq: 420, type: "lowpass", q: 0.5, attack: 0.002, decay: 0.15, release: 0.28 });
@@ -912,14 +924,16 @@
         playTone({ freq: 990, slide: 1980, duration: 0.18, volume: 0.1, type: "triangle", attack: 0.01, decay: 0.07, release: 0.12 });
         playNoiseBurst({ duration: 0.12, volume: 0.08, freq: 3200, type: "highpass", attack: 0.005, decay: 0.05, release: 0.06 });
       },
-      hit: () => {
-        playNoiseBurst({ duration: 0.06, volume: 0.2, freq: 1200, type: "lowpass", attack: 0.001, decay: 0.02, release: 0.03 });
-        playTone({ freq: 220, slide: 120, duration: 0.05, volume: 0.18, type: "triangle", attack: 0.001, decay: 0.02, release: 0.03 });
-      },
-      die: () => {
+      hit: () => safeSound(() => {
+        const now = performance.now();
+        if (now - lastHitSound < 80) return;
+        lastHitSound = now;
+        playNoiseBurst({ duration: 0.06, volume: 0.15, freq: 1200, type: "lowpass", attack: 0.001, decay: 0.02, release: 0.03 });
+      }),
+      die: () => safeSound(() => {
         playTone({ freq: 280, slide: 90, duration: 0.2, volume: 0.2, type: "sawtooth", attack: 0.003, decay: 0.08, release: 0.1, filterFreq: 800 });
         playNoiseBurst({ duration: 0.16, volume: 0.18, freq: 600, type: "bandpass", attack: 0.002, decay: 0.06, release: 0.08 });
-      },
+      }),
       wave: () => {
         playTone({ freq: 196, duration: 0.28, volume: 0.22, type: "triangle", attack: 0.01, decay: 0.12, release: 0.14 });
         setTimeout(() => playTone({ freq: 262, duration: 0.28, volume: 0.22, type: "triangle", attack: 0.01, decay: 0.12, release: 0.14 }), 120);
@@ -936,7 +950,7 @@
     const GRID_H = 8;
     const CELL = 40;
     const MAX_LEVELS = 50;
-    const WAVES_PER_LEVEL = 6;
+    const WAVES_PER_LEVEL = 4;
     const TERRAIN_START_LEVEL = 11;
     const GOLD_PER_LEVEL = 95;
     const STORAGE_KEY = "darwin-td-progress";
@@ -1032,6 +1046,7 @@
     let selectedCell = null;
     let selectedTower = null;
     let waveActive = false;
+    let currentWaveNumber = 0;
     let spawnQueue = [];
     let spawnTimer = 0;
     let gameOver = false;
@@ -1043,11 +1058,11 @@
         bullet: "bullet-arrow",
         sound: sound.arrow,
         levels: [
-          { attack: 10, range: 2.5, speed: 800, cost: 80 },
-          { attack: 18, range: 2.7, speed: 700, cost: 120 },
-          { attack: 28, range: 2.9, speed: 650, cost: 160 },
-          { attack: 40, range: 3.1, speed: 600, cost: 220 },
-          { attack: 55, range: 3.3, speed: 550, cost: 300 }
+          { attack: 10, range: 3.0, speed: 800, cost: 80 },
+          { attack: 18, range: 3.2, speed: 700, cost: 120 },
+          { attack: 28, range: 3.4, speed: 650, cost: 160 },
+          { attack: 40, range: 3.6, speed: 600, cost: 220 },
+          { attack: 55, range: 3.8, speed: 550, cost: 300 }
         ]
       },
       cannon: {
@@ -1164,6 +1179,7 @@
       spawnQueue = [];
       spawnTimer = 0;
       waveActive = false;
+      currentWaveNumber = 0;
     }
 
     function buildLevelGrid() {
@@ -1178,7 +1194,7 @@
         if (!unlocked) btn.classList.add("locked");
         if (cleared) btn.classList.add("cleared");
         if (lv === ui.level) btn.classList.add("current");
-        btn.disabled = !unlocked || waveActive || levelCompletePending;
+        btn.disabled = !unlocked || waveActive;
         btn.title = !unlocked ? "未解锁" : cleared ? "已通关" : "已解锁";
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -1201,6 +1217,7 @@
 
     function enterLevel(level) {
       if (!gameStarted || level < 1 || level > maxUnlockedLevel) return;
+      if (waveActive || enemies.length > 0) return;
       hideMenus();
       clearCombat();
       clearTowers();
@@ -1420,7 +1437,7 @@
     }
 
     function buildTower(type) {
-      if (!selectedCell || selectedCell.tower || selectedCell.terrain || gameOver || paused) return;
+      if (!selectedCell || selectedCell.tower || selectedCell.terrain || gameOver || paused || levelCompletePending) return;
       const def = towerTypes[type];
       const stats = def.levels[0];
       if (ui.gold < stats.cost) return;
@@ -1447,7 +1464,7 @@
     }
 
     function upgradeTower() {
-      if (!selectedTower || gameOver) return;
+      if (!selectedTower || gameOver || paused || levelCompletePending) return;
       const def = towerTypes[selectedTower.type];
       if (selectedTower.level >= def.levels.length) return;
       const next = def.levels[selectedTower.level];
@@ -1466,10 +1483,10 @@
       const waveIndex = getWaveDifficulty(level, waveInLevel);
       const count = Math.min(3 + Math.floor(waveIndex * 1.1 + level * 0.8), 70);
       const types = ["normal"];
-      if (level >= 2 || waveInLevel >= 3) types.push("fast");
-      if (level >= 5 || waveInLevel >= 4) types.push("tank");
-      if (level >= 10 || waveInLevel >= 5) types.push("shield");
-      if (level >= 15 || waveInLevel >= 6) types.push("bomber");
+      if (level >= 2 || waveInLevel >= 2) types.push("fast");
+      if (level >= 5 || waveInLevel >= 3) types.push("tank");
+      if (level >= 10 || waveInLevel >= 4) types.push("shield");
+      if (level >= 15 || waveInLevel >= 3) types.push("bomber");
 
       const hpScale = (1 + waveIndex * 0.055 + Math.pow(level, 1.2) * 0.006) * cfg.enemyHp;
       const baseInterval = Math.max(220, 850 - level * 6 - waveInLevel * 10) / cfg.spawnInterval;
@@ -1477,7 +1494,7 @@
       for (let i = 0; i < count; i++) {
         const type = types[Math.floor(Math.random() * types.length)];
         const row = Math.floor(Math.random() * GRID_H);
-        plan.push({ type, row, hpScale, delay: i === 0 ? 500 : baseInterval });
+        plan.push({ type, row, hpScale, delay: i === 0 ? 400 : baseInterval });
       }
       return plan;
     }
@@ -1487,6 +1504,7 @@
       if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
       ensureAudio();
       const nextWave = ui.waveInLevel + 1;
+      currentWaveNumber = nextWave;
       waveActive = true;
       spawnQueue = makeWavePlan(ui.level, nextWave);
       spawnTimer = 0;
@@ -1518,8 +1536,8 @@
         shield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
         maxShield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
         speed: def.speed * cfg.enemySpeed,
-        gold: Math.round((def.gold + Math.floor(ui.level * 1.5 + ui.waveInLevel * 2)) * cfg.goldReward),
-        damage: Math.round(def.damage * cfg.enemyDamage * (1 + ui.level * 0.025 + ui.waveInLevel * 0.01)),
+        gold: Math.round((def.gold + Math.floor(ui.level * 1.5 + currentWaveNumber * 2)) * cfg.goldReward),
+        damage: Math.round(def.damage * cfg.enemyDamage * (1 + ui.level * 0.025 + currentWaveNumber * 0.01)),
         explode: !!def.explode,
         el,
         hpFill,
@@ -1599,7 +1617,6 @@
       }
 
       if (dmg > 0) enemy.hp -= dmg;
-      sound.hit();
       updateEnemyPosition(enemy);
 
       if (def.slow) enemy.slowUntil = performance.now() + def.slowDuration;
@@ -1608,17 +1625,21 @@
         enemy.burnTick = performance.now();
       }
 
-      if (enemy.hp <= 0) killEnemy(enemy);
+      if (enemy.hp <= 0) {
+        killEnemy(enemy);
+        return;
+      }
+      sound.hit();
     }
 
     function killEnemy(enemy) {
       if (enemy.dead) return;
       enemy.dead = true;
       ui.gold += enemy.gold;
-      sound.die();
       enemy.el.remove();
       const idx = enemies.indexOf(enemy);
       if (idx >= 0) enemies.splice(idx, 1);
+      sound.die();
       refreshUI();
     }
 
@@ -1642,7 +1663,7 @@
       levelCompleteEl.style.display = "none";
       gameOverText.textContent = won
         ? `恭喜通关！你以【${difficulties[difficulty].label}】难度完成了全部 ${MAX_LEVELS} 关！`
-        : `基地被摧毁（${difficulties[difficulty].label} · 第 ${ui.level} 关 · 第 ${ui.waveInLevel} 波）`;
+        : `基地被摧毁（${difficulties[difficulty].label} · 第 ${ui.level} 关 · 第 ${Math.min(currentWaveNumber || ui.waveInLevel + 1, WAVES_PER_LEVEL)} 波）`;
       gameOverEl.style.display = "block";
       refreshUI();
     }
@@ -1684,17 +1705,15 @@
         const len = Math.hypot(dx, dy);
         const step = b.speed * dt / 1000;
         if (len <= step || b.target.dead) {
-          if (!b.target.dead) {
-            if (b.def.aoe) {
-              for (const enemy of enemies) {
-                if (enemy.dead) continue;
-                if (dist(b.target.x, b.target.y, enemy.x, enemy.y) <= b.def.aoeRadius) {
-                  applyDamage(enemy, b.stats.attack, b.tower.type);
-                }
+          if (b.def.aoe) {
+            for (const enemy of enemies) {
+              if (enemy.dead) continue;
+              if (dist(b.target.x, b.target.y, enemy.x, enemy.y) <= b.def.aoeRadius) {
+                applyDamage(enemy, b.stats.attack, b.tower.type);
               }
-            } else {
-              applyDamage(b.target, b.stats.attack, b.tower.type);
             }
+          } else if (!b.target.dead) {
+            applyDamage(b.target, b.stats.attack, b.tower.type);
           }
           b.el.remove();
           bullets.splice(i, 1);
@@ -1733,6 +1752,12 @@
           enemy.el.remove();
           enemies.splice(i, 1);
           damageBase(dmg);
+          continue;
+        }
+
+        if (enemy.hp <= 0) {
+          killEnemy(enemy);
+          continue;
         }
       }
     }
@@ -1755,21 +1780,30 @@
       if (spawnTimer <= 0) {
         const next = spawnQueue.shift();
         spawnEnemy(next);
-        spawnTimer = next.delay || 600;
+        const cfg = difficulties[difficulty];
+        spawnTimer = Math.max(220, 850 - ui.level * 6 - currentWaveNumber * 10) / cfg.spawnInterval;
       }
     }
 
     function gameLoop(ts) {
-      if (!lastTime) lastTime = ts;
-      const dt = Math.min(ts - lastTime, 50);
-      lastTime = ts;
+      try {
+        if (!lastTime) {
+          lastTime = ts;
+          requestAnimationFrame(gameLoop);
+          return;
+        }
+        const dt = Math.min(ts - lastTime, 50);
+        lastTime = ts;
 
-      if (!gameOver && gameStarted && !paused) {
-        updateSpawning(dt);
-        updateEnemies(dt, ts);
-        updateTowers(dt);
-        updateBullets(dt);
-        refreshUI();
+        if (!gameOver && gameStarted && !paused) {
+          updateSpawning(dt);
+          updateEnemies(dt, ts);
+          updateTowers(dt);
+          updateBullets(dt);
+          refreshUI();
+        }
+      } catch (err) {
+        console.error("gameLoop error:", err);
       }
       requestAnimationFrame(gameLoop);
     }
@@ -1799,6 +1833,8 @@
     stayLevelBtn.addEventListener("click", () => {
       levelCompletePending = false;
       levelCompleteEl.style.display = "none";
+      ui.waveInLevel = 0;
+      currentWaveNumber = 0;
       refreshUI();
     });
 
@@ -1830,6 +1866,23 @@
     createGrid();
     refreshUI();
     requestAnimationFrame(gameLoop);
+
+    if (new URLSearchParams(location.search).get("test") === "1") {
+      window.__darwin = {
+        getState() {
+          return {
+            waveActive, paused, gameOver, gameStarted, levelCompletePending,
+            waveInLevel: ui.waveInLevel, level: ui.level, gold: ui.gold,
+            enemies: enemies.length,
+            enemyXs: enemies.map((e) => ({ x: e.x, y: e.y, hp: e.hp })),
+            towers: towers.length,
+            spawnLeft: spawnQueue.length
+          };
+        },
+        ui, enterLevel, startWave, clearCombat, generateTerrain, WAVES_PER_LEVEL, cells,
+        get maxUnlockedLevel() { return maxUnlockedLevel; }
+      };
+    }
   </script>
 </body>
 </html>
