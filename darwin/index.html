@@ -538,6 +538,137 @@
       padding: 4px;
       background: #0d0d14;
     }
+
+    #level-panel-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    #level-toggle-btn {
+      padding: 5px 12px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    #level-toggle-btn:hover {
+      background: #505070;
+    }
+
+    #level-panel {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 6px;
+      width: 320px;
+      max-height: 280px;
+      overflow-y: auto;
+      background: #181824;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 10px;
+      z-index: 1500;
+      box-shadow: 0 8px 24px #000;
+    }
+
+    #level-panel.open {
+      display: block;
+    }
+
+    #level-panel-title {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    #level-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .level-btn {
+      padding: 8px 4px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-size: 12px;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+
+    .level-btn:hover:not(:disabled) {
+      background: #505070;
+      border-color: #3cff8f;
+    }
+
+    .level-btn.current {
+      border-color: #ffeb3b;
+      box-shadow: 0 0 6px rgba(255, 235, 59, 0.4);
+    }
+
+    .level-btn.locked {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .level-btn.cleared {
+      border-color: #4caf50;
+    }
+
+    #level-complete {
+      position: fixed;
+      top: 38%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(5, 15, 10, 0.96);
+      padding: 24px 32px;
+      color: white;
+      font-size: 18px;
+      display: none;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 0 24px #000;
+      z-index: 2100;
+      border: 1px solid #3cff8f;
+    }
+
+    #level-complete h2 {
+      margin: 0 0 8px;
+      color: #3cff8f;
+      font-size: 22px;
+    }
+
+    #level-complete p {
+      margin: 0 0 16px;
+      color: #bbb;
+      font-size: 14px;
+    }
+
+    #level-complete button {
+      margin: 4px 6px;
+      padding: 6px 14px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #666;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    #level-complete button:hover {
+      background: #505070;
+    }
+
+    #level-complete .primary {
+      border-color: #3cff8f;
+    }
   </style>
 </head>
 
@@ -546,18 +677,26 @@
   <div id="ui-bar">
     <span id="gold">金币: 500</span>
     <span id="base-hp">基地HP: 100/100</span>
-    <span id="wave">关卡: 0/50</span>
+    <span id="level-info">关卡: 1/50</span>
+    <span id="wave-info">波次: 0/6</span>
     <span id="difficulty-label">难度: -</span>
     <span id="enemies-left">敌人: 0</span>
   </div>
 
   <div id="wave-controls">
-    <button id="start-wave-btn">开始下一关</button>
+    <button id="start-wave-btn">开始下一波</button>
+    <div id="level-panel-wrap">
+      <button id="level-toggle-btn">关卡列表 ▼</button>
+      <div id="level-panel">
+        <div id="level-panel-title">选择已解锁关卡</div>
+        <div id="level-grid"></div>
+      </div>
+    </div>
     <button id="pause-btn" class="ctrl-btn">暂停</button>
     <button id="resume-btn" class="ctrl-btn" style="display:none;">继续</button>
   </div>
 
-  <div id="hint">点击草地建造防御塔 · 点击已有塔升级 · 第11关起每关随机出现山丘/石滩/河流（不可建造）</div>
+  <div id="hint">每关抵挡 6 波即可通关 · 通关解锁下一关 · 换关时清除防御塔并获得更多初始金币</div>
 
   <div id="game-container">
     <div id="base-area">
@@ -595,12 +734,19 @@
 
   <div id="difficulty-screen">
     <h1>Darwin 塔防</h1>
-    <p>共 50 关 · 关卡越高难度越大 · 第 11 关起地图随机出现障碍地形</p>
+    <p>共 50 关 · 每关抵挡 6 波通关 · 通关解锁下一关 · 第 11 关起出现障碍地形</p>
     <div class="difficulty-btns">
       <button data-diff="easy">简单</button>
       <button data-diff="normal">普通</button>
       <button data-diff="hard">困难</button>
     </div>
+  </div>
+
+  <div id="level-complete">
+    <h2 id="level-complete-title">关卡通过！</h2>
+    <p id="level-complete-desc"></p>
+    <button id="next-level-btn" class="primary">进入下一关</button>
+    <button id="stay-level-btn">留在本关</button>
   </div>
 
   <div id="pause-overlay">
@@ -672,8 +818,11 @@
     const GRID_W = 12;
     const GRID_H = 8;
     const CELL = 40;
-    const MAX_WAVES = 50;
-    const TERRAIN_START_WAVE = 11;
+    const MAX_LEVELS = 50;
+    const WAVES_PER_LEVEL = 6;
+    const TERRAIN_START_LEVEL = 11;
+    const GOLD_PER_LEVEL = 95;
+    const STORAGE_KEY = "darwin-td-progress";
 
     const difficulties = {
       easy: {
@@ -727,6 +876,16 @@
     const pauseOverlay = document.getElementById("pause-overlay");
     const difficultyScreen = document.getElementById("difficulty-screen");
     const difficultyLabel = document.getElementById("difficulty-label");
+    const levelInfoEl = document.getElementById("level-info");
+    const waveInfoEl = document.getElementById("wave-info");
+    const levelPanel = document.getElementById("level-panel");
+    const levelGrid = document.getElementById("level-grid");
+    const levelToggleBtn = document.getElementById("level-toggle-btn");
+    const levelCompleteEl = document.getElementById("level-complete");
+    const levelCompleteTitle = document.getElementById("level-complete-title");
+    const levelCompleteDesc = document.getElementById("level-complete-desc");
+    const nextLevelBtn = document.getElementById("next-level-btn");
+    const stayLevelBtn = document.getElementById("stay-level-btn");
     const gameOverEl = document.getElementById("game-over");
     const gameOverText = document.getElementById("game-over-text");
 
@@ -734,15 +893,18 @@
     let gameStarted = false;
     let paused = false;
     let pauseStartedAt = 0;
-    let totalPausedTime = 0;
+    let maxUnlockedLevel = 1;
+    let clearedLevels = new Set();
+    let levelPanelOpen = false;
+    let levelCompletePending = false;
 
     const baseState = { maxHP: 100, currentHP: 100 };
     const ui = {
       gold: 500,
-      wave: 0,
+      level: 1,
+      waveInLevel: 0,
       goldEl: document.getElementById("gold"),
       hpEl: document.getElementById("base-hp"),
-      waveEl: document.getElementById("wave"),
       enemiesEl: document.getElementById("enemies-left")
     };
 
@@ -836,21 +998,138 @@
       bomber: { css: "enemy-bomber", hp: 45, speed: 32, gold: 22, damage: 25, explode: true }
     };
 
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        const saved = data[difficulty];
+        if (!saved) return;
+        maxUnlockedLevel = Math.max(1, Math.min(MAX_LEVELS, saved.maxUnlocked || 1));
+        clearedLevels = new Set(saved.cleared || []);
+      } catch (_) { /* ignore */ }
+    }
+
+    function saveProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const data = raw ? JSON.parse(raw) : {};
+        data[difficulty] = {
+          maxUnlocked: maxUnlockedLevel,
+          cleared: [...clearedLevels]
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (_) { /* ignore */ }
+    }
+
+    function getLevelStartGold(level) {
+      const cfg = difficulties[difficulty];
+      return cfg.gold + (level - 1) * GOLD_PER_LEVEL;
+    }
+
+    function getWaveDifficulty(level, waveInLevel) {
+      return (level - 1) * WAVES_PER_LEVEL + waveInLevel;
+    }
+
+    function clearTowers() {
+      for (const tower of towers) {
+        tower.el.remove();
+        tower.cell.tower = null;
+      }
+      towers.length = 0;
+    }
+
+    function clearCombat() {
+      for (const enemy of enemies) enemy.el.remove();
+      enemies.length = 0;
+      for (const bullet of bullets) bullet.el.remove();
+      bullets.length = 0;
+      spawnQueue = [];
+      spawnTimer = 0;
+      waveActive = false;
+    }
+
+    function buildLevelGrid() {
+      levelGrid.innerHTML = "";
+      for (let lv = 1; lv <= MAX_LEVELS; lv++) {
+        const btn = document.createElement("button");
+        btn.className = "level-btn";
+        btn.textContent = lv;
+        btn.dataset.level = lv;
+        const unlocked = lv <= maxUnlockedLevel;
+        const cleared = clearedLevels.has(lv);
+        if (!unlocked) btn.classList.add("locked");
+        if (cleared) btn.classList.add("cleared");
+        if (lv === ui.level) btn.classList.add("current");
+        btn.disabled = !unlocked || waveActive || levelCompletePending;
+        btn.title = !unlocked ? "未解锁" : cleared ? "已通关" : "已解锁";
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (lv <= maxUnlockedLevel) {
+            enterLevel(lv);
+            toggleLevelPanel(false);
+          }
+        });
+        levelGrid.appendChild(btn);
+      }
+    }
+
+    function toggleLevelPanel(force) {
+      if (typeof force === "boolean") levelPanelOpen = force;
+      else levelPanelOpen = !levelPanelOpen;
+      levelPanel.classList.toggle("open", levelPanelOpen);
+      levelToggleBtn.textContent = levelPanelOpen ? "关卡列表 ▲" : "关卡列表 ▼";
+      if (levelPanelOpen) buildLevelGrid();
+    }
+
+    function enterLevel(level) {
+      if (!gameStarted || level < 1 || level > maxUnlockedLevel) return;
+      hideMenus();
+      clearCombat();
+      clearTowers();
+      clearTerrain();
+      ui.level = level;
+      ui.waveInLevel = 0;
+      ui.gold = getLevelStartGold(level);
+      baseState.currentHP = baseState.maxHP;
+      levelCompletePending = false;
+      levelCompleteEl.style.display = "none";
+      gameOver = false;
+      gameOverEl.style.display = "none";
+      generateTerrain(level);
+      refreshUI();
+    }
+
     function refreshUI() {
       ui.goldEl.textContent = "金币: " + Math.floor(ui.gold);
       ui.hpEl.textContent = "基地HP: " + Math.floor(baseState.currentHP) + "/" + baseState.maxHP;
-      ui.waveEl.textContent = "关卡: " + ui.wave + "/" + MAX_WAVES;
+      levelInfoEl.textContent = "关卡: " + ui.level + "/" + MAX_LEVELS;
+      waveInfoEl.textContent = "波次: " + ui.waveInLevel + "/" + WAVES_PER_LEVEL;
       if (difficulty) difficultyLabel.textContent = "难度: " + difficulties[difficulty].label;
       ui.enemiesEl.textContent = "敌人: " + enemies.length + (spawnQueue.length ? "+" + spawnQueue.length : "");
-      const canStart = gameStarted && !paused && !waveActive && !gameOver && ui.wave < MAX_WAVES;
+
+      const levelDone = ui.waveInLevel >= WAVES_PER_LEVEL;
+      const canStart = gameStarted && !paused && !waveActive && !gameOver && !levelCompletePending && !levelDone;
       startWaveBtn.disabled = !canStart;
-      startWaveBtn.textContent = ui.wave >= MAX_WAVES && !waveActive && enemies.length === 0
-        ? "全部通关!"
-        : waveActive ? "关卡进行中..." : paused ? "已暂停" : "开始下一关";
+
+      if (ui.level >= MAX_LEVELS && levelDone && !waveActive && enemies.length === 0) {
+        startWaveBtn.textContent = "全部通关!";
+      } else if (waveActive) {
+        startWaveBtn.textContent = "波次进行中...";
+      } else if (paused) {
+        startWaveBtn.textContent = "已暂停";
+      } else if (levelDone) {
+        startWaveBtn.textContent = "本关已通过";
+      } else {
+        startWaveBtn.textContent = "开始第 " + (ui.waveInLevel + 1) + " 波";
+      }
+
       pauseBtn.disabled = !gameStarted || gameOver || (!waveActive && enemies.length === 0 && !paused);
       pauseBtn.style.display = paused ? "none" : "inline-block";
       resumeBtn.style.display = paused ? "inline-block" : "none";
       pauseBtn.classList.toggle("active", paused);
+
+      if (levelPanelOpen) buildLevelGrid();
     }
 
     function clearTerrain() {
@@ -864,11 +1143,11 @@
       }
     }
 
-    function generateTerrain(wave) {
+    function generateTerrain(level) {
       clearTerrain();
-      if (wave < TERRAIN_START_WAVE) return;
+      if (level < TERRAIN_START_LEVEL) return;
 
-      const ratio = 0.08 + ((wave - TERRAIN_START_WAVE + 1) / (MAX_WAVES - TERRAIN_START_WAVE + 1)) * 0.22;
+      const ratio = 0.08 + ((level - TERRAIN_START_LEVEL + 1) / (MAX_LEVELS - TERRAIN_START_LEVEL + 1)) * 0.22;
       const targetCount = Math.min(
         Math.floor(GRID_W * GRID_H * ratio),
         GRID_W * GRID_H - towers.length - 8
@@ -899,10 +1178,33 @@
       difficulty = diff;
       const cfg = difficulties[diff];
       gameStarted = true;
-      ui.gold = cfg.gold;
+      maxUnlockedLevel = 1;
+      clearedLevels = new Set();
+      loadProgress();
       baseState.maxHP = cfg.baseHP;
-      baseState.currentHP = cfg.baseHP;
       difficultyScreen.style.display = "none";
+      enterLevel(1);
+    }
+
+    function showLevelComplete() {
+      levelCompletePending = true;
+      clearedLevels.add(ui.level);
+      if (ui.level < MAX_LEVELS) {
+        maxUnlockedLevel = Math.max(maxUnlockedLevel, ui.level + 1);
+      }
+      saveProgress();
+
+      if (ui.level >= MAX_LEVELS) {
+        endGame(true);
+        return;
+      }
+
+      levelCompleteTitle.textContent = "第 " + ui.level + " 关通过！";
+      levelCompleteDesc.textContent =
+        "成功抵挡 " + WAVES_PER_LEVEL + " 波进攻！已解锁第 " + (ui.level + 1) + " 关。" +
+        "进入下一关将清除防御塔，并获得 " + getLevelStartGold(ui.level + 1) + " 初始金币。";
+      nextLevelBtn.style.display = "inline-block";
+      levelCompleteEl.style.display = "block";
       refreshUI();
     }
 
@@ -959,7 +1261,7 @@
     }
 
     function onCellClick(x, y, e) {
-      if (gameOver || paused || !gameStarted) return;
+      if (gameOver || paused || !gameStarted || levelCompletePending) return;
       ensureAudio();
       const cell = getCell(x, y);
       if (!cell || cell.terrain) return;
@@ -1041,18 +1343,19 @@
       refreshUI();
     }
 
-    function makeWavePlan(wave) {
+    function makeWavePlan(level, waveInLevel) {
       const plan = [];
       const cfg = difficulties[difficulty];
-      const count = Math.min(3 + Math.floor(wave * 1.4 + wave * wave * 0.02), 80);
+      const waveIndex = getWaveDifficulty(level, waveInLevel);
+      const count = Math.min(3 + Math.floor(waveIndex * 1.1 + level * 0.8), 70);
       const types = ["normal"];
-      if (wave >= 3) types.push("fast");
-      if (wave >= 8) types.push("tank");
-      if (wave >= 15) types.push("shield");
-      if (wave >= 22) types.push("bomber");
+      if (level >= 2 || waveInLevel >= 3) types.push("fast");
+      if (level >= 5 || waveInLevel >= 4) types.push("tank");
+      if (level >= 10 || waveInLevel >= 5) types.push("shield");
+      if (level >= 15 || waveInLevel >= 6) types.push("bomber");
 
-      const hpScale = (1 + wave * 0.065 + Math.pow(wave, 1.35) * 0.004) * cfg.enemyHp;
-      const baseInterval = Math.max(220, 850 - wave * 8) / cfg.spawnInterval;
+      const hpScale = (1 + waveIndex * 0.055 + Math.pow(level, 1.2) * 0.006) * cfg.enemyHp;
+      const baseInterval = Math.max(220, 850 - level * 6 - waveInLevel * 10) / cfg.spawnInterval;
 
       for (let i = 0; i < count; i++) {
         const type = types[Math.floor(Math.random() * types.length)];
@@ -1063,12 +1366,12 @@
     }
 
     function startWave() {
-      if (!gameStarted || waveActive || gameOver || paused || ui.wave >= MAX_WAVES) return;
+      if (!gameStarted || waveActive || gameOver || paused || levelCompletePending) return;
+      if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
       ensureAudio();
-      ui.wave++;
-      generateTerrain(ui.wave);
+      const nextWave = ui.waveInLevel + 1;
       waveActive = true;
-      spawnQueue = makeWavePlan(ui.wave);
+      spawnQueue = makeWavePlan(ui.level, nextWave);
       spawnTimer = 0;
       sound.wave();
       hideMenus();
@@ -1098,8 +1401,8 @@
         shield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
         maxShield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
         speed: def.speed * cfg.enemySpeed,
-        gold: Math.round((def.gold + Math.floor(ui.wave * 1.2)) * cfg.goldReward),
-        damage: Math.round(def.damage * cfg.enemyDamage * (1 + ui.wave * 0.02)),
+        gold: Math.round((def.gold + Math.floor(ui.level * 1.5 + ui.waveInLevel * 2)) * cfg.goldReward),
+        damage: Math.round(def.damage * cfg.enemyDamage * (1 + ui.level * 0.025 + ui.waveInLevel * 0.01)),
         explode: !!def.explode,
         el,
         hpFill,
@@ -1217,10 +1520,12 @@
       gameOver = true;
       waveActive = false;
       paused = false;
+      levelCompletePending = false;
       pauseOverlay.style.display = "none";
+      levelCompleteEl.style.display = "none";
       gameOverText.textContent = won
-        ? `恭喜通关！你以【${difficulties[difficulty].label}】难度守住了全部 ${MAX_WAVES} 关！`
-        : `基地被摧毁（${difficulties[difficulty].label} · 第 ${ui.wave} 关）`;
+        ? `恭喜通关！你以【${difficulties[difficulty].label}】难度完成了全部 ${MAX_LEVELS} 关！`
+        : `基地被摧毁（${difficulties[difficulty].label} · 第 ${ui.level} 关 · 第 ${ui.waveInLevel} 波）`;
       gameOverEl.style.display = "block";
       refreshUI();
     }
@@ -1236,7 +1541,6 @@
 
     function resumeGame() {
       if (!paused) return;
-      totalPausedTime += performance.now() - pauseStartedAt;
       paused = false;
       pauseOverlay.style.display = "none";
       refreshUI();
@@ -1321,8 +1625,12 @@
       if (spawnQueue.length === 0) {
         if (enemies.length === 0) {
           waveActive = false;
-          if (ui.wave >= MAX_WAVES) endGame(true);
-          else refreshUI();
+          ui.waveInLevel++;
+          if (ui.waveInLevel >= WAVES_PER_LEVEL) {
+            showLevelComplete();
+          } else {
+            refreshUI();
+          }
         }
         return;
       }
@@ -1364,6 +1672,18 @@
     startWaveBtn.addEventListener("click", startWave);
     pauseBtn.addEventListener("click", pauseGame);
     resumeBtn.addEventListener("click", resumeGame);
+    levelToggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (gameStarted) toggleLevelPanel();
+    });
+    nextLevelBtn.addEventListener("click", () => {
+      if (ui.level < MAX_LEVELS) enterLevel(ui.level + 1);
+    });
+    stayLevelBtn.addEventListener("click", () => {
+      levelCompletePending = false;
+      levelCompleteEl.style.display = "none";
+      refreshUI();
+    });
 
     difficultyScreen.querySelectorAll("[data-diff]").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -1383,6 +1703,9 @@
     document.addEventListener("click", (e) => {
       if (!buildMenu.contains(e.target) && !upgradeMenu.contains(e.target) && !e.target.classList.contains("cell")) {
         hideMenus();
+      }
+      if (levelPanelOpen && !document.getElementById("level-panel-wrap").contains(e.target)) {
+        toggleLevelPanel(false);
       }
       ensureAudio();
     });
