@@ -34,10 +34,16 @@
       padding: 5px;
       background: #101018;
       box-shadow: 0 2px 4px #000 inset;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    #wave-controls button {
-      padding: 5px 10px;
+    #wave-controls button,
+    .ctrl-btn {
+      padding: 5px 12px;
       background: #303048;
       color: #fff;
       border: 1px solid #555;
@@ -45,13 +51,164 @@
       font-size: 13px;
     }
 
-    #wave-controls button:hover:not(:disabled) {
+    #wave-controls button:hover:not(:disabled),
+    .ctrl-btn:hover:not(:disabled) {
       background: #505070;
     }
 
-    #wave-controls button:disabled {
+    #wave-controls button:disabled,
+    .ctrl-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+
+    #pause-btn.active {
+      background: #5c3d6e;
+      border-color: #9b59b6;
+    }
+
+    .cell.blocked {
+      cursor: not-allowed;
+    }
+
+    .cell.blocked:hover {
+      outline: none;
+    }
+
+    .terrain-hill {
+      background:
+        radial-gradient(circle at 50% 35%, #8d6e63 0 25%, #6d4c41 25% 55%, #4e342e 55% 100%) !important;
+      box-shadow: inset 0 0 0 2px #3e2723;
+    }
+
+    .terrain-hill::after {
+      content: "山";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      text-shadow: 0 1px 2px #000;
+    }
+
+    .terrain-stone {
+      background:
+        repeating-linear-gradient(45deg, #78909c 0 4px, #546e7a 4px 8px, #90a4ae 8px 12px) !important;
+      box-shadow: inset 0 0 0 2px #37474f;
+    }
+
+    .terrain-stone::after {
+      content: "石";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+      text-shadow: 0 1px 2px #000;
+    }
+
+    .terrain-river {
+      background:
+        linear-gradient(180deg, #4fc3f7 0 30%, #0288d1 30% 70%, #01579b 70% 100%) !important;
+      box-shadow: inset 0 0 0 2px #0277bd;
+      animation: riverFlow 2s linear infinite;
+    }
+
+    @keyframes riverFlow {
+      from { filter: brightness(1); }
+      50% { filter: brightness(1.15); }
+      to { filter: brightness(1); }
+    }
+
+    .terrain-river::after {
+      content: "河";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      text-shadow: 0 1px 2px #003;
+    }
+
+    #difficulty-screen, #pause-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 15, 0.92);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+
+    #pause-overlay {
+      display: none;
+      z-index: 2500;
+      pointer-events: none;
+    }
+
+    #resume-btn {
+      position: relative;
+      z-index: 2600;
+    }
+
+    #difficulty-screen h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: #3cff8f;
+      text-shadow: 0 0 12px rgba(60, 255, 143, 0.4);
+    }
+
+    #difficulty-screen p {
+      margin: 0 0 20px;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .difficulty-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .difficulty-btns button {
+      padding: 12px 24px;
+      min-width: 120px;
+      background: #303048;
+      color: #fff;
+      border: 2px solid #555;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    .difficulty-btns button:hover {
+      background: #505070;
+      border-color: #3cff8f;
+    }
+
+    .difficulty-btns button[data-diff="easy"] { border-color: #4caf50; }
+    .difficulty-btns button[data-diff="hard"] { border-color: #f44336; }
+
+    #pause-overlay h2 {
+      margin: 0;
+      font-size: 32px;
+      color: #ffeb3b;
+      letter-spacing: 4px;
+    }
+
+    #pause-overlay p {
+      margin: 10px 0 0;
+      color: #888;
+      font-size: 14px;
     }
 
     #game-container {
@@ -389,15 +546,18 @@
   <div id="ui-bar">
     <span id="gold">金币: 500</span>
     <span id="base-hp">基地HP: 100/100</span>
-    <span id="wave">波次: 0</span>
+    <span id="wave">关卡: 0/50</span>
+    <span id="difficulty-label">难度: -</span>
     <span id="enemies-left">敌人: 0</span>
   </div>
 
   <div id="wave-controls">
-    <button id="start-wave-btn">开始下一波</button>
+    <button id="start-wave-btn">开始下一关</button>
+    <button id="pause-btn" class="ctrl-btn">暂停</button>
+    <button id="resume-btn" class="ctrl-btn" style="display:none;">继续</button>
   </div>
 
-  <div id="hint">点击空地建造防御塔 · 点击已有塔升级 · 敌人从右侧进入，向左进攻基地</div>
+  <div id="hint">点击草地建造防御塔 · 点击已有塔升级 · 第11关起每关随机出现山丘/石滩/河流（不可建造）</div>
 
   <div id="game-container">
     <div id="base-area">
@@ -431,6 +591,21 @@
   <div id="game-over">
     <div id="game-over-text"></div>
     <button onclick="location.reload()">重新开始</button>
+  </div>
+
+  <div id="difficulty-screen">
+    <h1>Darwin 塔防</h1>
+    <p>共 50 关 · 关卡越高难度越大 · 第 11 关起地图随机出现障碍地形</p>
+    <div class="difficulty-btns">
+      <button data-diff="easy">简单</button>
+      <button data-diff="normal">普通</button>
+      <button data-diff="hard">困难</button>
+    </div>
+  </div>
+
+  <div id="pause-overlay">
+    <h2>已暂停</h2>
+    <p>点击「继续」恢复游戏</p>
   </div>
 
   <script>
@@ -497,7 +672,47 @@
     const GRID_W = 12;
     const GRID_H = 8;
     const CELL = 40;
-    const MAX_WAVES = 15;
+    const MAX_WAVES = 50;
+    const TERRAIN_START_WAVE = 11;
+
+    const difficulties = {
+      easy: {
+        label: "简单",
+        gold: 650,
+        baseHP: 150,
+        enemyHp: 0.72,
+        enemySpeed: 0.82,
+        enemyDamage: 0.65,
+        spawnInterval: 1.25,
+        goldReward: 1.35
+      },
+      normal: {
+        label: "普通",
+        gold: 500,
+        baseHP: 100,
+        enemyHp: 1,
+        enemySpeed: 1,
+        enemyDamage: 1,
+        spawnInterval: 1,
+        goldReward: 1
+      },
+      hard: {
+        label: "困难",
+        gold: 360,
+        baseHP: 70,
+        enemyHp: 1.4,
+        enemySpeed: 1.22,
+        enemyDamage: 1.45,
+        spawnInterval: 0.72,
+        goldReward: 0.82
+      }
+    };
+
+    const terrainTypes = [
+      { id: "hill", css: "terrain-hill", label: "山丘" },
+      { id: "stone", css: "terrain-stone", label: "石滩" },
+      { id: "river", css: "terrain-river", label: "河流" }
+    ];
 
     const grid = document.getElementById("grid");
     const gridContainer = document.getElementById("grid-container");
@@ -507,8 +722,19 @@
     const upgradeInfo = document.getElementById("upgrade-info");
     const upgradeBtn = document.getElementById("upgrade-btn");
     const startWaveBtn = document.getElementById("start-wave-btn");
+    const pauseBtn = document.getElementById("pause-btn");
+    const resumeBtn = document.getElementById("resume-btn");
+    const pauseOverlay = document.getElementById("pause-overlay");
+    const difficultyScreen = document.getElementById("difficulty-screen");
+    const difficultyLabel = document.getElementById("difficulty-label");
     const gameOverEl = document.getElementById("game-over");
     const gameOverText = document.getElementById("game-over-text");
+
+    let difficulty = null;
+    let gameStarted = false;
+    let paused = false;
+    let pauseStartedAt = 0;
+    let totalPausedTime = 0;
 
     const baseState = { maxHP: 100, currentHP: 100 };
     const ui = {
@@ -613,12 +839,71 @@
     function refreshUI() {
       ui.goldEl.textContent = "金币: " + Math.floor(ui.gold);
       ui.hpEl.textContent = "基地HP: " + Math.floor(baseState.currentHP) + "/" + baseState.maxHP;
-      ui.waveEl.textContent = "波次: " + ui.wave + (ui.wave >= MAX_WAVES ? " (最终)" : "");
+      ui.waveEl.textContent = "关卡: " + ui.wave + "/" + MAX_WAVES;
+      if (difficulty) difficultyLabel.textContent = "难度: " + difficulties[difficulty].label;
       ui.enemiesEl.textContent = "敌人: " + enemies.length + (spawnQueue.length ? "+" + spawnQueue.length : "");
-      startWaveBtn.disabled = waveActive || gameOver || ui.wave >= MAX_WAVES;
+      const canStart = gameStarted && !paused && !waveActive && !gameOver && ui.wave < MAX_WAVES;
+      startWaveBtn.disabled = !canStart;
       startWaveBtn.textContent = ui.wave >= MAX_WAVES && !waveActive && enemies.length === 0
         ? "全部通关!"
-        : waveActive ? "波次进行中..." : "开始下一波";
+        : waveActive ? "关卡进行中..." : paused ? "已暂停" : "开始下一关";
+      pauseBtn.disabled = !gameStarted || gameOver || (!waveActive && enemies.length === 0 && !paused);
+      pauseBtn.style.display = paused ? "none" : "inline-block";
+      resumeBtn.style.display = paused ? "inline-block" : "none";
+      pauseBtn.classList.toggle("active", paused);
+    }
+
+    function clearTerrain() {
+      for (const cell of cells) {
+        if (!cell.terrain) continue;
+        cell.terrain = null;
+        cell.el.classList.remove("blocked", "terrain-hill", "terrain-stone", "terrain-river");
+        cell.el.title = "";
+        cell.el.classList.remove("grass-dark", "grass-light");
+        cell.el.classList.add((cell.x + cell.y) % 2 === 0 ? "grass-dark" : "grass-light");
+      }
+    }
+
+    function generateTerrain(wave) {
+      clearTerrain();
+      if (wave < TERRAIN_START_WAVE) return;
+
+      const ratio = 0.08 + ((wave - TERRAIN_START_WAVE + 1) / (MAX_WAVES - TERRAIN_START_WAVE + 1)) * 0.22;
+      const targetCount = Math.min(
+        Math.floor(GRID_W * GRID_H * ratio),
+        GRID_W * GRID_H - towers.length - 8
+      );
+      const candidates = cells.filter((c) => !c.tower && !c.terrain);
+      shuffle(candidates);
+      const count = Math.min(targetCount, candidates.length);
+
+      for (let i = 0; i < count; i++) {
+        const cell = candidates[i];
+        const terrain = terrainTypes[Math.floor(Math.random() * terrainTypes.length)];
+        cell.terrain = terrain.id;
+        cell.el.classList.remove("grass-dark", "grass-light");
+        cell.el.classList.add("blocked", terrain.css);
+        cell.el.title = terrain.label + "（不可建造）";
+      }
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function startGame(diff) {
+      difficulty = diff;
+      const cfg = difficulties[diff];
+      gameStarted = true;
+      ui.gold = cfg.gold;
+      baseState.maxHP = cfg.baseHP;
+      baseState.currentHP = cfg.baseHP;
+      difficultyScreen.style.display = "none";
+      refreshUI();
     }
 
     function createGrid() {
@@ -631,7 +916,7 @@
           cell.dataset.y = y;
           cell.addEventListener("click", (e) => onCellClick(x, y, e));
           grid.appendChild(cell);
-          cells.push({ x, y, el: cell, tower: null });
+          cells.push({ x, y, el: cell, tower: null, terrain: null });
         }
       }
     }
@@ -674,10 +959,10 @@
     }
 
     function onCellClick(x, y, e) {
-      if (gameOver) return;
+      if (gameOver || paused || !gameStarted) return;
       ensureAudio();
       const cell = getCell(x, y);
-      if (!cell) return;
+      if (!cell || cell.terrain) return;
 
       if (cell.tower) {
         selectedTower = cell.tower;
@@ -716,7 +1001,7 @@
     }
 
     function buildTower(type) {
-      if (!selectedCell || selectedCell.tower || gameOver) return;
+      if (!selectedCell || selectedCell.tower || selectedCell.terrain || gameOver || paused) return;
       const def = towerTypes[type];
       const stats = def.levels[0];
       if (ui.gold < stats.cost) return;
@@ -758,27 +1043,30 @@
 
     function makeWavePlan(wave) {
       const plan = [];
-      const count = 4 + wave * 2;
+      const cfg = difficulties[difficulty];
+      const count = Math.min(3 + Math.floor(wave * 1.4 + wave * wave * 0.02), 80);
       const types = ["normal"];
-      if (wave >= 2) types.push("fast");
-      if (wave >= 4) types.push("tank");
-      if (wave >= 6) types.push("shield");
-      if (wave >= 8) types.push("bomber");
+      if (wave >= 3) types.push("fast");
+      if (wave >= 8) types.push("tank");
+      if (wave >= 15) types.push("shield");
+      if (wave >= 22) types.push("bomber");
+
+      const hpScale = (1 + wave * 0.065 + Math.pow(wave, 1.35) * 0.004) * cfg.enemyHp;
+      const baseInterval = Math.max(220, 850 - wave * 8) / cfg.spawnInterval;
 
       for (let i = 0; i < count; i++) {
         const type = types[Math.floor(Math.random() * types.length)];
         const row = Math.floor(Math.random() * GRID_H);
-        const hpScale = 1 + wave * 0.12;
-        const interval = Math.max(350, 900 - Math.min(wave * 30, 400));
-        plan.push({ type, row, hpScale, delay: i === 0 ? 400 : interval });
+        plan.push({ type, row, hpScale, delay: i === 0 ? 500 : baseInterval });
       }
       return plan;
     }
 
     function startWave() {
-      if (waveActive || gameOver || ui.wave >= MAX_WAVES) return;
+      if (!gameStarted || waveActive || gameOver || paused || ui.wave >= MAX_WAVES) return;
       ensureAudio();
       ui.wave++;
+      generateTerrain(ui.wave);
       waveActive = true;
       spawnQueue = makeWavePlan(ui.wave);
       spawnTimer = 0;
@@ -789,6 +1077,7 @@
 
     function spawnEnemy(entry) {
       const def = enemyTypes[entry.type];
+      const cfg = difficulties[difficulty];
       const el = document.createElement("div");
       el.className = "enemy " + def.css;
       const hpBar = document.createElement("div");
@@ -808,9 +1097,9 @@
         maxHP,
         shield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
         maxShield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
-        speed: def.speed,
-        gold: def.gold + Math.floor(ui.wave * 1.5),
-        damage: def.damage,
+        speed: def.speed * cfg.enemySpeed,
+        gold: Math.round((def.gold + Math.floor(ui.wave * 1.2)) * cfg.goldReward),
+        damage: Math.round(def.damage * cfg.enemyDamage * (1 + ui.wave * 0.02)),
         explode: !!def.explode,
         el,
         hpFill,
@@ -927,10 +1216,29 @@
     function endGame(won) {
       gameOver = true;
       waveActive = false;
+      paused = false;
+      pauseOverlay.style.display = "none";
       gameOverText.textContent = won
-        ? "恭喜通关！你成功守住了基地！"
-        : "基地被摧毁，游戏结束";
+        ? `恭喜通关！你以【${difficulties[difficulty].label}】难度守住了全部 ${MAX_WAVES} 关！`
+        : `基地被摧毁（${difficulties[difficulty].label} · 第 ${ui.wave} 关）`;
       gameOverEl.style.display = "block";
+      refreshUI();
+    }
+
+    function pauseGame() {
+      if (!gameStarted || gameOver || paused) return;
+      paused = true;
+      pauseStartedAt = performance.now();
+      pauseOverlay.style.display = "flex";
+      hideMenus();
+      refreshUI();
+    }
+
+    function resumeGame() {
+      if (!paused) return;
+      totalPausedTime += performance.now() - pauseStartedAt;
+      paused = false;
+      pauseOverlay.style.display = "none";
       refreshUI();
     }
 
@@ -1031,7 +1339,7 @@
       const dt = Math.min(ts - lastTime, 50);
       lastTime = ts;
 
-      if (!gameOver) {
+      if (!gameOver && gameStarted && !paused) {
         updateSpawning(dt);
         updateEnemies(dt, ts);
         updateTowers(dt);
@@ -1054,6 +1362,23 @@
     });
 
     startWaveBtn.addEventListener("click", startWave);
+    pauseBtn.addEventListener("click", pauseGame);
+    resumeBtn.addEventListener("click", resumeGame);
+
+    difficultyScreen.querySelectorAll("[data-diff]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        ensureAudio();
+        startGame(btn.dataset.diff);
+      });
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && gameStarted && !gameOver) {
+        e.preventDefault();
+        if (paused) resumeGame();
+        else if (waveActive || enemies.length > 0) pauseGame();
+      }
+    });
 
     document.addEventListener("click", (e) => {
       if (!buildMenu.contains(e.target) && !upgradeMenu.contains(e.target) && !e.target.classList.contains("cell")) {
