@@ -76,64 +76,96 @@
     }
 
     .terrain-hill {
-      background:
-        radial-gradient(circle at 50% 35%, #8d6e63 0 25%, #6d4c41 25% 55%, #4e342e 55% 100%) !important;
-      box-shadow: inset 0 0 0 2px #3e2723;
+      background: #2a5a2c !important;
+      box-shadow: inset 0 0 0 2px #1b3d1d;
+    }
+
+    .terrain-hill::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 14px;
+      left: 4px;
+      bottom: 8px;
+      background: linear-gradient(160deg, #a1887f 0%, #6d4c41 45%, #4e342e 100%);
+      clip-path: polygon(50% 0%, 92% 78%, 8% 78%);
+      image-rendering: pixelated;
     }
 
     .terrain-hill::after {
-      content: "山";
+      content: "";
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      color: rgba(255,255,255,0.5);
-      text-shadow: 0 1px 2px #000;
+      width: 14px;
+      height: 11px;
+      right: 5px;
+      bottom: 6px;
+      background: linear-gradient(160deg, #8d6e63 0%, #5d4037 55%, #3e2723 100%);
+      clip-path: polygon(50% 0%, 90% 80%, 10% 80%);
+      image-rendering: pixelated;
     }
 
     .terrain-stone {
       background:
-        repeating-linear-gradient(45deg, #78909c 0 4px, #546e7a 4px 8px, #90a4ae 8px 12px) !important;
+        radial-gradient(circle at 30% 35%, #90a4ae 2px, transparent 2px),
+        radial-gradient(circle at 68% 28%, #b0bec5 2px, transparent 2px),
+        radial-gradient(circle at 52% 62%, #78909c 3px, transparent 3px),
+        repeating-linear-gradient(45deg, #607d8b 0 4px, #546e7a 4px 8px, #78909c 8px 12px) !important;
       box-shadow: inset 0 0 0 2px #37474f;
     }
 
-    .terrain-stone::after {
-      content: "石";
+    .terrain-stone::before {
+      content: "";
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      color: rgba(255,255,255,0.55);
-      text-shadow: 0 1px 2px #000;
+      width: 10px;
+      height: 8px;
+      left: 8px;
+      top: 10px;
+      border-radius: 2px;
+      background: linear-gradient(135deg, #cfd8dc, #78909c);
+      box-shadow: 12px 6px 0 -1px #90a4ae, 6px 14px 0 -1px #607d8b;
     }
 
     .terrain-river {
       background:
-        linear-gradient(180deg, #4fc3f7 0 30%, #0288d1 30% 70%, #01579b 70% 100%) !important;
-      box-shadow: inset 0 0 0 2px #0277bd;
-      animation: riverFlow 2s linear infinite;
+        repeating-linear-gradient(
+          0deg,
+          #4fc3f7 0 6px,
+          #29b6f6 6px 12px,
+          #0288d1 12px 18px,
+          #0277bd 18px 24px
+        ) !important;
+      box-shadow: inset 0 0 0 2px #01579b;
+      animation: riverFlow 2.4s linear infinite;
     }
 
     @keyframes riverFlow {
-      from { filter: brightness(1); }
-      50% { filter: brightness(1.15); }
-      to { filter: brightness(1); }
+      from { background-position: 0 0; }
+      to { background-position: 0 24px; }
+    }
+
+    .terrain-river::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0 20%, rgba(255,255,255,0.18) 20% 24%, transparent 24% 54%, rgba(255,255,255,0.12) 54% 58%, transparent 58% 100%);
+      animation: riverShine 1.8s ease-in-out infinite;
+    }
+
+    @keyframes riverShine {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
     }
 
     .terrain-river::after {
-      content: "河";
+      content: "";
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      color: rgba(255,255,255,0.6);
-      text-shadow: 0 1px 2px #003;
+      width: 100%;
+      height: 3px;
+      top: 12px;
+      left: 0;
+      background: rgba(255,255,255,0.2);
+      box-shadow: 0 10px 0 rgba(255,255,255,0.12), 0 20px 0 rgba(255,255,255,0.08);
     }
 
     #difficulty-screen, #pause-overlay {
@@ -763,56 +795,141 @@
       if (audioCtx.state === "suspended") audioCtx.resume();
     }
 
-    function tone({ freq = 440, duration = 0.1, type = "square", volume = 0.2, slide = null } = {}) {
-      if (!audioCtx) return;
-      const osc = audioCtx.createOscillator();
+    function masterGain(volume = 1) {
       const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.value = freq;
       gain.gain.value = volume;
-      osc.connect(gain);
       gain.connect(audioCtx.destination);
-      const now = audioCtx.currentTime;
-      if (slide) osc.frequency.linearRampToValueAtTime(slide, now + duration);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-      osc.start();
-      osc.stop(now + duration + 0.02);
+      return gain;
     }
 
-    function noise({ duration = 0.15, volume = 0.2 } = {}) {
+    function envGain(target, attack, decay, sustain, release, peak) {
+      const now = audioCtx.currentTime;
+      target.gain.setValueAtTime(0.0001, now);
+      target.gain.exponentialRampToValueAtTime(Math.max(peak, 0.0002), now + attack);
+      target.gain.exponentialRampToValueAtTime(Math.max(sustain, 0.0001), now + attack + decay);
+      target.gain.exponentialRampToValueAtTime(0.0001, now + attack + decay + release);
+    }
+
+    function playNoiseBurst({
+      duration = 0.2,
+      volume = 0.25,
+      type = "lowpass",
+      freq = 900,
+      q = 0.7,
+      attack = 0.005,
+      decay = 0.08,
+      release = 0.12
+    } = {}) {
       if (!audioCtx) return;
       const bufferSize = Math.max(1, Math.floor(audioCtx.sampleRate * duration));
       const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
       const src = audioCtx.createBufferSource();
-      const gain = audioCtx.createGain();
-      gain.gain.value = volume;
       src.buffer = buffer;
-      src.connect(gain);
-      gain.connect(audioCtx.destination);
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = type;
+      filter.frequency.value = freq;
+      filter.Q.value = q;
+      const gain = audioCtx.createGain();
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(masterGain(volume));
+      envGain(gain.gain, attack, decay, 0.0001, release, 1);
       src.start();
+      src.stop(audioCtx.currentTime + duration + 0.05);
+    }
+
+    function playTone({
+      freq = 440,
+      duration = 0.12,
+      type = "sine",
+      volume = 0.2,
+      attack = 0.01,
+      decay = 0.05,
+      release = 0.08,
+      slide = null,
+      filterFreq = null
+    } = {}) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      const gain = audioCtx.createGain();
+      let output = osc;
+      if (filterFreq) {
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = filterFreq;
+        osc.connect(filter);
+        output = filter;
+      }
+      output.connect(gain);
+      gain.connect(masterGain(volume));
+      const now = audioCtx.currentTime;
+      if (slide) osc.frequency.exponentialRampToValueAtTime(slide, now + duration);
+      envGain(gain.gain, attack, decay, 0.0001, release, 1);
+      osc.start(now);
+      osc.stop(now + duration + release + 0.05);
     }
 
     const sound = {
-      build: () => tone({ freq: 600, slide: 900, duration: 0.12 }),
+      build: () => {
+        playTone({ freq: 180, type: "triangle", duration: 0.08, volume: 0.35, attack: 0.002, decay: 0.04, release: 0.06 });
+        playNoiseBurst({ duration: 0.09, volume: 0.12, freq: 2200, type: "bandpass", attack: 0.001, decay: 0.03, release: 0.05 });
+      },
       upgrade: () => {
-        tone({ freq: 500, duration: 0.08 });
-        setTimeout(() => tone({ freq: 800, duration: 0.12 }), 80);
+        playTone({ freq: 520, duration: 0.18, volume: 0.18, attack: 0.005, decay: 0.08, release: 0.1 });
+        setTimeout(() => playTone({ freq: 780, duration: 0.22, volume: 0.2, attack: 0.005, decay: 0.1, release: 0.12 }), 70);
+        setTimeout(() => playTone({ freq: 1040, duration: 0.25, volume: 0.16, attack: 0.005, decay: 0.12, release: 0.14 }), 140);
       },
-      arrow: () => tone({ freq: 1200, duration: 0.05 }),
-      cannon: () => noise({ duration: 0.2, volume: 0.25 }),
-      ice: () => tone({ freq: 900, type: "sine", duration: 0.08 }),
-      fire: () => tone({ freq: 300, type: "sawtooth", duration: 0.12 }),
-      magic: () => tone({ freq: 1000, slide: 1400, duration: 0.1 }),
-      hit: () => tone({ freq: 250, duration: 0.05 }),
-      die: () => noise({ duration: 0.12 }),
+      arrow: () => {
+        playNoiseBurst({ duration: 0.07, volume: 0.14, freq: 1800, type: "bandpass", attack: 0.001, decay: 0.02, release: 0.04 });
+        playTone({ freq: 900, slide: 420, duration: 0.05, volume: 0.1, type: "triangle", attack: 0.001, decay: 0.02, release: 0.03 });
+      },
+      cannon: () => {
+        playTone({ freq: 95, type: "sine", duration: 0.35, volume: 0.55, attack: 0.003, decay: 0.12, release: 0.22, filterFreq: 280 });
+        playNoiseBurst({ duration: 0.45, volume: 0.42, freq: 420, type: "lowpass", q: 0.5, attack: 0.002, decay: 0.15, release: 0.28 });
+        playTone({ freq: 48, type: "triangle", duration: 0.5, volume: 0.28, attack: 0.005, decay: 0.2, release: 0.3 });
+      },
+      ice: () => {
+        [1400, 1760, 2100].forEach((f, i) => {
+          setTimeout(() => playTone({
+            freq: f, duration: 0.14, volume: 0.12, type: "sine",
+            attack: 0.002, decay: 0.06, release: 0.08
+          }), i * 25);
+        });
+        playNoiseBurst({ duration: 0.05, volume: 0.06, freq: 5000, type: "highpass", attack: 0.001, decay: 0.02, release: 0.03 });
+      },
+      fire: () => {
+        playNoiseBurst({ duration: 0.18, volume: 0.22, freq: 700, type: "bandpass", attack: 0.004, decay: 0.08, release: 0.1 });
+        playTone({ freq: 140, slide: 90, duration: 0.2, type: "sawtooth", volume: 0.08, attack: 0.01, decay: 0.08, release: 0.1, filterFreq: 500 });
+      },
+      magic: () => {
+        playTone({ freq: 660, slide: 1320, duration: 0.16, volume: 0.16, type: "sine", attack: 0.01, decay: 0.06, release: 0.1 });
+        playTone({ freq: 990, slide: 1980, duration: 0.18, volume: 0.1, type: "triangle", attack: 0.01, decay: 0.07, release: 0.12 });
+        playNoiseBurst({ duration: 0.12, volume: 0.08, freq: 3200, type: "highpass", attack: 0.005, decay: 0.05, release: 0.06 });
+      },
+      hit: () => {
+        playNoiseBurst({ duration: 0.06, volume: 0.2, freq: 1200, type: "lowpass", attack: 0.001, decay: 0.02, release: 0.03 });
+        playTone({ freq: 220, slide: 120, duration: 0.05, volume: 0.18, type: "triangle", attack: 0.001, decay: 0.02, release: 0.03 });
+      },
+      die: () => {
+        playTone({ freq: 280, slide: 90, duration: 0.2, volume: 0.2, type: "sawtooth", attack: 0.003, decay: 0.08, release: 0.1, filterFreq: 800 });
+        playNoiseBurst({ duration: 0.16, volume: 0.18, freq: 600, type: "bandpass", attack: 0.002, decay: 0.06, release: 0.08 });
+      },
       wave: () => {
-        tone({ freq: 400 });
-        setTimeout(() => tone({ freq: 600 }), 120);
-        setTimeout(() => tone({ freq: 800 }), 240);
+        playTone({ freq: 196, duration: 0.28, volume: 0.22, type: "triangle", attack: 0.01, decay: 0.12, release: 0.14 });
+        setTimeout(() => playTone({ freq: 262, duration: 0.28, volume: 0.22, type: "triangle", attack: 0.01, decay: 0.12, release: 0.14 }), 120);
+        setTimeout(() => playTone({ freq: 330, duration: 0.35, volume: 0.24, type: "triangle", attack: 0.01, decay: 0.14, release: 0.16 }), 240);
+        setTimeout(() => playNoiseBurst({ duration: 0.12, volume: 0.1, freq: 180, type: "lowpass", attack: 0.003, decay: 0.05, release: 0.06 }), 0);
       },
-      baseHit: () => tone({ freq: 120, type: "sawtooth", duration: 0.2, volume: 0.3 })
+      baseHit: () => {
+        playTone({ freq: 70, type: "sine", duration: 0.45, volume: 0.5, attack: 0.003, decay: 0.15, release: 0.28, filterFreq: 200 });
+        playNoiseBurst({ duration: 0.35, volume: 0.35, freq: 260, type: "lowpass", attack: 0.002, decay: 0.12, release: 0.22 });
+      }
     };
 
     const GRID_W = 12;
