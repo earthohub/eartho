@@ -123,7 +123,6 @@ while True:
             monster.attack(hero)
             monster.show_info()
             if hero.hp <= 0:
-                print("你失败了！")
                 break
         if hero.hp > 0 and monster.hp <= 0:
             hero.exp+=monster.exp
