@@ -273,50 +273,118 @@
       flex-direction: row;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
-    #base-area, #spawn-area {
+    #base-area {
       width: 120px;
       height: 360px;
       display: flex;
       justify-content: center;
       align-items: center;
+      z-index: 2;
     }
 
     #base {
       width: 64px;
       height: 64px;
-      background:
-        linear-gradient(#3cff8f 0 20%, #1f8f4a 20% 40%, #145f32 40% 100%);
-      box-shadow:
-        0 0 0 3px #000,
-        0 0 10px #3cff8f;
       image-rendering: pixelated;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 11px;
-      text-align: center;
       border-radius: 4px;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 0 0 3px #000;
+      transition: filter 0.2s;
     }
 
-    #spawn-point {
-      width: 48px;
-      height: 48px;
+    #base.base-dmg-5 {
+      background: linear-gradient(#3cff8f 0 18%, #1f8f4a 18% 42%, #145f32 42% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 12px rgba(60, 255, 143, 0.45);
+    }
+
+    #base.base-dmg-4 {
+      background: linear-gradient(#7cb342 0 18%, #558b2f 18% 42%, #33691e 42% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 8px rgba(124, 179, 66, 0.35);
+    }
+
+    #base.base-dmg-4::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 55%, rgba(0,0,0,0.25) 55% 58%, transparent 58%);
+    }
+
+    #base.base-dmg-3 {
+      background: linear-gradient(#a1887f 0 20%, #6d4c41 20% 45%, #4e342e 45% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 6px rgba(109, 76, 65, 0.4);
+    }
+
+    #base.base-dmg-3::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      top: 28px;
+      left: 0;
+      background: rgba(0,0,0,0.45);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.3);
+    }
+
+    #base.base-dmg-2 {
+      background: linear-gradient(#78909c 0 22%, #546e7a 22% 48%, #37474f 48% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 6px rgba(84, 110, 122, 0.35);
+    }
+
+    #base.base-dmg-2::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 2px dashed rgba(0,0,0,0.35);
+    }
+
+    #base.base-dmg-2::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 3px;
+      top: 14px;
+      left: 10px;
+      background: #263238;
+      transform: rotate(-18deg);
+      box-shadow: 18px 20px 0 #263238;
+    }
+
+    #base.base-dmg-1 {
+      background: linear-gradient(#424242 0 25%, #212121 25% 50%, #0d0d0d 50% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 10px rgba(244, 67, 54, 0.5);
+      animation: baseCritical 0.6s infinite alternate;
+    }
+
+    #base.base-dmg-1::before {
+      content: "";
+      position: absolute;
+      inset: 0;
       background:
-        radial-gradient(circle at 30% 30%, #ff9ab5, #e91e63 60%, #5a0a2a 100%);
-      box-shadow:
-        0 0 0 3px #000,
-        0 0 10px #e91e63;
-      border-radius: 6px;
-      image-rendering: pixelated;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 10px;
-      text-align: center;
+        linear-gradient(45deg, transparent 40%, rgba(244,67,54,0.35) 40% 43%, transparent 43%),
+        linear-gradient(-35deg, transparent 55%, rgba(0,0,0,0.5) 55% 58%, transparent 58%);
+    }
+
+    #base.base-dmg-1::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 16px;
+      bottom: 4px;
+      left: 26px;
+      background: #000;
+    }
+
+    @keyframes baseCritical {
+      from { filter: brightness(1); }
+      to { filter: brightness(1.25); }
+    }
+
+    #base.base-hit-flash {
+      filter: brightness(1.6) saturate(1.4);
     }
 
     #grid-container {
@@ -328,7 +396,19 @@
       align-items: center;
       box-shadow: 0 0 0 4px #222, 0 0 20px #000;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+      z-index: 1;
+    }
+
+    #enemy-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      overflow: visible;
     }
 
     #grid {
@@ -405,13 +485,6 @@
       background:
         conic-gradient(from 0deg, #9b59b6, #8e44ad, #3498db, #9b59b6);
       border-radius: 50%;
-    }
-
-    #enemy-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 5;
     }
 
     .enemy {
@@ -767,17 +840,14 @@
 
   <div id="game-container">
     <div id="base-area">
-      <div id="base">基地</div>
+      <div id="base" class="base-dmg-5"></div>
     </div>
 
     <div id="grid-container">
       <div id="grid"></div>
-      <div id="enemy-layer"></div>
     </div>
 
-    <div id="spawn-area">
-      <div id="spawn-point">入口</div>
-    </div>
+    <div id="enemy-layer"></div>
   </div>
 
   <div id="build-menu">
@@ -1033,7 +1103,10 @@
     ];
 
     const grid = document.getElementById("grid");
+    const gameContainer = document.getElementById("game-container");
     const gridContainer = document.getElementById("grid-container");
+    const baseAreaEl = document.getElementById("base-area");
+    const baseEl = document.getElementById("base");
     const enemyLayer = document.getElementById("enemy-layer");
     const buildMenu = document.getElementById("build-menu");
     const upgradeMenu = document.getElementById("upgrade-menu");
@@ -1303,6 +1376,7 @@
       gameOver = false;
       gameOverEl.style.display = "none";
       generateTerrain(level);
+      updateBaseVisual();
       scheduleNextWave();
       refreshUI();
     }
@@ -1310,6 +1384,7 @@
     function refreshUI() {
       ui.goldEl.textContent = "金币: " + Math.floor(ui.gold);
       ui.hpEl.textContent = "基地HP: " + Math.floor(baseState.currentHP) + "/" + baseState.maxHP;
+      updateBaseVisual();
       levelInfoEl.textContent = "关卡: " + ui.level + "/" + MAX_LEVELS;
       waveInfoEl.textContent = "波次: " + ui.waveInLevel + "/" + WAVES_PER_LEVEL;
       if (difficulty) difficultyLabel.textContent = "难度: " + difficulties[difficulty].label;
@@ -1449,13 +1524,32 @@
       return cells[y * GRID_W + x];
     }
 
-    function gridToPixel(x, y) {
+    function gridToGamePixel(x, y) {
       const offsetX = (gridContainer.clientWidth - GRID_W * CELL) / 2;
       const offsetY = (gridContainer.clientHeight - GRID_H * CELL) / 2;
+      const gridLeft = baseAreaEl.offsetWidth;
       return {
-        px: offsetX + x * CELL + CELL / 2,
+        px: gridLeft + offsetX + x * CELL + CELL / 2,
         py: offsetY + y * CELL + CELL / 2
       };
+    }
+
+    function getBaseCenterInGame() {
+      return {
+        px: baseAreaEl.offsetLeft + (baseAreaEl.offsetWidth - baseEl.offsetWidth) / 2 + baseEl.offsetWidth / 2,
+        py: baseAreaEl.offsetTop + (baseAreaEl.offsetHeight - baseEl.offsetHeight) / 2 + baseEl.offsetHeight / 2
+      };
+    }
+
+    function updateBaseVisual() {
+      const ratio = baseState.maxHP > 0 ? baseState.currentHP / baseState.maxHP : 0;
+      baseEl.classList.remove("base-dmg-1", "base-dmg-2", "base-dmg-3", "base-dmg-4", "base-dmg-5");
+      let level = 1;
+      if (ratio > 0.8) level = 5;
+      else if (ratio > 0.6) level = 4;
+      else if (ratio > 0.4) level = 3;
+      else if (ratio > 0.2) level = 2;
+      baseEl.classList.add("base-dmg-" + level);
     }
 
     function hideMenus() {
@@ -1615,10 +1709,13 @@
       enemyLayer.appendChild(el);
 
       const maxHP = Math.round(def.hp * entry.hpScale);
+      const targetRow = entry.row;
       const enemy = {
         type: entry.type,
-        x: GRID_W + 0.5,
-        y: entry.row + 0.5,
+        phase: "enter",
+        targetRow,
+        x: GRID_W + 0.35,
+        y: GRID_H + 0.85,
         hp: maxHP,
         maxHP,
         shield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
@@ -1640,7 +1737,15 @@
     }
 
     function updateEnemyPosition(enemy) {
-      const { px, py } = gridToPixel(enemy.x, enemy.y);
+      let px, py;
+      if (enemy.phase === "base") {
+        px = enemy.px;
+        py = enemy.py;
+      } else {
+        const p = gridToGamePixel(enemy.x, enemy.y);
+        px = p.px;
+        py = p.py;
+      }
       enemy.el.style.left = (px - 13) + "px";
       enemy.el.style.top = (py - 13) + "px";
       const ratio = Math.max(0, enemy.hp / enemy.maxHP);
@@ -1659,9 +1764,11 @@
       let bestScore = -Infinity;
       for (const enemy of enemies) {
         if (enemy.dead) continue;
-        const d = dist(tower.x + 0.5, tower.y + 0.5, enemy.x, enemy.y);
+        const ex = enemy.phase === "base" ? 0 : enemy.x;
+        const ey = enemy.y;
+        const d = dist(tower.x + 0.5, tower.y + 0.5, ex, ey);
         if (d > stats.range) continue;
-        const score = enemy.x * 10 - d;
+        const score = ex * 10 - d;
         if (score > bestScore) {
           bestScore = score;
           best = enemy;
@@ -1671,8 +1778,10 @@
     }
 
     function shootBullet(tower, target, def, stats) {
-      const from = gridToPixel(tower.x + 0.5, tower.y + 0.5);
-      const to = gridToPixel(target.x, target.y);
+      const from = gridToGamePixel(tower.x + 0.5, tower.y + 0.5);
+      const to = target.phase === "base"
+        ? { px: target.px, py: target.py }
+        : gridToGamePixel(target.x, target.y);
       const el = document.createElement("div");
       el.className = "bullet " + def.bullet;
       enemyLayer.appendChild(el);
@@ -1734,12 +1843,17 @@
     function damageBase(amount) {
       baseState.currentHP -= amount;
       sound.baseHit();
-      document.getElementById("base").style.boxShadow = "0 0 0 3px #000, 0 0 20px #ff1744";
-      setTimeout(() => {
-        document.getElementById("base").style.boxShadow = "0 0 0 3px #000, 0 0 10px #3cff8f";
-      }, 200);
+      baseEl.classList.add("base-hit-flash");
+      setTimeout(() => baseEl.classList.remove("base-hit-flash"), 200);
       refreshUI();
       if (baseState.currentHP <= 0) endGame(false);
+    }
+
+    function enemyReachBase(enemy, i) {
+      const dmg = enemy.explode ? enemy.damage * 1.5 : enemy.damage;
+      enemy.el.remove();
+      enemies.splice(i, 1);
+      damageBase(dmg);
     }
 
     function endGame(won) {
@@ -1805,7 +1919,7 @@
           if (b.def.aoe) {
             for (const enemy of enemies) {
               if (enemy.dead) continue;
-              if (dist(b.target.x, b.target.y, enemy.x, enemy.y) <= b.def.aoeRadius) {
+              if (dist(b.target.phase === "base" ? 0 : b.target.x, b.target.y, enemy.x, enemy.y) <= b.def.aoeRadius) {
                 applyDamage(enemy, b.stats.attack, b.tower.type);
               }
             }
@@ -1831,7 +1945,35 @@
         let speed = enemy.speed;
         if (now < enemy.slowUntil) speed *= 0.45;
 
-        enemy.x -= (speed * dt) / 1000 / CELL;
+        if (enemy.phase === "enter") {
+          enemy.y -= (speed * dt) / 1000 / CELL;
+          if (enemy.y <= enemy.targetRow + 0.5) {
+            enemy.y = enemy.targetRow + 0.5;
+            enemy.phase = "field";
+          }
+        } else if (enemy.phase === "field") {
+          enemy.x -= (speed * dt) / 1000 / CELL;
+          if (enemy.x <= 0) {
+            enemy.x = 0;
+            enemy.phase = "base";
+            const edge = gridToGamePixel(0, enemy.y);
+            enemy.px = edge.px;
+            enemy.py = edge.py;
+          }
+        } else if (enemy.phase === "base") {
+          const base = getBaseCenterInGame();
+          const dx = base.px - enemy.px;
+          const dy = base.py - enemy.py;
+          const len = Math.hypot(dx, dy);
+          const step = (speed * dt) / 1000;
+          if (len <= step + 8) {
+            enemyReachBase(enemy, i);
+            continue;
+          }
+          enemy.px += (dx / len) * step;
+          enemy.py += (dy / len) * step;
+        }
+
         updateEnemyPosition(enemy);
 
         if (now < enemy.burnUntil && now - enemy.burnTick >= 500) {
@@ -1844,15 +1986,7 @@
           }
         }
 
-        if (enemy.x < -0.3) {
-          const dmg = enemy.explode ? enemy.damage * 1.5 : enemy.damage;
-          enemy.el.remove();
-          enemies.splice(i, 1);
-          damageBase(dmg);
-          continue;
-        }
-
-        if (enemy.hp <= 0) {
+        if (enemy.phase !== "base" && enemy.hp <= 0) {
           killEnemy(enemy);
           continue;
         }
