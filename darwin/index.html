@@ -1056,6 +1056,9 @@
     const GRID_W = 12;
     const GRID_H = 8;
     const CELL = 40;
+    const ENTRY_X = GRID_W - 0.5;
+    const ENTRY_Y = GRID_H + 0.35;
+    const BASE_TURN_X = 0.6;
     const MAX_LEVELS = 50;
     const WAVES_PER_LEVEL = 4;
     const WAVE_AUTO_DELAY_MS = 10000;
@@ -1527,10 +1530,11 @@
     function gridToGamePixel(x, y) {
       const offsetX = (gridContainer.clientWidth - GRID_W * CELL) / 2;
       const offsetY = (gridContainer.clientHeight - GRID_H * CELL) / 2;
-      const gridLeft = baseAreaEl.offsetWidth;
+      const gridLeft = baseAreaEl.offsetWidth + gridContainer.offsetLeft;
+      const gridTop = gridContainer.offsetTop;
       return {
         px: gridLeft + offsetX + x * CELL + CELL / 2,
-        py: offsetY + y * CELL + CELL / 2
+        py: gridTop + offsetY + y * CELL + CELL / 2
       };
     }
 
@@ -1714,8 +1718,9 @@
         type: entry.type,
         phase: "enter",
         targetRow,
-        x: GRID_W + 0.35,
-        y: GRID_H + 0.85,
+        entryX: ENTRY_X,
+        x: ENTRY_X,
+        y: ENTRY_Y,
         hp: maxHP,
         maxHP,
         shield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
@@ -1946,6 +1951,7 @@
         if (now < enemy.slowUntil) speed *= 0.45;
 
         if (enemy.phase === "enter") {
+          enemy.x = enemy.entryX;
           enemy.y -= (speed * dt) / 1000 / CELL;
           if (enemy.y <= enemy.targetRow + 0.5) {
             enemy.y = enemy.targetRow + 0.5;
@@ -1953,12 +1959,11 @@
           }
         } else if (enemy.phase === "field") {
           enemy.x -= (speed * dt) / 1000 / CELL;
-          if (enemy.x <= 0) {
-            enemy.x = 0;
+          if (enemy.x <= BASE_TURN_X) {
             enemy.phase = "base";
-            const edge = gridToGamePixel(0, enemy.y);
-            enemy.px = edge.px;
-            enemy.py = edge.py;
+            const turn = gridToGamePixel(enemy.x, enemy.y);
+            enemy.px = turn.px;
+            enemy.py = turn.py;
           }
         } else if (enemy.phase === "base") {
           const base = getBaseCenterInGame();
@@ -2109,7 +2114,7 @@
             waveActive, paused, gameOver, gameStarted, levelCompletePending,
             waveInLevel: ui.waveInLevel, level: ui.level, gold: ui.gold,
             enemies: enemies.length,
-            enemyXs: enemies.map((e) => ({ x: e.x, y: e.y, hp: e.hp })),
+            enemyXs: enemies.map((e) => ({ x: e.x, y: e.y, phase: e.phase, hp: e.hp })),
             towers: towers.length,
             spawnLeft: spawnQueue.length
           };
