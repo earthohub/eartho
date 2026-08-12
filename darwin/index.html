@@ -582,6 +582,11 @@
       text-align: center;
     }
 
+    #level-panel-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
     #level-toggle-btn {
       padding: 5px 12px;
       background: #303048;
@@ -1191,18 +1196,23 @@
       waveCountdown = 0;
     }
 
+    function isGameplayFrozen() {
+      return paused || levelPanelOpen || levelCompletePending;
+    }
+
     function scheduleNextWave() {
-      if (!gameStarted || gameOver || levelCompletePending || waveActive || paused) return;
+      if (!gameStarted || gameOver || isGameplayFrozen() || waveActive) return;
       if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
       waveCountdown = WAVE_AUTO_DELAY_MS;
     }
 
     function updateWaveCountdown(dt) {
       if (waveCountdown <= 0) return;
-      if (waveActive || levelCompletePending || gameOver || paused) {
+      if (waveActive || gameOver) {
         waveCountdown = 0;
         return;
       }
+      if (isGameplayFrozen()) return;
       waveCountdown -= dt;
       if (waveCountdown <= 0) {
         waveCountdown = 0;
@@ -1240,7 +1250,11 @@
       else levelPanelOpen = !levelPanelOpen;
       levelPanel.classList.toggle("open", levelPanelOpen);
       levelToggleBtn.textContent = levelPanelOpen ? "关卡列表 ▲" : "关卡列表 ▼";
-      if (levelPanelOpen) buildLevelGrid();
+      if (levelPanelOpen) {
+        hideMenus();
+        buildLevelGrid();
+      }
+      refreshUI();
     }
 
     function enterLevel(level) {
@@ -1276,8 +1290,10 @@
 
       if (ui.level >= MAX_LEVELS && levelDone && !waveActive && enemies.length === 0) {
         waveCountdownEl.textContent = "全部通关!";
-      } else if (waveActive) {
+      } else       if (waveActive) {
         waveCountdownEl.textContent = "第 " + currentWaveNumber + " 波进行中...";
+      } else if (levelPanelOpen) {
+        waveCountdownEl.textContent = "关卡选择中（已暂停）";
       } else if (paused) {
         waveCountdownEl.textContent = waveCountdown > 0
           ? "已暂停 · 下一波 " + secs + " 秒后开始"
@@ -1428,7 +1444,7 @@
     }
 
     function onCellClick(x, y, e) {
-      if (gameOver || paused || !gameStarted || levelCompletePending) return;
+      if (gameOver || isGameplayFrozen() || !gameStarted) return;
       ensureAudio();
       const cell = getCell(x, y);
       if (!cell || cell.terrain) return;
@@ -1470,7 +1486,7 @@
     }
 
     function buildTower(type) {
-      if (!selectedCell || selectedCell.tower || selectedCell.terrain || gameOver || paused || levelCompletePending) return;
+      if (!selectedCell || selectedCell.tower || selectedCell.terrain || gameOver || isGameplayFrozen()) return;
       const def = towerTypes[type];
       const stats = def.levels[0];
       if (ui.gold < stats.cost) return;
@@ -1497,7 +1513,7 @@
     }
 
     function upgradeTower() {
-      if (!selectedTower || gameOver || paused || levelCompletePending) return;
+      if (!selectedTower || gameOver || isGameplayFrozen()) return;
       const def = towerTypes[selectedTower.type];
       if (selectedTower.level >= def.levels.length) return;
       const next = def.levels[selectedTower.level];
@@ -1533,7 +1549,7 @@
     }
 
     function startWave() {
-      if (!gameStarted || waveActive || gameOver || paused || levelCompletePending) return;
+      if (!gameStarted || waveActive || gameOver || isGameplayFrozen()) return;
       if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
       waveCountdown = 0;
       ensureAudio();
@@ -1830,7 +1846,7 @@
         const dt = Math.min(ts - lastTime, 50);
         lastTime = ts;
 
-        if (!gameOver && gameStarted && !paused) {
+        if (!gameOver && gameStarted && !paused && !levelPanelOpen) {
           updateWaveCountdown(dt);
           updateSpawning(dt);
           updateEnemies(dt, ts);
