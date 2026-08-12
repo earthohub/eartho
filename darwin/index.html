@@ -1058,7 +1058,7 @@
     const CELL = 40;
     const ENTRY_X = GRID_W - 0.5;
     const ENTRY_Y = GRID_H + 0.35;
-    const BASE_TURN_X = 0.6;
+    const GRASS_LEFT_EXIT_X = -0.5;
     const MAX_LEVELS = 50;
     const WAVES_PER_LEVEL = 4;
     const WAVE_AUTO_DELAY_MS = 10000;
@@ -1959,11 +1959,12 @@
           }
         } else if (enemy.phase === "field") {
           enemy.x -= (speed * dt) / 1000 / CELL;
-          if (enemy.x <= BASE_TURN_X) {
+          if (enemy.x <= GRASS_LEFT_EXIT_X) {
+            enemy.x = GRASS_LEFT_EXIT_X;
             enemy.phase = "base";
-            const turn = gridToGamePixel(enemy.x, enemy.y);
-            enemy.px = turn.px;
-            enemy.py = turn.py;
+            const exit = gridToGamePixel(enemy.x, enemy.y);
+            enemy.px = exit.px;
+            enemy.py = exit.py;
           }
         } else if (enemy.phase === "base") {
           const base = getBaseCenterInGame();
