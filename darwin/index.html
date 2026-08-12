@@ -571,9 +571,15 @@
       background: #0d0d14;
     }
 
-    #level-panel-wrap {
-      position: relative;
+    #wave-countdown {
       display: inline-block;
+      min-width: 180px;
+      padding: 5px 12px;
+      background: #252538;
+      color: #ffeb3b;
+      border: 1px solid #555;
+      font-size: 13px;
+      text-align: center;
     }
 
     #level-toggle-btn {
@@ -716,7 +722,7 @@
   </div>
 
   <div id="wave-controls">
-    <button id="start-wave-btn">开始下一波</button>
+    <span id="wave-countdown">准备中...</span>
     <div id="level-panel-wrap">
       <button id="level-toggle-btn">关卡列表 ▼</button>
       <div id="level-panel">
@@ -728,7 +734,7 @@
     <button id="resume-btn" class="ctrl-btn" style="display:none;">继续</button>
   </div>
 
-  <div id="hint">每关抵挡 4 波即可通关 · 通关解锁下一关 · 换关时清除防御塔并获得更多初始金币</div>
+  <div id="hint">每关抵挡 4 波即可通关 · 每波间隔 10 秒自动开始 · 换关时清除防御塔并获得更多初始金币</div>
 
   <div id="game-container">
     <div id="base-area">
@@ -951,6 +957,7 @@
     const CELL = 40;
     const MAX_LEVELS = 50;
     const WAVES_PER_LEVEL = 4;
+    const WAVE_AUTO_DELAY_MS = 10000;
     const TERRAIN_START_LEVEL = 11;
     const GOLD_PER_LEVEL = 95;
     const STORAGE_KEY = "darwin-td-progress";
@@ -1001,7 +1008,7 @@
     const upgradeMenu = document.getElementById("upgrade-menu");
     const upgradeInfo = document.getElementById("upgrade-info");
     const upgradeBtn = document.getElementById("upgrade-btn");
-    const startWaveBtn = document.getElementById("start-wave-btn");
+    const waveCountdownEl = document.getElementById("wave-countdown");
     const pauseBtn = document.getElementById("pause-btn");
     const resumeBtn = document.getElementById("resume-btn");
     const pauseOverlay = document.getElementById("pause-overlay");
@@ -1049,6 +1056,7 @@
     let currentWaveNumber = 0;
     let spawnQueue = [];
     let spawnTimer = 0;
+    let waveCountdown = 0;
     let gameOver = false;
     let lastTime = 0;
 
@@ -1180,6 +1188,26 @@
       spawnTimer = 0;
       waveActive = false;
       currentWaveNumber = 0;
+      waveCountdown = 0;
+    }
+
+    function scheduleNextWave() {
+      if (!gameStarted || gameOver || levelCompletePending || waveActive || paused) return;
+      if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
+      waveCountdown = WAVE_AUTO_DELAY_MS;
+    }
+
+    function updateWaveCountdown(dt) {
+      if (waveCountdown <= 0) return;
+      if (waveActive || levelCompletePending || gameOver || paused) {
+        waveCountdown = 0;
+        return;
+      }
+      waveCountdown -= dt;
+      if (waveCountdown <= 0) {
+        waveCountdown = 0;
+        startWave();
+      }
     }
 
     function buildLevelGrid() {
@@ -1231,6 +1259,7 @@
       gameOver = false;
       gameOverEl.style.display = "none";
       generateTerrain(level);
+      scheduleNextWave();
       refreshUI();
     }
 
@@ -1243,19 +1272,22 @@
       ui.enemiesEl.textContent = "敌人: " + enemies.length + (spawnQueue.length ? "+" + spawnQueue.length : "");
 
       const levelDone = ui.waveInLevel >= WAVES_PER_LEVEL;
-      const canStart = gameStarted && !paused && !waveActive && !gameOver && !levelCompletePending && !levelDone;
-      startWaveBtn.disabled = !canStart;
+      const secs = Math.ceil(waveCountdown / 1000);
 
       if (ui.level >= MAX_LEVELS && levelDone && !waveActive && enemies.length === 0) {
-        startWaveBtn.textContent = "全部通关!";
+        waveCountdownEl.textContent = "全部通关!";
       } else if (waveActive) {
-        startWaveBtn.textContent = "波次进行中...";
+        waveCountdownEl.textContent = "第 " + currentWaveNumber + " 波进行中...";
       } else if (paused) {
-        startWaveBtn.textContent = "已暂停";
-      } else if (levelDone) {
-        startWaveBtn.textContent = "本关已通过";
+        waveCountdownEl.textContent = waveCountdown > 0
+          ? "已暂停 · 下一波 " + secs + " 秒后开始"
+          : "已暂停";
+      } else if (levelDone || levelCompletePending) {
+        waveCountdownEl.textContent = "本关已通过";
+      } else if (waveCountdown > 0) {
+        waveCountdownEl.textContent = "第 " + (ui.waveInLevel + 1) + " 波 " + secs + " 秒后开始...";
       } else {
-        startWaveBtn.textContent = "开始第 " + (ui.waveInLevel + 1) + " 波";
+        waveCountdownEl.textContent = "准备下一波...";
       }
 
       pauseBtn.disabled = !gameStarted || gameOver || (!waveActive && enemies.length === 0 && !paused);
@@ -1322,6 +1354,7 @@
 
     function showLevelComplete() {
       levelCompletePending = true;
+      waveCountdown = 0;
       clearedLevels.add(ui.level);
       if (ui.level < MAX_LEVELS) {
         maxUnlockedLevel = Math.max(maxUnlockedLevel, ui.level + 1);
@@ -1502,6 +1535,7 @@
     function startWave() {
       if (!gameStarted || waveActive || gameOver || paused || levelCompletePending) return;
       if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
+      waveCountdown = 0;
       ensureAudio();
       const nextWave = ui.waveInLevel + 1;
       currentWaveNumber = nextWave;
@@ -1771,6 +1805,7 @@
           if (ui.waveInLevel >= WAVES_PER_LEVEL) {
             showLevelComplete();
           } else {
+            scheduleNextWave();
             refreshUI();
           }
         }
@@ -1796,6 +1831,7 @@
         lastTime = ts;
 
         if (!gameOver && gameStarted && !paused) {
+          updateWaveCountdown(dt);
           updateSpawning(dt);
           updateEnemies(dt, ts);
           updateTowers(dt);
@@ -1820,7 +1856,6 @@
       upgradeTower();
     });
 
-    startWaveBtn.addEventListener("click", startWave);
     pauseBtn.addEventListener("click", pauseGame);
     resumeBtn.addEventListener("click", resumeGame);
     levelToggleBtn.addEventListener("click", (e) => {
@@ -1835,6 +1870,7 @@
       levelCompleteEl.style.display = "none";
       ui.waveInLevel = 0;
       currentWaveNumber = 0;
+      scheduleNextWave();
       refreshUI();
     });
 
