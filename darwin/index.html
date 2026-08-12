@@ -168,7 +168,7 @@
       box-shadow: 0 10px 0 rgba(255,255,255,0.12), 0 20px 0 rgba(255,255,255,0.08);
     }
 
-    #difficulty-screen, #pause-overlay {
+    #difficulty-screen {
       position: fixed;
       inset: 0;
       background: rgba(5, 5, 15, 0.92);
@@ -181,8 +181,32 @@
 
     #pause-overlay {
       display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.2);
       z-index: 2500;
       pointer-events: none;
+    }
+
+    #pause-overlay .pause-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(5, 5, 15, 0.88);
+      padding: 18px 36px;
+      border-radius: 10px;
+      border: 2px solid #ffeb3b;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    body.game-paused .enemy,
+    body.game-paused .tower,
+    body.game-paused .terrain-river,
+    body.game-paused .terrain-river::before {
+      animation-play-state: paused !important;
     }
 
     #resume-btn {
@@ -239,7 +263,7 @@
 
     #pause-overlay p {
       margin: 10px 0 0;
-      color: #888;
+      color: #ccc;
       font-size: 14px;
     }
 
@@ -793,8 +817,10 @@
   </div>
 
   <div id="pause-overlay">
-    <h2>已暂停</h2>
-    <p>点击「继续」恢复游戏</p>
+    <div class="pause-badge">
+      <h2>已暂停</h2>
+      <p id="pause-hint">点击「继续」恢复游戏</p>
+    </div>
   </div>
 
   <script>
@@ -1017,6 +1043,7 @@
     const pauseBtn = document.getElementById("pause-btn");
     const resumeBtn = document.getElementById("resume-btn");
     const pauseOverlay = document.getElementById("pause-overlay");
+    const pauseHint = document.getElementById("pause-hint");
     const difficultyScreen = document.getElementById("difficulty-screen");
     const difficultyLabel = document.getElementById("difficulty-label");
     const levelInfoEl = document.getElementById("level-info");
@@ -1253,6 +1280,9 @@
       if (levelPanelOpen) {
         hideMenus();
         buildLevelGrid();
+        document.body.classList.add("game-paused");
+      } else if (!paused) {
+        document.body.classList.remove("game-paused");
       }
       refreshUI();
     }
@@ -1306,10 +1336,18 @@
         waveCountdownEl.textContent = "准备下一波...";
       }
 
-      pauseBtn.disabled = !gameStarted || gameOver || (!waveActive && enemies.length === 0 && !paused);
+      pauseBtn.disabled = !gameStarted || gameOver || levelCompletePending;
       pauseBtn.style.display = paused ? "none" : "inline-block";
       resumeBtn.style.display = paused ? "inline-block" : "none";
       pauseBtn.classList.toggle("active", paused);
+
+      if (paused && pauseOverlay.style.display !== "none") {
+        if (waveCountdown > 0) {
+          pauseHint.textContent = "下一波 " + secs + " 秒后开始 · 点击「继续」或按空格键恢复";
+        } else {
+          pauseHint.textContent = "点击「继续」或按空格键恢复游戏";
+        }
+      }
 
       if (levelPanelOpen) buildLevelGrid();
     }
@@ -1710,6 +1748,7 @@
       paused = false;
       levelCompletePending = false;
       pauseOverlay.style.display = "none";
+      document.body.classList.remove("game-paused");
       levelCompleteEl.style.display = "none";
       gameOverText.textContent = won
         ? `恭喜通关！你以【${difficulties[difficulty].label}】难度完成了全部 ${MAX_LEVELS} 关！`
@@ -1719,11 +1758,18 @@
     }
 
     function pauseGame() {
-      if (!gameStarted || gameOver || paused) return;
+      if (!gameStarted || gameOver || paused || levelCompletePending) return;
       paused = true;
       pauseStartedAt = performance.now();
-      pauseOverlay.style.display = "flex";
+      pauseOverlay.style.display = "block";
+      if (waveCountdown > 0) {
+        const secs = Math.ceil(waveCountdown / 1000);
+        pauseHint.textContent = "下一波 " + secs + " 秒后开始 · 点击「继续」或按空格键恢复";
+      } else {
+        pauseHint.textContent = "点击「继续」或按空格键恢复游戏";
+      }
       hideMenus();
+      document.body.classList.add("game-paused");
       refreshUI();
     }
 
@@ -1731,6 +1777,7 @@
       if (!paused) return;
       paused = false;
       pauseOverlay.style.display = "none";
+      if (!levelPanelOpen) document.body.classList.remove("game-paused");
       refreshUI();
     }
 
@@ -1852,6 +1899,8 @@
           updateEnemies(dt, ts);
           updateTowers(dt);
           updateBullets(dt);
+        }
+        if (gameStarted && !gameOver) {
           refreshUI();
         }
       } catch (err) {
@@ -1901,7 +1950,7 @@
       if (e.code === "Space" && gameStarted && !gameOver) {
         e.preventDefault();
         if (paused) resumeGame();
-        else if (waveActive || enemies.length > 0) pauseGame();
+        else if (waveActive || enemies.length > 0 || waveCountdown > 0) pauseGame();
       }
     });
 
