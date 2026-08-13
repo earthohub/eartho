@@ -1481,9 +1481,18 @@
     }
 
     function scheduleNextWave() {
-      if (!gameStarted || gameOver || isGameplayFrozen() || waveActive) return;
+      if (!gameStarted || gameOver || waveActive) return;
       if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
-      waveCountdown = WAVE_AUTO_DELAY_MS;
+      if (levelCompletePending) return;
+      if (waveCountdown <= 0) waveCountdown = WAVE_AUTO_DELAY_MS;
+    }
+
+    function closeLevelPanel() {
+      if (!levelPanelOpen) return;
+      levelPanelOpen = false;
+      levelPanel.classList.remove("open");
+      levelToggleBtn.textContent = "关卡列表 ▼";
+      if (!paused) document.body.classList.remove("game-paused");
     }
 
     function updateWaveCountdown(dt) {
@@ -1520,8 +1529,8 @@
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
           if (isLevelUnlocked(lv)) {
+            closeLevelPanel();
             enterLevel(lv);
-            toggleLevelPanel(false);
           }
         });
         levelGrid.appendChild(btn);
@@ -1537,8 +1546,9 @@
         hideMenus();
         buildLevelGrid();
         document.body.classList.add("game-paused");
-      } else if (!paused) {
-        document.body.classList.remove("game-paused");
+      } else {
+        if (!paused) document.body.classList.remove("game-paused");
+        scheduleNextWave();
       }
       refreshUI();
     }
@@ -1547,6 +1557,7 @@
       if (!gameStarted || level < 1 || level > MAX_LEVELS) return;
       if (!isLevelUnlocked(level)) return;
       if (!debugMode && (waveActive || enemies.length > 0)) return;
+      closeLevelPanel();
       hideMenus();
       clearCombat();
       clearTowers();
@@ -2334,10 +2345,11 @@
     }
 
     document.addEventListener("keydown", (e) => {
-      if (e.code === "Space" && gameStarted && !gameOver) {
+      if (e.code === "Space" && gameStarted && !gameOver && !levelCompletePending) {
         e.preventDefault();
+        if (levelPanelOpen) return;
         if (paused) resumeGame();
-        else if (waveActive || enemies.length > 0 || waveCountdown > 0) pauseGame();
+        else pauseGame();
       }
     });
 
@@ -2362,6 +2374,7 @@
           return {
             waveActive, paused, gameOver, gameStarted, levelCompletePending, debugMode,
             waveInLevel: ui.waveInLevel, level: ui.level, gold: ui.gold,
+            waveCountdown, levelPanelOpen,
             enemies: enemies.length,
             enemyXs: enemies.map((e) => ({ x: e.x, y: e.y, phase: e.phase, hp: e.hp, isBoss: e.isBoss, type: e.type })),
             focusTarget: focusFireTarget ? focusFireTarget.type : null,
