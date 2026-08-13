@@ -1058,7 +1058,8 @@
     const CELL = 40;
     const ENTRY_X = GRID_W - 0.5;
     const ENTRY_Y = GRID_H + 0.35;
-    const GRASS_LEFT_EXIT_X = -0.5;
+    const ENEMY_HALF = 13;
+    const GRASS_LEFT_EXIT_X = -0.5 - ENEMY_HALF / CELL;
     const MAX_LEVELS = 50;
     const WAVES_PER_LEVEL = 4;
     const WAVE_AUTO_DELAY_MS = 10000;
@@ -1530,11 +1531,9 @@
     function gridToGamePixel(x, y) {
       const offsetX = (gridContainer.clientWidth - GRID_W * CELL) / 2;
       const offsetY = (gridContainer.clientHeight - GRID_H * CELL) / 2;
-      const gridLeft = baseAreaEl.offsetWidth + gridContainer.offsetLeft;
-      const gridTop = gridContainer.offsetTop;
       return {
-        px: gridLeft + offsetX + x * CELL + CELL / 2,
-        py: gridTop + offsetY + y * CELL + CELL / 2
+        px: gridContainer.offsetLeft + offsetX + x * CELL + CELL / 2,
+        py: gridContainer.offsetTop + offsetY + y * CELL + CELL / 2
       };
     }
 
