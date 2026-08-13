@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>像素风塔防游戏 - 完整修复版</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0b0b10;
+      color: #fff;
+      font-family: Consolas, monospace;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    #ui-bar {
+      height: 40px;
+      background: #15151f;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 14px;
+      box-shadow: 0 2px 4px #000;
+    }
+
+    #ui-bar span {
+      margin-right: 20px;
+    }
+
+    #wave-controls {
+      text-align: center;
+      padding: 5px;
+      background: #101018;
+      box-shadow: 0 2px 4px #000 inset;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    #wave-controls button,
+    .ctrl-btn {
+      padding: 5px 12px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    #wave-controls button:hover:not(:disabled),
+    .ctrl-btn:hover:not(:disabled) {
+      background: #505070;
+    }
+
+    #wave-controls button:disabled,
+    .ctrl-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #pause-btn.active {
+      background: #5c3d6e;
+      border-color: #9b59b6;
+    }
+
+    .cell.blocked {
+      cursor: not-allowed;
+    }
+
+    .cell.blocked:hover {
+      outline: none;
+    }
+
+    .terrain-hill {
+      background: #2a5a2c !important;
+      box-shadow: inset 0 0 0 2px #1b3d1d;
+    }
+
+    .terrain-hill::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 14px;
+      left: 4px;
+      bottom: 8px;
+      background: linear-gradient(160deg, #a1887f 0%, #6d4c41 45%, #4e342e 100%);
+      clip-path: polygon(50% 0%, 92% 78%, 8% 78%);
+      image-rendering: pixelated;
+    }
+
+    .terrain-hill::after {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 11px;
+      right: 5px;
+      bottom: 6px;
+      background: linear-gradient(160deg, #8d6e63 0%, #5d4037 55%, #3e2723 100%);
+      clip-path: polygon(50% 0%, 90% 80%, 10% 80%);
+      image-rendering: pixelated;
+    }
+
+    .terrain-stone {
+      background:
+        radial-gradient(circle at 30% 35%, #90a4ae 2px, transparent 2px),
+        radial-gradient(circle at 68% 28%, #b0bec5 2px, transparent 2px),
+        radial-gradient(circle at 52% 62%, #78909c 3px, transparent 3px),
+        repeating-linear-gradient(45deg, #607d8b 0 4px, #546e7a 4px 8px, #78909c 8px 12px) !important;
+      box-shadow: inset 0 0 0 2px #37474f;
+    }
+
+    .terrain-stone::before {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 8px;
+      left: 8px;
+      top: 10px;
+      border-radius: 2px;
+      background: linear-gradient(135deg, #cfd8dc, #78909c);
+      box-shadow: 12px 6px 0 -1px #90a4ae, 6px 14px 0 -1px #607d8b;
+    }
+
+    .terrain-river {
+      background:
+        repeating-linear-gradient(
+          0deg,
+          #4fc3f7 0 6px,
+          #29b6f6 6px 12px,
+          #0288d1 12px 18px,
+          #0277bd 18px 24px
+        ) !important;
+      box-shadow: inset 0 0 0 2px #01579b;
+      animation: riverFlow 2.4s linear infinite;
+    }
+
+    @keyframes riverFlow {
+      from { background-position: 0 0; }
+      to { background-position: 0 24px; }
+    }
+
+    .terrain-river::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0 20%, rgba(255,255,255,0.18) 20% 24%, transparent 24% 54%, rgba(255,255,255,0.12) 54% 58%, transparent 58% 100%);
+      animation: riverShine 1.8s ease-in-out infinite;
+    }
+
+    @keyframes riverShine {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .terrain-river::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      top: 12px;
+      left: 0;
+      background: rgba(255,255,255,0.2);
+      box-shadow: 0 10px 0 rgba(255,255,255,0.12), 0 20px 0 rgba(255,255,255,0.08);
+    }
+
+    #difficulty-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 15, 0.92);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+
+    #pause-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: 2500;
+      pointer-events: none;
+    }
+
+    #pause-overlay .pause-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(5, 5, 15, 0.88);
+      padding: 18px 36px;
+      border-radius: 10px;
+      border: 2px solid #ffeb3b;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    body.game-paused .enemy,
+    body.game-paused .tower,
+    body.game-paused .terrain-river,
+    body.game-paused .terrain-river::before {
+      animation-play-state: paused !important;
+    }
+
+    #resume-btn {
+      position: relative;
+      z-index: 2600;
+    }
+
+    #difficulty-screen h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: #3cff8f;
+      text-shadow: 0 0 12px rgba(60, 255, 143, 0.4);
+    }
+
+    #difficulty-screen p {
+      margin: 0 0 20px;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .difficulty-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .difficulty-btns button {
+      padding: 12px 24px;
+      min-width: 120px;
+      background: #303048;
+      color: #fff;
+      border: 2px solid #555;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    .difficulty-btns button:hover {
+      background: #505070;
+      border-color: #3cff8f;
+    }
+
+    .difficulty-btns button[data-diff="easy"] { border-color: #4caf50; }
+    .difficulty-btns button[data-diff="hard"] { border-color: #f44336; }
+
+    #pause-overlay h2 {
+      margin: 0;
+      font-size: 32px;
+      color: #ffeb3b;
+      letter-spacing: 4px;
+    }
+
+    #pause-overlay p {
+      margin: 10px 0 0;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    #game-container {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #base-area {
+      width: 120px;
+      height: 360px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+    }
+
+    #base {
+      width: 64px;
+      height: 64px;
+      image-rendering: pixelated;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 0 3px #000;
+      transition: filter 0.2s;
+    }
+
+    #base.base-dmg-5 {
+      background: linear-gradient(#3cff8f 0 18%, #1f8f4a 18% 42%, #145f32 42% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 12px rgba(60, 255, 143, 0.45);
+    }
+
+    #base.base-dmg-4 {
+      background: linear-gradient(#7cb342 0 18%, #558b2f 18% 42%, #33691e 42% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 8px rgba(124, 179, 66, 0.35);
+    }
+
+    #base.base-dmg-4::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 55%, rgba(0,0,0,0.25) 55% 58%, transparent 58%);
+    }
+
+    #base.base-dmg-3 {
+      background: linear-gradient(#a1887f 0 20%, #6d4c41 20% 45%, #4e342e 45% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 6px rgba(109, 76, 65, 0.4);
+    }
+
+    #base.base-dmg-3::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      top: 28px;
+      left: 0;
+      background: rgba(0,0,0,0.45);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.3);
+    }
+
+    #base.base-dmg-2 {
+      background: linear-gradient(#78909c 0 22%, #546e7a 22% 48%, #37474f 48% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 6px rgba(84, 110, 122, 0.35);
+    }
+
+    #base.base-dmg-2::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 2px dashed rgba(0,0,0,0.35);
+    }
+
+    #base.base-dmg-2::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 3px;
+      top: 14px;
+      left: 10px;
+      background: #263238;
+      transform: rotate(-18deg);
+      box-shadow: 18px 20px 0 #263238;
+    }
+
+    #base.base-dmg-1 {
+      background: linear-gradient(#424242 0 25%, #212121 25% 50%, #0d0d0d 50% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 10px rgba(244, 67, 54, 0.5);
+      animation: baseCritical 0.6s infinite alternate;
+    }
+
+    #base.base-dmg-1::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(45deg, transparent 40%, rgba(244,67,54,0.35) 40% 43%, transparent 43%),
+        linear-gradient(-35deg, transparent 55%, rgba(0,0,0,0.5) 55% 58%, transparent 58%);
+    }
+
+    #base.base-dmg-1::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 16px;
+      bottom: 4px;
+      left: 26px;
+      background: #000;
+    }
+
+    @keyframes baseCritical {
+      from { filter: brightness(1); }
+      to { filter: brightness(1.25); }
+    }
+
+    #base.base-hit-flash {
+      filter: brightness(1.6) saturate(1.4);
+    }
+
+    #grid-container {
+      width: 640px;
+      height: 360px;
+      background: #05050a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 0 4px #222, 0 0 20px #000;
+      position: relative;
+      overflow: visible;
+      z-index: 1;
+    }
+
+    #enemy-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      overflow: visible;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(12, 40px);
+      grid-template-rows: repeat(8, 40px);
+      gap: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      background-size: cover;
+      image-rendering: pixelated;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .cell:hover {
+      outline: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .grass-dark {
+      background: #1e4620;
+    }
+
+    .grass-light {
+      background: #2e6b2f;
+    }
+
+    .tower {
+      width: 30px;
+      height: 30px;
+      margin: 5px auto;
+      image-rendering: pixelated;
+      position: relative;
+      box-shadow: 0 0 0 3px #000;
+      animation: towerIdle 0.8s infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes towerIdle {
+      from { transform: translateY(0); }
+      to { transform: translateY(-1px); }
+    }
+
+    .tower-arrow {
+      background:
+        linear-gradient(#f7e27a 0 40%, #f1c40f 40% 70%, #8e5b0a 70% 100%);
+      clip-path: polygon(50% 0, 90% 40%, 70% 40%, 70% 100%, 30% 100%, 30% 40%, 10% 40%);
+    }
+
+    .tower-cannon {
+      background:
+        radial-gradient(circle at 50% 30%, #eee 0 20%, #999 20% 40%, #555 40% 100%);
+      border-radius: 4px;
+    }
+
+    .tower-ice {
+      background:
+        linear-gradient(#b3ffff 0 40%, #4dd0e1 40% 70%, #006064 70% 100%);
+      clip-path: polygon(50% 0, 90% 40%, 70% 100%, 30% 100%, 10% 40%);
+    }
+
+    .tower-fire {
+      background:
+        radial-gradient(circle at 50% 0, #ffeb3b 0 20%, #ff5722 20% 60%, #4a1a0a 60% 100%);
+      border-radius: 50% 50% 40% 40%;
+    }
+
+    .tower-magic {
+      background:
+        conic-gradient(from 0deg, #9b59b6, #8e44ad, #3498db, #9b59b6);
+      border-radius: 50%;
+    }
+
+    .enemy {
+      width: 26px;
+      height: 26px;
+      position: absolute;
+      border-radius: 4px;
+      image-rendering: pixelated;
+      box-shadow: 0 0 0 3px #000;
+      animation: enemyShake 0.4s infinite alternate;
+      transition: filter 0.15s;
+    }
+
+    .enemy.frozen {
+      filter: hue-rotate(180deg) brightness(1.2);
+    }
+
+    .enemy.burning::before {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 120, 0, 0.5), transparent 70%);
+      animation: burnPulse 0.5s infinite alternate;
+    }
+
+    @keyframes burnPulse {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
+    @keyframes enemyShake {
+      from { transform: translate(-1px, 0); }
+      to { transform: translate(1px, 0); }
+    }
+
+    .enemy-normal {
+      background:
+        linear-gradient(#ffcc80 0 40%, #fb8c00 40% 70%, #6d4c41 70% 100%);
+    }
+
+    .enemy-fast {
+      background:
+        linear-gradient(90deg, #ffeb3b 0 40%, #ff9800 40% 100%);
+      border-radius: 13px;
+    }
+
+    .enemy-tank {
+      background:
+        linear-gradient(#8d6e63 0 30%, #5d4037 30% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 8px #4e342e;
+    }
+
+    .enemy-shield {
+      background:
+        radial-gradient(circle at 50% 30%, #e1f5fe 0 30%, #03a9f4 30% 70%, #01579b 70% 100%);
+      border-radius: 50%;
+    }
+
+    .enemy-bomber {
+      background:
+        radial-gradient(circle at 50% 30%, #ff8a80 0 30%, #e53935 30% 70%, #b71c1c 70% 100%);
+      position: relative;
+    }
+
+    .enemy-bomber::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 10px;
+      background: #333;
+      top: -4px;
+      left: 10px;
+      border-radius: 3px;
+      box-shadow: 0 0 4px #000;
+    }
+
+    .enemy-boss {
+      width: 36px;
+      height: 36px;
+      pointer-events: auto;
+      cursor: crosshair;
+      background:
+        radial-gradient(circle at 50% 28%, #ff8a65 0 22%, #d84315 22% 55%, #4a148c 55% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 14px rgba(216, 67, 21, 0.65);
+      animation: bossPulse 1.2s ease-in-out infinite alternate;
+    }
+
+    .enemy-boss::before {
+      content: "B";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffeb3b;
+      text-shadow: 0 0 4px #000, 1px 1px 0 #000;
+    }
+
+    .enemy-boss::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 14px;
+      background: linear-gradient(#ffd54f, #ff6f00);
+      top: -8px;
+      left: 13px;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    }
+
+    @keyframes bossPulse {
+      from { filter: brightness(1); transform: scale(1); }
+      to { filter: brightness(1.15); transform: scale(1.04); }
+    }
+
+    .enemy.focus-marked {
+      box-shadow: 0 0 0 3px #ffeb3b, 0 0 18px #ff5722 !important;
+    }
+
+    .enemy-boss .hp-bar {
+      width: 32px;
+      left: 2px;
+      top: -8px;
+      height: 5px;
+    }
+
+    .hp-bar {
+      position: absolute;
+      top: -6px;
+      left: 2px;
+      width: 22px;
+      height: 4px;
+      background: #222;
+      border: 1px solid #000;
+    }
+
+    .hp-fill {
+      height: 100%;
+      background: #4caf50;
+      width: 100%;
+      transition: width 0.1s;
+    }
+
+    .bullet {
+      width: 8px;
+      height: 8px;
+      position: absolute;
+      border-radius: 50%;
+      box-shadow: 0 0 8px currentColor;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .bullet-arrow { background: #ffeb3b; color: #ffeb3b; }
+    .bullet-cannon { background: #ff9800; color: #ff9800; width: 10px; height: 10px; }
+    .bullet-ice { background: #80deea; color: #80deea; }
+    .bullet-fire { background: #ff5722; color: #ff5722; }
+    .bullet-magic { background: #ce93d8; color: #ce93d8; }
+
+    #build-menu, #upgrade-menu {
+      position: absolute;
+      background: #181824;
+      padding: 8px;
+      border: 1px solid #555;
+      color: #fff;
+      border-radius: 4px;
+      font-size: 12px;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 0 10px #000;
+    }
+
+    #build-menu button, #upgrade-menu button {
+      width: 180px;
+      margin: 2px 0;
+      padding: 4px 6px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    #build-menu button:hover:not(:disabled),
+    #upgrade-menu button:hover:not(:disabled) {
+      background: #505070;
+    }
+
+    #build-menu button:disabled,
+    #upgrade-menu button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    #game-over {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(5,5,15,0.95);
+      padding: 20px 30px;
+      color: white;
+      font-size: 20px;
+      display: none;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 0 20px #000;
+      z-index: 2000;
+    }
+
+    #game-over button {
+      margin-top: 10px;
+      padding: 5px 15px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #666;
+      cursor: pointer;
+    }
+
+    #game-over button:hover {
+      background: #505070;
+    }
+
+    #hint {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      padding: 4px;
+      background: #0d0d14;
+    }
+
+    #wave-countdown {
+      display: inline-block;
+      min-width: 180px;
+      padding: 5px 12px;
+      background: #252538;
+      color: #ffeb3b;
+      border: 1px solid #555;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    #level-panel-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    #level-toggle-btn {
+      padding: 5px 12px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    #level-toggle-btn:hover {
+      background: #505070;
+    }
+
+    #level-panel {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 6px;
+      width: 320px;
+      max-height: 280px;
+      overflow-y: auto;
+      background: #181824;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 10px;
+      z-index: 1500;
+      box-shadow: 0 8px 24px #000;
+    }
+
+    #level-panel.open {
+      display: block;
+    }
+
+    #level-panel-title {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    #level-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .level-btn {
+      padding: 8px 4px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-size: 12px;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+
+    .level-btn:hover:not(:disabled) {
+      background: #505070;
+      border-color: #3cff8f;
+    }
+
+    .level-btn.current {
+      border-color: #ffeb3b;
+      box-shadow: 0 0 6px rgba(255, 235, 59, 0.4);
+    }
+
+    .level-btn.locked {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .level-btn.cleared {
+      border-color: #4caf50;
+    }
+
+    .level-btn.boss-level {
+      border-color: #d84315;
+      background: #3a2030;
+    }
+
+    .level-btn.boss-level:not(:disabled):hover {
+      border-color: #ff5722;
+      box-shadow: 0 0 8px rgba(255, 87, 34, 0.45);
+    }
+
+    #debug-badge {
+      display: none;
+      padding: 3px 8px;
+      background: #5c0030;
+      border: 1px solid #e91e63;
+      color: #f48fb1;
+      font-size: 11px;
+      border-radius: 3px;
+    }
+
+    #debug-badge.active {
+      display: inline-block;
+    }
+
+    .debug-toggle {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      background: #303048;
+      border: 1px solid #555;
+      font-size: 12px;
+      color: #ccc;
+      cursor: pointer;
+      border-radius: 3px;
+      user-select: none;
+    }
+
+    .debug-toggle.visible {
+      display: inline-flex;
+    }
+
+    .debug-toggle.active {
+      border-color: #e91e63;
+      color: #f48fb1;
+      background: #3a1830;
+    }
+
+    .debug-toggle input {
+      cursor: pointer;
+    }
+
+    #level-complete {
+      position: fixed;
+      top: 38%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(5, 15, 10, 0.96);
+      padding: 24px 32px;
+      color: white;
+      font-size: 18px;
+      display: none;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 0 24px #000;
+      z-index: 2100;
+      border: 1px solid #3cff8f;
+    }
+
+    #level-complete h2 {
+      margin: 0 0 8px;
+      color: #3cff8f;
+      font-size: 22px;
+    }
+
+    #level-complete p {
+      margin: 0 0 16px;
+      color: #bbb;
+      font-size: 14px;
+    }
+
+    #level-complete button {
+      margin: 4px 6px;
+      padding: 6px 14px;
+      background: #303048;
+      color: #fff;
+      border: 1px solid #666;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    #level-complete button:hover {
+      background: #505070;
+    }
+
+    #level-complete .primary {
+      border-color: #3cff8f;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="ui-bar">
+    <span id="gold">金币: 500</span>
+    <span id="base-hp">基地HP: 100/100</span>
+    <span id="level-info">关卡: 1/50</span>
+    <span id="wave-info">波次: 0/4</span>
+    <span id="difficulty-label">难度: -</span>
+    <span id="enemies-left">敌人: 0</span>
+  </div>
+
+  <div id="wave-controls">
+    <span id="wave-countdown">准备中...</span>
+    <div id="level-panel-wrap">
+      <button id="level-toggle-btn">关卡列表 ▼</button>
+      <div id="level-panel">
+        <div id="level-panel-title">选择已解锁关卡</div>
+        <div id="level-grid"></div>
+      </div>
+    </div>
+    <button id="pause-btn" class="ctrl-btn">暂停</button>
+    <button id="resume-btn" class="ctrl-btn" style="display:none;">继续</button>
+    <label id="debug-ingame-label" class="debug-toggle" title="解锁全部关卡，可随时跳转测试">
+      <input type="checkbox" id="debug-ingame-check" /> 调试
+    </label>
+    <span id="debug-badge">调试模式</span>
+  </div>
+
+  <div id="hint">每关抵挡 4 波即可通关 · Boss 关（10/20/30/40/50）第 4 波出现 Boss · 双击 Boss 集火 · 每波间隔 10 秒自动开始</div>
+
+  <div id="game-container">
+    <div id="base-area">
+      <div id="base" class="base-dmg-5"></div>
+    </div>
+
+    <div id="grid-container">
+      <div id="grid"></div>
+      <div id="enemy-layer"></div>
+    </div>
+  </div>
+
+  <div id="build-menu">
+    <div style="margin-bottom:4px;">选择塔类型</div>
+    <button class="build-btn" data-type="arrow">箭塔：快攻单体（80）</button>
+    <button class="build-btn" data-type="cannon">炮塔：范围爆炸（120）</button>
+    <button class="build-btn" data-type="ice">冰塔：减速控制（100）</button>
+    <button class="build-btn" data-type="fire">火塔：持续灼烧（120）</button>
+    <button class="build-btn" data-type="magic">魔法塔：穿透护盾（150）</button>
+  </div>
+
+  <div id="upgrade-menu">
+    <div id="upgrade-info" style="margin-bottom:4px;"></div>
+    <button id="upgrade-btn">升级</button>
+  </div>
+
+  <div id="game-over">
+    <div id="game-over-text"></div>
+    <button onclick="location.reload()">重新开始</button>
+  </div>
+
+  <div id="difficulty-screen">
+    <h1>Darwin 塔防</h1>
+    <p>共 50 关 · 每关抵挡 4 波通关 · 第 10/20/30/40/50 关为 Boss 关 · 第 11 关起出现障碍地形</p>
+    <div class="difficulty-btns">
+      <button data-diff="easy">简单</button>
+      <button data-diff="normal">普通</button>
+      <button data-diff="hard">困难</button>
+    </div>
+    <label id="debug-mode-label" style="margin-top:14px;font-size:13px;color:#aaa;cursor:pointer;">
+      <input type="checkbox" id="debug-mode-check" style="margin-right:6px;" />
+      调试模式（解锁全部关卡，任意选关测试）
+    </label>
+  </div>
+
+  <div id="level-complete">
+    <h2 id="level-complete-title">关卡通过！</h2>
+    <p id="level-complete-desc"></p>
+    <button id="next-level-btn" class="primary">进入下一关</button>
+    <button id="stay-level-btn">留在本关</button>
+  </div>
+
+  <div id="pause-overlay">
+    <div class="pause-badge">
+      <h2>已暂停</h2>
+      <p id="pause-hint">点击「继续」恢复游戏</p>
+    </div>
+  </div>
+
+  <script>
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new AudioCtx();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function masterGain(volume = 1) {
+      const gain = audioCtx.createGain();
+      gain.gain.value = volume;
+      gain.connect(audioCtx.destination);
+      return gain;
+    }
+
+    function envGain(param, attack, decay, sustain, release, peak) {
+      const now = audioCtx.currentTime;
+      param.setValueAtTime(0.0001, now);
+      param.exponentialRampToValueAtTime(Math.max(peak, 0.0002), now + attack);
+      param.exponentialRampToValueAtTime(Math.max(sustain, 0.0001), now + attack + decay);
+      param.exponentialRampToValueAtTime(0.0001, now + attack + decay + release);
+    }
+
+    function playNoiseBurst({
+      duration = 0.2,
+      volume = 0.25,
+      type = "lowpass",
+      freq = 900,
+      q = 0.7,
+      attack = 0.005,
+      decay = 0.08,
+      release = 0.12
+    } = {}) {
+      if (!audioCtx) return;
+      const bufferSize = Math.max(1, Math.floor(audioCtx.sampleRate * duration));
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      const src = audioCtx.createBufferSource();
+      src.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = type;
+      filter.frequency.value = freq;
+      filter.Q.value = q;
+      const gain = audioCtx.createGain();
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(masterGain(volume));
+      envGain(gain.gain, attack, decay, 0.0001, release, 1);
+      src.start();
+      src.stop(audioCtx.currentTime + duration + 0.05);
+    }
+
+    function playTone({
+      freq = 440,
+      duration = 0.12,
+      type = "sine",
+      volume = 0.2,
+      attack = 0.01,
+      decay = 0.05,
+      release = 0.08,
+      slide = null,
+      filterFreq = null
+    } = {}) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      const gain = audioCtx.createGain();
+      let output = osc;
+      if (filterFreq) {
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = filterFreq;
+        osc.connect(filter);
+        output = filter;
+      }
+      output.connect(gain);
+      gain.connect(masterGain(volume));
+      const now = audioCtx.currentTime;
+      if (slide) osc.frequency.exponentialRampToValueAtTime(slide, now + duration);
+      envGain(gain.gain, attack, decay, 0.0001, release, 1);
+      osc.start(now);
+      osc.stop(now + duration + release + 0.05);
+    }
+
+    let lastHitSound = 0;
+    let lastCombatSound = 0;
+
+    function safeSound(fn) {
+      try {
+        if (!audioCtx) return;
+        fn();
+      } catch (_) { /* ignore audio errors */ }
+    }
+
+    const sound = {
+      build: () => {
+        playTone({ freq: 180, type: "triangle", duration: 0.08, volume: 0.35, attack: 0.002, decay: 0.04, release: 0.06 });
+        playNoiseBurst({ duration: 0.09, volume: 0.12, freq: 2200, type: "bandpass", attack: 0.001, decay: 0.03, release: 0.05 });
+      },
+      upgrade: () => {
+        playTone({ freq: 520, duration: 0.18, volume: 0.18, attack: 0.005, decay: 0.08, release: 0.1 });
+        setTimeout(() => playTone({ freq: 780, duration: 0.22, volume: 0.2, attack: 0.005, decay: 0.1, release: 0.12 }), 70);
+        setTimeout(() => playTone({ freq: 1040, duration: 0.25, volume: 0.16, attack: 0.005, decay: 0.12, release: 0.14 }), 140);
+      },
+      arrow: () => safeSound(() => {
+        const now = performance.now();
+        if (now - lastCombatSound < 70) return;
+        lastCombatSound = now;
+        playNoiseBurst({ duration: 0.07, volume: 0.14, freq: 1800, type: "bandpass", attack: 0.001, decay: 0.02, release: 0.04 });
+      }),
+      cannon: () => {
+        playTone({ freq: 95, type: "sine", duration: 0.35, volume: 0.55, attack: 0.003, decay: 0.12, release: 0.22, filterFreq: 280 });
+        playNoiseBurst({ duration: 0.45, volume: 0.42, freq: 420, type: "lowpass", q: 0.5, attack: 0.002, decay: 0.15, release: 0.28 });
+        playTone({ freq: 48, type: "triangle", duration: 0.5, volume: 0.28, attack: 0.005, decay: 0.2, release: 0.3 });
+      },
+      ice: () => {
+        [1400, 1760, 2100].forEach((f, i) => {
+          setTimeout(() => playTone({
+            freq: f, duration: 0.14, volume: 0.12, type: "sine",
+            attack: 0.002, decay: 0.06, release: 0.08
+          }), i * 25);
+        });
+        playNoiseBurst({ duration: 0.05, volume: 0.06, freq: 5000, type: "highpass", attack: 0.001, decay: 0.02, release: 0.03 });
+      },
+      fire: () => {
+        playNoiseBurst({ duration: 0.18, volume: 0.22, freq: 700, type: "bandpass", attack: 0.004, decay: 0.08, release: 0.1 });
+        playTone({ freq: 140, slide: 90, duration: 0.2, type: "sawtooth", volume: 0.08, attack: 0.01, decay: 0.08, release: 0.1, filterFreq: 500 });
+      },
+      magic: () => {
+        playTone({ freq: 660, slide: 1320, duration: 0.16, volume: 0.16, type: "sine", attack: 0.01, decay: 0.06, release: 0.1 });
+        playTone({ freq: 990, slide: 1980, duration: 0.18, volume: 0.1, type: "triangle", attack: 0.01, decay: 0.07, release: 0.12 });
+        playNoiseBurst({ duration: 0.12, volume: 0.08, freq: 3200, type: "highpass", attack: 0.005, decay: 0.05, release: 0.06 });
+      },
+      hit: () => safeSound(() => {
+        const now = performance.now();
+        if (now - lastHitSound < 80) return;
+        lastHitSound = now;
+        playNoiseBurst({ duration: 0.06, volume: 0.15, freq: 1200, type: "lowpass", attack: 0.001, decay: 0.02, release: 0.03 });
+      }),
+      die: () => safeSound(() => {
+        playTone({ freq: 280, slide: 90, duration: 0.2, volume: 0.2, type: "sawtooth", attack: 0.003, decay: 0.08, release: 0.1, filterFreq: 800 });
+        playNoiseBurst({ duration: 0.16, volume: 0.18, freq: 600, type: "bandpass", attack: 0.002, decay: 0.06, release: 0.08 });
+      }),
+      wave: () => {
+        playTone({ freq: 196, duration: 0.28, volume: 0.22, type: "triangle", attack: 0.01, decay: 0.12, release: 0.14 });
+        setTimeout(() => playTone({ freq: 262, duration: 0.28, volume: 0.22, type: "triangle", attack: 0.01, decay: 0.12, release: 0.14 }), 120);
+        setTimeout(() => playTone({ freq: 330, duration: 0.35, volume: 0.24, type: "triangle", attack: 0.01, decay: 0.14, release: 0.16 }), 240);
+        setTimeout(() => playNoiseBurst({ duration: 0.12, volume: 0.1, freq: 180, type: "lowpass", attack: 0.003, decay: 0.05, release: 0.06 }), 0);
+      },
+      baseHit: () => {
+        playTone({ freq: 70, type: "sine", duration: 0.45, volume: 0.5, attack: 0.003, decay: 0.15, release: 0.28, filterFreq: 200 });
+        playNoiseBurst({ duration: 0.35, volume: 0.35, freq: 260, type: "lowpass", attack: 0.002, decay: 0.12, release: 0.22 });
+      }
+    };
+
+    const GRID_W = 12;
+    const GRID_H = 8;
+    const CELL = 40;
+    const ENTRY_X = GRID_W - 0.5;
+    const ENTRY_Y = GRID_H + 0.08;
+    const ENEMY_HALF = 13;
+    const ENEMY_BOSS_HALF = 18;
+    const GRASS_LEFT_EXIT_X = -0.5 - ENEMY_HALF / CELL;
+    const BOSS_LEVELS = [10, 20, 30, 40, 50];
+    const MAX_LEVELS = 50;
+    const WAVES_PER_LEVEL = 4;
+    const WAVE_AUTO_DELAY_MS = 10000;
+    const TERRAIN_START_LEVEL = 11;
+    const GOLD_PER_LEVEL = 95;
+    const STORAGE_KEY = "darwin-td-progress";
+
+    const difficulties = {
+      easy: {
+        label: "简单",
+        gold: 650,
+        baseHP: 150,
+        enemyHp: 0.72,
+        enemySpeed: 0.82,
+        enemyDamage: 0.65,
+        spawnInterval: 1.25,
+        goldReward: 1.35
+      },
+      normal: {
+        label: "普通",
+        gold: 500,
+        baseHP: 100,
+        enemyHp: 1,
+        enemySpeed: 1,
+        enemyDamage: 1,
+        spawnInterval: 1,
+        goldReward: 1
+      },
+      hard: {
+        label: "困难",
+        gold: 360,
+        baseHP: 70,
+        enemyHp: 1.4,
+        enemySpeed: 1.22,
+        enemyDamage: 1.45,
+        spawnInterval: 0.72,
+        goldReward: 0.82
+      }
+    };
+
+    const terrainTypes = [
+      { id: "hill", css: "terrain-hill", label: "山丘" },
+      { id: "stone", css: "terrain-stone", label: "石滩" },
+      { id: "river", css: "terrain-river", label: "河流" }
+    ];
+
+    const grid = document.getElementById("grid");
+    const gameContainer = document.getElementById("game-container");
+    const gridContainer = document.getElementById("grid-container");
+    const baseAreaEl = document.getElementById("base-area");
+    const baseEl = document.getElementById("base");
+    const enemyLayer = document.getElementById("enemy-layer");
+    const buildMenu = document.getElementById("build-menu");
+    const upgradeMenu = document.getElementById("upgrade-menu");
+    const upgradeInfo = document.getElementById("upgrade-info");
+    const upgradeBtn = document.getElementById("upgrade-btn");
+    const waveCountdownEl = document.getElementById("wave-countdown");
+    const pauseBtn = document.getElementById("pause-btn");
+    const resumeBtn = document.getElementById("resume-btn");
+    const pauseOverlay = document.getElementById("pause-overlay");
+    const pauseHint = document.getElementById("pause-hint");
+    const difficultyScreen = document.getElementById("difficulty-screen");
+    const difficultyLabel = document.getElementById("difficulty-label");
+    const levelInfoEl = document.getElementById("level-info");
+    const waveInfoEl = document.getElementById("wave-info");
+    const levelPanel = document.getElementById("level-panel");
+    const levelGrid = document.getElementById("level-grid");
+    const levelToggleBtn = document.getElementById("level-toggle-btn");
+    const levelCompleteEl = document.getElementById("level-complete");
+    const levelCompleteTitle = document.getElementById("level-complete-title");
+    const levelCompleteDesc = document.getElementById("level-complete-desc");
+    const nextLevelBtn = document.getElementById("next-level-btn");
+    const stayLevelBtn = document.getElementById("stay-level-btn");
+    const gameOverEl = document.getElementById("game-over");
+    const gameOverText = document.getElementById("game-over-text");
+    const debugModeCheck = document.getElementById("debug-mode-check");
+    const debugIngameCheck = document.getElementById("debug-ingame-check");
+    const debugIngameLabel = document.getElementById("debug-ingame-label");
+    const debugBadge = document.getElementById("debug-badge");
+
+    let difficulty = null;
+    let debugMode = new URLSearchParams(location.search).get("debug") === "1";
+
+    function syncDebugCheckboxes() {
+      if (debugModeCheck) debugModeCheck.checked = debugMode;
+      if (debugIngameCheck) debugIngameCheck.checked = debugMode;
+      if (debugIngameLabel) {
+        debugIngameLabel.classList.toggle("visible", gameStarted);
+        debugIngameLabel.classList.toggle("active", debugMode && gameStarted);
+      }
+    }
+
+    function setDebugMode(on) {
+      debugMode = !!on;
+      syncDebugCheckboxes();
+      if (levelPanelOpen) buildLevelGrid();
+      refreshUI();
+    }
+
+    let gameStarted = false;
+    let paused = false;
+    let pauseStartedAt = 0;
+    let maxUnlockedLevel = 1;
+    let clearedLevels = new Set();
+    let levelPanelOpen = false;
+    let levelCompletePending = false;
+
+    const baseState = { maxHP: 100, currentHP: 100 };
+    const ui = {
+      gold: 500,
+      level: 1,
+      waveInLevel: 0,
+      goldEl: document.getElementById("gold"),
+      hpEl: document.getElementById("base-hp"),
+      enemiesEl: document.getElementById("enemies-left")
+    };
+
+    const cells = [];
+    const towers = [];
+    const enemies = [];
+    const bullets = [];
+    let selectedCell = null;
+    let selectedTower = null;
+    let waveActive = false;
+    let currentWaveNumber = 0;
+    let spawnQueue = [];
+    let spawnTimer = 0;
+    let waveCountdown = 0;
+    let gameOver = false;
+    let lastTime = 0;
+    let focusFireTarget = null;
+
+    const towerTypes = {
+      arrow: {
+        css: "tower-arrow",
+        bullet: "bullet-arrow",
+        sound: sound.arrow,
+        levels: [
+          { attack: 10, range: 3.0, speed: 800, cost: 80 },
+          { attack: 18, range: 3.2, speed: 700, cost: 120 },
+          { attack: 28, range: 3.4, speed: 650, cost: 160 },
+          { attack: 40, range: 3.6, speed: 600, cost: 220 },
+          { attack: 55, range: 3.8, speed: 550, cost: 300 }
+        ]
+      },
+      cannon: {
+        css: "tower-cannon",
+        bullet: "bullet-cannon",
+        sound: sound.cannon,
+        aoe: true,
+        aoeRadius: 1.2,
+        levels: [
+          { attack: 20, range: 2.2, speed: 1200, cost: 120 },
+          { attack: 35, range: 2.4, speed: 1100, cost: 180 },
+          { attack: 55, range: 2.6, speed: 1000, cost: 240 },
+          { attack: 80, range: 2.8, speed: 900, cost: 320 },
+          { attack: 110, range: 3.0, speed: 800, cost: 400 }
+        ]
+      },
+      ice: {
+        css: "tower-ice",
+        bullet: "bullet-ice",
+        sound: sound.ice,
+        slow: 0.45,
+        slowDuration: 2000,
+        levels: [
+          { attack: 5, range: 2.5, speed: 1000, cost: 100 },
+          { attack: 8, range: 2.7, speed: 950, cost: 150 },
+          { attack: 12, range: 2.9, speed: 900, cost: 200 },
+          { attack: 16, range: 3.1, speed: 850, cost: 260 },
+          { attack: 20, range: 3.3, speed: 800, cost: 320 }
+        ]
+      },
+      fire: {
+        css: "tower-fire",
+        bullet: "bullet-fire",
+        sound: sound.fire,
+        burn: 4,
+        burnDuration: 3000,
+        levels: [
+          { attack: 8, range: 2.3, speed: 900, cost: 120 },
+          { attack: 14, range: 2.5, speed: 850, cost: 170 },
+          { attack: 22, range: 2.7, speed: 800, cost: 230 },
+          { attack: 32, range: 2.9, speed: 750, cost: 300 },
+          { attack: 45, range: 3.1, speed: 700, cost: 380 }
+        ]
+      },
+      magic: {
+        css: "tower-magic",
+        bullet: "bullet-magic",
+        sound: sound.magic,
+        pierceShield: true,
+        levels: [
+          { attack: 15, range: 2.4, speed: 950, cost: 150 },
+          { attack: 25, range: 2.6, speed: 900, cost: 210 },
+          { attack: 38, range: 2.8, speed: 850, cost: 280 },
+          { attack: 55, range: 3.0, speed: 800, cost: 360 },
+          { attack: 75, range: 3.2, speed: 750, cost: 450 }
+        ]
+      }
+    };
+
+    const enemyTypes = {
+      normal: { css: "enemy-normal", hp: 55, speed: 28, gold: 12, damage: 8 },
+      fast: { css: "enemy-fast", hp: 35, speed: 48, gold: 16, damage: 6 },
+      tank: { css: "enemy-tank", hp: 180, speed: 18, gold: 28, damage: 15 },
+      shield: { css: "enemy-shield", hp: 70, shield: 50, speed: 24, gold: 30, damage: 10 },
+      bomber: { css: "enemy-bomber", hp: 45, speed: 32, gold: 22, damage: 25, explode: true },
+      boss: { css: "enemy-boss", hp: 900, speed: 11, gold: 220, damage: 45, shield: 120, isBoss: true }
+    };
+
+    function isBossLevel(level) {
+      return BOSS_LEVELS.includes(level);
+    }
+
+    function getBossTier(level) {
+      const idx = BOSS_LEVELS.indexOf(level);
+      return idx >= 0 ? idx + 1 : 0;
+    }
+
+    function isLevelUnlocked(level) {
+      return debugMode || level <= maxUnlockedLevel;
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        const saved = data[difficulty];
+        if (!saved) return;
+        maxUnlockedLevel = Math.max(1, Math.min(MAX_LEVELS, saved.maxUnlocked || 1));
+        clearedLevels = new Set(saved.cleared || []);
+      } catch (_) { /* ignore */ }
+    }
+
+    function saveProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const data = raw ? JSON.parse(raw) : {};
+        data[difficulty] = {
+          maxUnlocked: maxUnlockedLevel,
+          cleared: [...clearedLevels]
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (_) { /* ignore */ }
+    }
+
+    function getLevelStartGold(level) {
+      const cfg = difficulties[difficulty];
+      return cfg.gold + (level - 1) * GOLD_PER_LEVEL;
+    }
+
+    function getWaveDifficulty(level, waveInLevel) {
+      return (level - 1) * WAVES_PER_LEVEL + waveInLevel;
+    }
+
+    function clearTowers() {
+      for (const tower of towers) {
+        tower.el.remove();
+        tower.cell.tower = null;
+      }
+      towers.length = 0;
+    }
+
+    function clearCombat() {
+      for (const enemy of enemies) enemy.el.remove();
+      enemies.length = 0;
+      for (const bullet of bullets) bullet.el.remove();
+      bullets.length = 0;
+      spawnQueue = [];
+      spawnTimer = 0;
+      waveActive = false;
+      currentWaveNumber = 0;
+      waveCountdown = 0;
+      clearFocusFire();
+    }
+
+    function clearFocusFire() {
+      focusFireTarget = null;
+      for (const enemy of enemies) {
+        enemy.el.classList.remove("focus-marked");
+      }
+    }
+
+    function setFocusFire(enemy) {
+      if (!enemy || !enemy.isBoss || enemy.dead || gameOver) return;
+      focusFireTarget = enemy;
+      for (const e of enemies) {
+        e.el.classList.toggle("focus-marked", e === enemy);
+      }
+      ensureAudio();
+      sound.wave();
+    }
+
+    function getEnemyGridPos(enemy) {
+      if (enemy.phase === "base") {
+        const p = gridToGamePixel(GRASS_LEFT_EXIT_X, enemy.y);
+        return { x: GRASS_LEFT_EXIT_X, y: enemy.y, px: enemy.px, py: enemy.py };
+      }
+      return { x: enemy.x, y: enemy.y, px: null, py: null };
+    }
+
+    function isGameplayFrozen() {
+      return paused || levelPanelOpen || levelCompletePending;
+    }
+
+    function scheduleNextWave() {
+      if (!gameStarted || gameOver || waveActive) return;
+      if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
+      if (levelCompletePending) return;
+      if (waveCountdown <= 0) waveCountdown = WAVE_AUTO_DELAY_MS;
+    }
+
+    function closeLevelPanel() {
+      if (!levelPanelOpen) return;
+      levelPanelOpen = false;
+      levelPanel.classList.remove("open");
+      levelToggleBtn.textContent = "关卡列表 ▼";
+      if (!paused) document.body.classList.remove("game-paused");
+    }
+
+    function updateWaveCountdown(dt) {
+      if (waveCountdown <= 0) return;
+      if (waveActive || gameOver) {
+        waveCountdown = 0;
+        return;
+      }
+      if (isGameplayFrozen()) return;
+      waveCountdown -= dt;
+      if (waveCountdown <= 0) {
+        waveCountdown = 0;
+        startWave();
+      }
+    }
+
+    function buildLevelGrid() {
+      levelGrid.innerHTML = "";
+      const panelTitle = document.getElementById("level-panel-title");
+      panelTitle.textContent = debugMode ? "选择关卡（调试：全部解锁）" : "选择已解锁关卡";
+      for (let lv = 1; lv <= MAX_LEVELS; lv++) {
+        const btn = document.createElement("button");
+        btn.className = "level-btn";
+        btn.textContent = isBossLevel(lv) ? lv + "★" : String(lv);
+        btn.dataset.level = lv;
+        const unlocked = isLevelUnlocked(lv);
+        const cleared = clearedLevels.has(lv);
+        if (!unlocked) btn.classList.add("locked");
+        if (cleared) btn.classList.add("cleared");
+        if (isBossLevel(lv)) btn.classList.add("boss-level");
+        if (lv === ui.level) btn.classList.add("current");
+        btn.disabled = !unlocked || (!debugMode && waveActive);
+        btn.title = !unlocked ? "未解锁" : debugMode ? "调试：点击跳转" : isBossLevel(lv) ? "Boss 关" : cleared ? "已通关" : "已解锁";
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (isLevelUnlocked(lv)) {
+            closeLevelPanel();
+            enterLevel(lv);
+          }
+        });
+        levelGrid.appendChild(btn);
+      }
+    }
+
+    function toggleLevelPanel(force) {
+      if (typeof force === "boolean") levelPanelOpen = force;
+      else levelPanelOpen = !levelPanelOpen;
+      levelPanel.classList.toggle("open", levelPanelOpen);
+      levelToggleBtn.textContent = levelPanelOpen ? "关卡列表 ▲" : "关卡列表 ▼";
+      if (levelPanelOpen) {
+        hideMenus();
+        buildLevelGrid();
+        document.body.classList.add("game-paused");
+      } else {
+        if (!paused) document.body.classList.remove("game-paused");
+        scheduleNextWave();
+      }
+      refreshUI();
+    }
+
+    function enterLevel(level) {
+      if (!gameStarted || level < 1 || level > MAX_LEVELS) return;
+      if (!isLevelUnlocked(level)) return;
+      if (!debugMode && (waveActive || enemies.length > 0)) return;
+      closeLevelPanel();
+      hideMenus();
+      clearCombat();
+      clearTowers();
+      clearTerrain();
+      ui.level = level;
+      ui.waveInLevel = 0;
+      ui.gold = getLevelStartGold(level);
+      baseState.currentHP = baseState.maxHP;
+      levelCompletePending = false;
+      levelCompleteEl.style.display = "none";
+      gameOver = false;
+      gameOverEl.style.display = "none";
+      generateTerrain(level);
+      updateBaseVisual();
+      scheduleNextWave();
+      refreshUI();
+    }
+
+    function refreshUI() {
+      ui.goldEl.textContent = "金币: " + Math.floor(ui.gold);
+      ui.hpEl.textContent = "基地HP: " + Math.floor(baseState.currentHP) + "/" + baseState.maxHP;
+      updateBaseVisual();
+      const bossTag = isBossLevel(ui.level) ? " [Boss]" : "";
+      levelInfoEl.textContent = "关卡: " + ui.level + "/" + MAX_LEVELS + bossTag;
+      waveInfoEl.textContent = "波次: " + ui.waveInLevel + "/" + WAVES_PER_LEVEL;
+      if (difficulty) difficultyLabel.textContent = "难度: " + difficulties[difficulty].label;
+      ui.enemiesEl.textContent = "敌人: " + enemies.length + (spawnQueue.length ? "+" + spawnQueue.length : "");
+      debugBadge.classList.toggle("active", debugMode && gameStarted);
+      syncDebugCheckboxes();
+
+      const levelDone = ui.waveInLevel >= WAVES_PER_LEVEL;
+      const secs = Math.ceil(waveCountdown / 1000);
+
+      if (ui.level >= MAX_LEVELS && levelDone && !waveActive && enemies.length === 0) {
+        waveCountdownEl.textContent = "全部通关!";
+      } else       if (waveActive) {
+        waveCountdownEl.textContent = "第 " + currentWaveNumber + " 波进行中...";
+      } else if (levelPanelOpen) {
+        waveCountdownEl.textContent = "关卡选择中（已暂停）";
+      } else if (paused) {
+        waveCountdownEl.textContent = waveCountdown > 0
+          ? "已暂停 · 下一波 " + secs + " 秒后开始"
+          : "已暂停";
+      } else if (levelDone || levelCompletePending) {
+        waveCountdownEl.textContent = "本关已通过";
+      } else if (waveCountdown > 0) {
+        const bossHint = isBossLevel(ui.level) && ui.waveInLevel + 1 === WAVES_PER_LEVEL ? " · Boss 波" : "";
+        waveCountdownEl.textContent = "第 " + (ui.waveInLevel + 1) + " 波 " + secs + " 秒后开始..." + bossHint;
+      } else {
+        waveCountdownEl.textContent = "准备下一波...";
+      }
+
+      pauseBtn.disabled = !gameStarted || gameOver || levelCompletePending;
+      pauseBtn.style.display = paused ? "none" : "inline-block";
+      resumeBtn.style.display = paused ? "inline-block" : "none";
+      pauseBtn.classList.toggle("active", paused);
+
+      if (paused && pauseOverlay.style.display !== "none") {
+        if (waveCountdown > 0) {
+          pauseHint.textContent = "下一波 " + secs + " 秒后开始 · 点击「继续」或按空格键恢复";
+        } else {
+          pauseHint.textContent = "点击「继续」或按空格键恢复游戏";
+        }
+      }
+
+    }
+
+    function clearTerrain() {
+      for (const cell of cells) {
+        if (!cell.terrain) continue;
+        cell.terrain = null;
+        cell.el.classList.remove("blocked", "terrain-hill", "terrain-stone", "terrain-river");
+        cell.el.title = "";
+        cell.el.classList.remove("grass-dark", "grass-light");
+        cell.el.classList.add((cell.x + cell.y) % 2 === 0 ? "grass-dark" : "grass-light");
+      }
+    }
+
+    function generateTerrain(level) {
+      clearTerrain();
+      if (level < TERRAIN_START_LEVEL) return;
+
+      const ratio = 0.08 + ((level - TERRAIN_START_LEVEL + 1) / (MAX_LEVELS - TERRAIN_START_LEVEL + 1)) * 0.22;
+      const targetCount = Math.min(
+        Math.floor(GRID_W * GRID_H * ratio),
+        GRID_W * GRID_H - towers.length - 8
+      );
+      const candidates = cells.filter((c) => !c.tower && !c.terrain);
+      shuffle(candidates);
+      const count = Math.min(targetCount, candidates.length);
+
+      for (let i = 0; i < count; i++) {
+        const cell = candidates[i];
+        const terrain = terrainTypes[Math.floor(Math.random() * terrainTypes.length)];
+        cell.terrain = terrain.id;
+        cell.el.classList.remove("grass-dark", "grass-light");
+        cell.el.classList.add("blocked", terrain.css);
+        cell.el.title = terrain.label + "（不可建造）";
+      }
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function startGame(diff) {
+      difficulty = diff;
+      if (debugModeCheck) debugMode = debugModeCheck.checked;
+      const cfg = difficulties[diff];
+      gameStarted = true;
+      syncDebugCheckboxes();
+      maxUnlockedLevel = 1;
+      clearedLevels = new Set();
+      loadProgress();
+      baseState.maxHP = cfg.baseHP;
+      difficultyScreen.style.display = "none";
+      enterLevel(1);
+    }
+
+    function showLevelComplete() {
+      levelCompletePending = true;
+      waveCountdown = 0;
+      clearedLevels.add(ui.level);
+      if (ui.level < MAX_LEVELS) {
+        maxUnlockedLevel = Math.max(maxUnlockedLevel, ui.level + 1);
+      }
+      saveProgress();
+
+      if (ui.level >= MAX_LEVELS) {
+        endGame(true);
+        return;
+      }
+
+      levelCompleteTitle.textContent = isBossLevel(ui.level)
+        ? "Boss 关第 " + ui.level + " 关通过！"
+        : "第 " + ui.level + " 关通过！";
+      levelCompleteDesc.textContent =
+        (isBossLevel(ui.level) ? "Boss 已被击败！" : "成功抵挡 " + WAVES_PER_LEVEL + " 波进攻！") +
+        "已解锁第 " + (ui.level + 1) + " 关。进入下一关将清除防御塔，并获得 " +
+        getLevelStartGold(ui.level + 1) + " 初始金币。";
+      nextLevelBtn.style.display = "inline-block";
+      levelCompleteEl.style.display = "block";
+      refreshUI();
+    }
+
+    function createGrid() {
+      for (let y = 0; y < GRID_H; y++) {
+        for (let x = 0; x < GRID_W; x++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          cell.classList.add((x + y) % 2 === 0 ? "grass-dark" : "grass-light");
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+          cell.addEventListener("click", (e) => onCellClick(x, y, e));
+          grid.appendChild(cell);
+          cells.push({ x, y, el: cell, tower: null, terrain: null });
+        }
+      }
+    }
+
+    function getCell(x, y) {
+      if (x < 0 || y < 0 || x >= GRID_W || y >= GRID_H) return null;
+      return cells[y * GRID_W + x];
+    }
+
+    function gridToGamePixel(x, y) {
+      const offsetX = (gridContainer.clientWidth - GRID_W * CELL) / 2;
+      const offsetY = (gridContainer.clientHeight - GRID_H * CELL) / 2;
+      return {
+        px: offsetX + x * CELL + CELL / 2,
+        py: offsetY + y * CELL + CELL / 2
+      };
+    }
+
+    function getBaseCenterInGame() {
+      const baseRect = baseEl.getBoundingClientRect();
+      const gridRect = gridContainer.getBoundingClientRect();
+      return {
+        px: baseRect.left - gridRect.left + baseRect.width / 2,
+        py: baseRect.top - gridRect.top + baseRect.height / 2
+      };
+    }
+
+    function updateBaseVisual() {
+      const ratio = baseState.maxHP > 0 ? baseState.currentHP / baseState.maxHP : 0;
+      baseEl.classList.remove("base-dmg-1", "base-dmg-2", "base-dmg-3", "base-dmg-4", "base-dmg-5");
+      let level = 1;
+      if (ratio > 0.8) level = 5;
+      else if (ratio > 0.6) level = 4;
+      else if (ratio > 0.4) level = 3;
+      else if (ratio > 0.2) level = 2;
+      baseEl.classList.add("base-dmg-" + level);
+    }
+
+    function hideMenus() {
+      buildMenu.style.display = "none";
+      upgradeMenu.style.display = "none";
+      selectedCell = null;
+      selectedTower = null;
+    }
+
+    function showMenuAt(menu, x, y) {
+      const rect = gridContainer.getBoundingClientRect();
+      menu.style.display = "block";
+      menu.style.left = Math.min(rect.left + x, window.innerWidth - menu.offsetWidth - 8) + "px";
+      menu.style.top = Math.min(rect.top + y, window.innerHeight - menu.offsetHeight - 8) + "px";
+    }
+
+    function updateBuildMenuButtons() {
+      buildMenu.querySelectorAll(".build-btn").forEach((btn) => {
+        const type = btn.dataset.type;
+        const cost = towerTypes[type].levels[0].cost;
+        btn.disabled = ui.gold < cost;
+        btn.textContent = btn.textContent.replace(/（\d+）$/, `（${cost}）`);
+      });
+    }
+
+    function onCellClick(x, y, e) {
+      if (gameOver || isGameplayFrozen() || !gameStarted) return;
+      ensureAudio();
+      const cell = getCell(x, y);
+      if (!cell || cell.terrain) return;
+
+      if (cell.tower) {
+        selectedTower = cell.tower;
+        selectedCell = null;
+        const stats = getTowerStats(cell.tower);
+        const maxLv = towerTypes[cell.tower.type].levels.length;
+        upgradeInfo.textContent = `${towerLabel(cell.tower.type)} Lv${cell.tower.level} | 攻${stats.attack} 距${stats.range.toFixed(1)}`;
+        if (cell.tower.level < maxLv) {
+          const next = towerTypes[cell.tower.type].levels[cell.tower.level];
+          upgradeBtn.textContent = `升级到 Lv${cell.tower.level + 1}（${next.cost}）`;
+          upgradeBtn.disabled = ui.gold < next.cost;
+          upgradeBtn.style.display = "block";
+        } else {
+          upgradeBtn.textContent = "已满级";
+          upgradeBtn.disabled = true;
+          upgradeBtn.style.display = "block";
+        }
+        buildMenu.style.display = "none";
+        showMenuAt(upgradeMenu, e.clientX - gridContainer.getBoundingClientRect().left, e.clientY - gridContainer.getBoundingClientRect().top);
+        return;
+      }
+
+      selectedCell = cell;
+      selectedTower = null;
+      upgradeMenu.style.display = "none";
+      updateBuildMenuButtons();
+      showMenuAt(buildMenu, e.clientX - gridContainer.getBoundingClientRect().left, e.clientY - gridContainer.getBoundingClientRect().top);
+    }
+
+    function towerLabel(type) {
+      return { arrow: "箭塔", cannon: "炮塔", ice: "冰塔", fire: "火塔", magic: "魔法塔" }[type] || type;
+    }
+
+    function getTowerStats(tower) {
+      return towerTypes[tower.type].levels[tower.level - 1];
+    }
+
+    function buildTower(type) {
+      if (!selectedCell || selectedCell.tower || selectedCell.terrain || gameOver || isGameplayFrozen()) return;
+      const def = towerTypes[type];
+      const stats = def.levels[0];
+      if (ui.gold < stats.cost) return;
+
+      ui.gold -= stats.cost;
+      const towerEl = document.createElement("div");
+      towerEl.className = "tower " + def.css;
+      selectedCell.el.appendChild(towerEl);
+
+      const tower = {
+        type,
+        level: 1,
+        x: selectedCell.x,
+        y: selectedCell.y,
+        el: towerEl,
+        cell: selectedCell,
+        cooldown: 0
+      };
+      selectedCell.tower = tower;
+      towers.push(tower);
+      sound.build();
+      hideMenus();
+      refreshUI();
+    }
+
+    function upgradeTower() {
+      if (!selectedTower || gameOver || isGameplayFrozen()) return;
+      const def = towerTypes[selectedTower.type];
+      if (selectedTower.level >= def.levels.length) return;
+      const next = def.levels[selectedTower.level];
+      if (ui.gold < next.cost) return;
+
+      ui.gold -= next.cost;
+      selectedTower.level++;
+      sound.upgrade();
+      hideMenus();
+      refreshUI();
+    }
+
+    function makeBossWavePlan(level) {
+      const plan = [];
+      const cfg = difficulties[difficulty];
+      const tier = getBossTier(level);
+      const waveIndex = getWaveDifficulty(level, WAVES_PER_LEVEL);
+      const hpScale = (1 + waveIndex * 0.055 + Math.pow(level, 1.2) * 0.006) * cfg.enemyHp;
+      const baseInterval = Math.max(280, 900 - level * 5) / cfg.spawnInterval;
+      const minionTypes = ["normal", "fast"];
+      if (level >= 20) minionTypes.push("tank");
+      if (level >= 30) minionTypes.push("shield");
+      if (level >= 40) minionTypes.push("bomber");
+
+      plan.push({
+        type: "boss",
+        row: Math.floor(GRID_H / 2),
+        hpScale,
+        bossTier: tier,
+        delay: 600
+      });
+
+      const minionCount = 4 + tier * 3;
+      for (let i = 0; i < minionCount; i++) {
+        const type = minionTypes[Math.floor(Math.random() * minionTypes.length)];
+        plan.push({
+          type,
+          row: Math.floor(Math.random() * GRID_H),
+          hpScale: hpScale * 0.85,
+          delay: i === 0 ? 900 : baseInterval
+        });
+      }
+      return plan;
+    }
+
+    function makeWavePlan(level, waveInLevel) {
+      if (isBossLevel(level) && waveInLevel === WAVES_PER_LEVEL) {
+        return makeBossWavePlan(level);
+      }
+      const plan = [];
+      const cfg = difficulties[difficulty];
+      const waveIndex = getWaveDifficulty(level, waveInLevel);
+      let count = Math.min(3 + Math.floor(waveIndex * 1.1 + level * 0.8), 70);
+      if (isBossLevel(level)) count = Math.min(count + 2, 70);
+      const types = ["normal"];
+      if (level >= 2 || waveInLevel >= 2) types.push("fast");
+      if (level >= 5 || waveInLevel >= 3) types.push("tank");
+      if (level >= 10 || waveInLevel >= 4) types.push("shield");
+      if (level >= 15 || waveInLevel >= 3) types.push("bomber");
+
+      const hpScale = (1 + waveIndex * 0.055 + Math.pow(level, 1.2) * 0.006) * cfg.enemyHp;
+      const baseInterval = Math.max(220, 850 - level * 6 - waveInLevel * 10) / cfg.spawnInterval;
+
+      for (let i = 0; i < count; i++) {
+        const type = types[Math.floor(Math.random() * types.length)];
+        const row = Math.floor(Math.random() * GRID_H);
+        plan.push({ type, row, hpScale, delay: i === 0 ? 400 : baseInterval });
+      }
+      return plan;
+    }
+
+    function startWave() {
+      if (!gameStarted || waveActive || gameOver || isGameplayFrozen()) return;
+      if (ui.waveInLevel >= WAVES_PER_LEVEL) return;
+      waveCountdown = 0;
+      ensureAudio();
+      const nextWave = ui.waveInLevel + 1;
+      currentWaveNumber = nextWave;
+      waveActive = true;
+      spawnQueue = makeWavePlan(ui.level, nextWave);
+      spawnTimer = spawnQueue.length > 0 ? spawnQueue[0].delay : 0;
+      sound.wave();
+      hideMenus();
+      refreshUI();
+    }
+
+    function spawnEnemy(entry) {
+      const def = enemyTypes[entry.type];
+      const cfg = difficulties[difficulty];
+      const el = document.createElement("div");
+      el.className = "enemy " + def.css;
+      const hpBar = document.createElement("div");
+      hpBar.className = "hp-bar";
+      const hpFill = document.createElement("div");
+      hpFill.className = "hp-fill";
+      hpBar.appendChild(hpFill);
+      el.appendChild(hpBar);
+      enemyLayer.appendChild(el);
+
+      const maxHP = Math.round(def.hp * entry.hpScale * (entry.bossTier ? 1 + (entry.bossTier - 1) * 0.75 : 1));
+      const targetRow = entry.row;
+      const isBoss = !!(def.isBoss || entry.type === "boss");
+      const enemy = {
+        type: entry.type,
+        phase: "enter",
+        targetRow,
+        entryX: ENTRY_X,
+        x: ENTRY_X,
+        y: ENTRY_Y,
+        hp: maxHP,
+        maxHP,
+        shield: def.shield ? Math.round(def.shield * entry.hpScale * (entry.bossTier ? 1 + entry.bossTier * 0.3 : 1)) : 0,
+        maxShield: def.shield ? Math.round(def.shield * entry.hpScale * (entry.bossTier ? 1 + entry.bossTier * 0.3 : 1)) : 0,
+        speed: def.speed * cfg.enemySpeed * (isBoss ? 0.92 : 1),
+        gold: Math.round((def.gold + Math.floor(ui.level * 2 + currentWaveNumber * 3)) * cfg.goldReward * (isBoss ? 2.5 : 1)),
+        damage: Math.round(def.damage * cfg.enemyDamage * (1 + ui.level * 0.025 + currentWaveNumber * 0.01) * (isBoss ? 1.35 : 1)),
+        explode: !!def.explode,
+        isBoss,
+        bossTier: entry.bossTier || 0,
+        el,
+        hpFill,
+        slowUntil: 0,
+        burnUntil: 0,
+        burnTick: 0,
+        dead: false
+      };
+      if (isBoss) {
+        el.title = "双击集火 Boss";
+        el.addEventListener("dblclick", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setFocusFire(enemy);
+        });
+      }
+      enemies.push(enemy);
+      updateEnemyPosition(enemy);
+      refreshUI();
+    }
+
+    function updateEnemyPosition(enemy) {
+      let px, py;
+      if (enemy.phase === "base") {
+        px = enemy.px;
+        py = enemy.py;
+      } else {
+        const p = gridToGamePixel(enemy.x, enemy.y);
+        px = p.px;
+        py = p.py;
+      }
+      enemy.el.style.left = (px - (enemy.isBoss ? ENEMY_BOSS_HALF : ENEMY_HALF)) + "px";
+      enemy.el.style.top = (py - (enemy.isBoss ? ENEMY_BOSS_HALF : ENEMY_HALF)) + "px";
+      const ratio = Math.max(0, enemy.hp / enemy.maxHP);
+      enemy.hpFill.style.width = (ratio * 100) + "%";
+      enemy.hpFill.style.background = ratio > 0.5 ? "#4caf50" : ratio > 0.25 ? "#ff9800" : "#f44336";
+      enemy.el.classList.toggle("frozen", performance.now() < enemy.slowUntil);
+      enemy.el.classList.toggle("burning", performance.now() < enemy.burnUntil);
+    }
+
+    function dist(ax, ay, bx, by) {
+      return Math.hypot(ax - bx, ay - by);
+    }
+
+    function findTarget(tower, stats) {
+      if (focusFireTarget && !focusFireTarget.dead) {
+        const pos = getEnemyGridPos(focusFireTarget);
+        const d = dist(tower.x + 0.5, tower.y + 0.5, pos.x, pos.y);
+        if (d <= stats.range) return focusFireTarget;
+      }
+
+      let best = null;
+      let bestScore = -Infinity;
+      for (const enemy of enemies) {
+        if (enemy.dead) continue;
+        const pos = getEnemyGridPos(enemy);
+        const d = dist(tower.x + 0.5, tower.y + 0.5, pos.x, pos.y);
+        if (d > stats.range) continue;
+        const score = pos.x * 10 - d + (enemy.isBoss ? 500 : 0);
+        if (score > bestScore) {
+          bestScore = score;
+          best = enemy;
+        }
+      }
+      return best;
+    }
+
+    function shootBullet(tower, target, def, stats) {
+      const from = gridToGamePixel(tower.x + 0.5, tower.y + 0.5);
+      const to = target.phase === "base"
+        ? { px: target.px, py: target.py }
+        : gridToGamePixel(target.x, target.y);
+      const el = document.createElement("div");
+      el.className = "bullet " + def.bullet;
+      enemyLayer.appendChild(el);
+
+      bullets.push({
+        x: from.px,
+        y: from.py,
+        tx: to.px,
+        ty: to.py,
+        speed: 420,
+        tower,
+        target,
+        def,
+        stats,
+        el,
+        done: false
+      });
+      def.sound();
+    }
+
+    function applyDamage(enemy, amount, sourceType) {
+      if (enemy.dead) return;
+      const def = towerTypes[sourceType];
+      let dmg = amount;
+
+      if (enemy.shield > 0 && !def.pierceShield) {
+        const absorbed = Math.min(enemy.shield, dmg);
+        enemy.shield -= absorbed;
+        dmg -= absorbed;
+      }
+
+      if (dmg > 0) enemy.hp -= dmg;
+      updateEnemyPosition(enemy);
+
+      if (def.slow) enemy.slowUntil = performance.now() + def.slowDuration;
+      if (def.burn) {
+        enemy.burnUntil = performance.now() + def.burnDuration;
+        enemy.burnTick = performance.now();
+      }
+
+      if (enemy.hp <= 0) {
+        killEnemy(enemy);
+        return;
+      }
+      sound.hit();
+    }
+
+    function killEnemy(enemy) {
+      if (enemy.dead) return;
+      enemy.dead = true;
+      if (focusFireTarget === enemy) clearFocusFire();
+      ui.gold += enemy.gold;
+      enemy.el.remove();
+      const idx = enemies.indexOf(enemy);
+      if (idx >= 0) enemies.splice(idx, 1);
+      sound.die();
+      refreshUI();
+    }
+
+    function damageBase(amount) {
+      baseState.currentHP -= amount;
+      sound.baseHit();
+      baseEl.classList.add("base-hit-flash");
+      setTimeout(() => baseEl.classList.remove("base-hit-flash"), 200);
+      refreshUI();
+      if (baseState.currentHP <= 0) endGame(false);
+    }
+
+    function enemyReachBase(enemy, i) {
+      const dmg = enemy.explode ? enemy.damage * 1.5 : enemy.damage;
+      enemy.el.remove();
+      enemies.splice(i, 1);
+      damageBase(dmg);
+    }
+
+    function endGame(won) {
+      gameOver = true;
+      waveActive = false;
+      paused = false;
+      levelCompletePending = false;
+      pauseOverlay.style.display = "none";
+      document.body.classList.remove("game-paused");
+      levelCompleteEl.style.display = "none";
+      gameOverText.textContent = won
+        ? `恭喜通关！你以【${difficulties[difficulty].label}】难度完成了全部 ${MAX_LEVELS} 关！`
+        : `基地被摧毁（${difficulties[difficulty].label} · 第 ${ui.level} 关 · 第 ${Math.min(currentWaveNumber || ui.waveInLevel + 1, WAVES_PER_LEVEL)} 波）`;
+      gameOverEl.style.display = "block";
+      refreshUI();
+    }
+
+    function pauseGame() {
+      if (!gameStarted || gameOver || paused || levelCompletePending) return;
+      paused = true;
+      pauseStartedAt = performance.now();
+      pauseOverlay.style.display = "block";
+      if (waveCountdown > 0) {
+        const secs = Math.ceil(waveCountdown / 1000);
+        pauseHint.textContent = "下一波 " + secs + " 秒后开始 · 点击「继续」或按空格键恢复";
+      } else {
+        pauseHint.textContent = "点击「继续」或按空格键恢复游戏";
+      }
+      hideMenus();
+      document.body.classList.add("game-paused");
+      refreshUI();
+    }
+
+    function resumeGame() {
+      if (!paused) return;
+      paused = false;
+      pauseOverlay.style.display = "none";
+      if (!levelPanelOpen) document.body.classList.remove("game-paused");
+      refreshUI();
+    }
+
+    function updateTowers(dt) {
+      for (const tower of towers) {
+        const def = towerTypes[tower.type];
+        const stats = getTowerStats(tower);
+        tower.cooldown -= dt;
+        if (tower.cooldown > 0) continue;
+        const target = findTarget(tower, stats);
+        if (!target) continue;
+        tower.cooldown = stats.speed;
+        shootBullet(tower, target, def, stats);
+      }
+    }
+
+    function updateBullets(dt) {
+      for (let i = bullets.length - 1; i >= 0; i--) {
+        const b = bullets[i];
+        const dx = b.tx - b.x;
+        const dy = b.ty - b.y;
+        const len = Math.hypot(dx, dy);
+        const step = b.speed * dt / 1000;
+        if (len <= step || b.target.dead) {
+          if (b.def.aoe) {
+            for (const enemy of enemies) {
+              if (enemy.dead) continue;
+              if (dist(b.target.phase === "base" ? 0 : b.target.x, b.target.y, enemy.x, enemy.y) <= b.def.aoeRadius) {
+                applyDamage(enemy, b.stats.attack, b.tower.type);
+              }
+            }
+          } else if (!b.target.dead) {
+            applyDamage(b.target, b.stats.attack, b.tower.type);
+          }
+          b.el.remove();
+          bullets.splice(i, 1);
+          continue;
+        }
+        b.x += (dx / len) * step;
+        b.y += (dy / len) * step;
+        b.el.style.left = (b.x - 4) + "px";
+        b.el.style.top = (b.y - 4) + "px";
+      }
+    }
+
+    function updateEnemies(dt, now) {
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemy = enemies[i];
+        if (enemy.dead) continue;
+
+        let speed = enemy.speed;
+        if (now < enemy.slowUntil) speed *= 0.45;
+
+        if (enemy.phase === "enter") {
+          enemy.x = enemy.entryX;
+          enemy.y -= (speed * dt) / 1000 / CELL;
+          if (enemy.y <= enemy.targetRow + 0.5) {
+            enemy.y = enemy.targetRow + 0.5;
+            enemy.phase = "field";
+          }
+        } else if (enemy.phase === "field") {
+          enemy.x -= (speed * dt) / 1000 / CELL;
+          if (enemy.x <= GRASS_LEFT_EXIT_X) {
+            enemy.x = GRASS_LEFT_EXIT_X;
+            enemy.phase = "base";
+            const exit = gridToGamePixel(enemy.x, enemy.y);
+            enemy.px = exit.px;
+            enemy.py = exit.py;
+          }
+        } else if (enemy.phase === "base") {
+          const base = getBaseCenterInGame();
+          const dx = base.px - enemy.px;
+          const dy = base.py - enemy.py;
+          const len = Math.hypot(dx, dy);
+          const step = (speed * dt) / 1000;
+          if (len <= step + 8) {
+            enemyReachBase(enemy, i);
+            continue;
+          }
+          enemy.px += (dx / len) * step;
+          enemy.py += (dy / len) * step;
+        }
+
+        updateEnemyPosition(enemy);
+
+        if (now < enemy.burnUntil && now - enemy.burnTick >= 500) {
+          enemy.burnTick = now;
+          enemy.hp -= towerTypes.fire.burn;
+          updateEnemyPosition(enemy);
+          if (enemy.hp <= 0) {
+            killEnemy(enemy);
+            continue;
+          }
+        }
+
+        if (enemy.phase !== "base" && enemy.hp <= 0) {
+          killEnemy(enemy);
+          continue;
+        }
+      }
+    }
+
+    function updateSpawning(dt) {
+      if (!waveActive) return;
+      if (spawnQueue.length === 0) {
+        if (enemies.length === 0) {
+          waveActive = false;
+          ui.waveInLevel++;
+          if (ui.waveInLevel >= WAVES_PER_LEVEL) {
+            showLevelComplete();
+          } else {
+            scheduleNextWave();
+            refreshUI();
+          }
+        }
+        return;
+      }
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        const next = spawnQueue.shift();
+        spawnEnemy(next);
+        spawnTimer = spawnQueue.length > 0 ? spawnQueue[0].delay : 0;
+      }
+    }
+
+    function gameLoop(ts) {
+      try {
+        if (!lastTime) {
+          lastTime = ts;
+          requestAnimationFrame(gameLoop);
+          return;
+        }
+        const dt = Math.min(ts - lastTime, 50);
+        lastTime = ts;
+
+        if (!gameOver && gameStarted && !paused && !levelPanelOpen) {
+          updateWaveCountdown(dt);
+          updateSpawning(dt);
+          updateEnemies(dt, ts);
+          updateTowers(dt);
+          updateBullets(dt);
+        }
+        if (gameStarted && !gameOver) {
+          refreshUI();
+        }
+      } catch (err) {
+        console.error("gameLoop error:", err);
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    buildMenu.querySelectorAll(".build-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        buildTower(btn.dataset.type);
+      });
+    });
+
+    upgradeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      upgradeTower();
+    });
+
+    pauseBtn.addEventListener("click", pauseGame);
+    resumeBtn.addEventListener("click", resumeGame);
+    levelToggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (gameStarted) toggleLevelPanel();
+    });
+    nextLevelBtn.addEventListener("click", () => {
+      if (ui.level < MAX_LEVELS) enterLevel(ui.level + 1);
+    });
+    stayLevelBtn.addEventListener("click", () => {
+      levelCompletePending = false;
+      levelCompleteEl.style.display = "none";
+      ui.waveInLevel = 0;
+      currentWaveNumber = 0;
+      scheduleNextWave();
+      refreshUI();
+    });
+
+    difficultyScreen.querySelectorAll("[data-diff]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        ensureAudio();
+        startGame(btn.dataset.diff);
+      });
+    });
+
+    if (debugModeCheck) {
+      debugModeCheck.addEventListener("change", () => setDebugMode(debugModeCheck.checked));
+    }
+    if (debugIngameCheck) {
+      debugIngameCheck.addEventListener("change", () => setDebugMode(debugIngameCheck.checked));
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && gameStarted && !gameOver && !levelCompletePending) {
+        e.preventDefault();
+        if (levelPanelOpen) return;
+        if (paused) resumeGame();
+        else pauseGame();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!buildMenu.contains(e.target) && !upgradeMenu.contains(e.target) && !e.target.classList.contains("cell")) {
+        hideMenus();
+      }
+      if (levelPanelOpen && !document.getElementById("level-panel-wrap").contains(e.target)) {
+        toggleLevelPanel(false);
+      }
+      ensureAudio();
+    });
+
+    createGrid();
+    syncDebugCheckboxes();
+    refreshUI();
+    requestAnimationFrame(gameLoop);
+
+    if (new URLSearchParams(location.search).get("test") === "1") {
+      window.__darwin = {
+        getState() {
+          return {
+            waveActive, paused, gameOver, gameStarted, levelCompletePending, debugMode,
+            waveInLevel: ui.waveInLevel, level: ui.level, gold: ui.gold,
+            waveCountdown, levelPanelOpen,
+            enemies: enemies.length,
+            enemyXs: enemies.map((e) => ({ x: e.x, y: e.y, phase: e.phase, hp: e.hp, isBoss: e.isBoss, type: e.type })),
+            focusTarget: focusFireTarget ? focusFireTarget.type : null,
+            towers: towers.length,
+            spawnLeft: spawnQueue.length,
+            bossLevel: isBossLevel(ui.level)
+          };
+        },
+        ui, enterLevel, startWave, clearCombat, generateTerrain, WAVES_PER_LEVEL, cells,
+        setFocusFire, isBossLevel, getBossTier, BOSS_LEVELS,
+        get maxUnlockedLevel() { return maxUnlockedLevel; }
+      };
+    }
+  </script>
+</body>
+</html>
