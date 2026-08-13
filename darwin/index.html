@@ -13,6 +13,7 @@
       flex-direction: column;
       height: 100vh;
       user-select: none;
+      overflow: hidden;
     }
 
     #ui-bar {
@@ -269,11 +270,13 @@
 
     #game-container {
       flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: row;
       justify-content: center;
       align-items: center;
       position: relative;
+      overflow: hidden;
     }
 
     #base-area {
@@ -952,9 +955,8 @@
 
     <div id="grid-container">
       <div id="grid"></div>
+      <div id="enemy-layer"></div>
     </div>
-
-    <div id="enemy-layer"></div>
   </div>
 
   <div id="build-menu">
@@ -1168,7 +1170,7 @@
     const GRID_H = 8;
     const CELL = 40;
     const ENTRY_X = GRID_W - 0.5;
-    const ENTRY_Y = GRID_H + 0.35;
+    const ENTRY_Y = GRID_H + 0.08;
     const ENEMY_HALF = 13;
     const ENEMY_BOSS_HALF = 18;
     const GRASS_LEFT_EXIT_X = -0.5 - ENEMY_HALF / CELL;
@@ -1731,15 +1733,17 @@
       const offsetX = (gridContainer.clientWidth - GRID_W * CELL) / 2;
       const offsetY = (gridContainer.clientHeight - GRID_H * CELL) / 2;
       return {
-        px: gridContainer.offsetLeft + offsetX + x * CELL + CELL / 2,
-        py: gridContainer.offsetTop + offsetY + y * CELL + CELL / 2
+        px: offsetX + x * CELL + CELL / 2,
+        py: offsetY + y * CELL + CELL / 2
       };
     }
 
     function getBaseCenterInGame() {
+      const baseRect = baseEl.getBoundingClientRect();
+      const gridRect = gridContainer.getBoundingClientRect();
       return {
-        px: baseAreaEl.offsetLeft + (baseAreaEl.offsetWidth - baseEl.offsetWidth) / 2 + baseEl.offsetWidth / 2,
-        py: baseAreaEl.offsetTop + (baseAreaEl.offsetHeight - baseEl.offsetHeight) / 2 + baseEl.offsetHeight / 2
+        px: baseRect.left - gridRect.left + baseRect.width / 2,
+        py: baseRect.top - gridRect.top + baseRect.height / 2
       };
     }
 
