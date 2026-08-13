@@ -562,6 +562,57 @@
       box-shadow: 0 0 4px #000;
     }
 
+    .enemy-boss {
+      width: 36px;
+      height: 36px;
+      pointer-events: auto;
+      cursor: crosshair;
+      background:
+        radial-gradient(circle at 50% 28%, #ff8a65 0 22%, #d84315 22% 55%, #4a148c 55% 100%);
+      box-shadow: 0 0 0 3px #000, 0 0 14px rgba(216, 67, 21, 0.65);
+      animation: bossPulse 1.2s ease-in-out infinite alternate;
+    }
+
+    .enemy-boss::before {
+      content: "B";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffeb3b;
+      text-shadow: 0 0 4px #000, 1px 1px 0 #000;
+    }
+
+    .enemy-boss::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 14px;
+      background: linear-gradient(#ffd54f, #ff6f00);
+      top: -8px;
+      left: 13px;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    }
+
+    @keyframes bossPulse {
+      from { filter: brightness(1); transform: scale(1); }
+      to { filter: brightness(1.15); transform: scale(1.04); }
+    }
+
+    .enemy.focus-marked {
+      box-shadow: 0 0 0 3px #ffeb3b, 0 0 18px #ff5722 !important;
+    }
+
+    .enemy-boss .hp-bar {
+      width: 32px;
+      left: 2px;
+      top: -8px;
+      height: 5px;
+    }
+
     .hp-bar {
       position: absolute;
       top: -6px;
@@ -763,6 +814,30 @@
       border-color: #4caf50;
     }
 
+    .level-btn.boss-level {
+      border-color: #d84315;
+      background: #3a2030;
+    }
+
+    .level-btn.boss-level:not(:disabled):hover {
+      border-color: #ff5722;
+      box-shadow: 0 0 8px rgba(255, 87, 34, 0.45);
+    }
+
+    #debug-badge {
+      display: none;
+      padding: 3px 8px;
+      background: #5c0030;
+      border: 1px solid #e91e63;
+      color: #f48fb1;
+      font-size: 11px;
+      border-radius: 3px;
+    }
+
+    #debug-badge.active {
+      display: inline-block;
+    }
+
     #level-complete {
       position: fixed;
       top: 38%;
@@ -834,9 +909,10 @@
     </div>
     <button id="pause-btn" class="ctrl-btn">暂停</button>
     <button id="resume-btn" class="ctrl-btn" style="display:none;">继续</button>
+    <span id="debug-badge">调试模式</span>
   </div>
 
-  <div id="hint">每关抵挡 4 波即可通关 · 每波间隔 10 秒自动开始 · 换关时清除防御塔并获得更多初始金币</div>
+  <div id="hint">每关抵挡 4 波即可通关 · Boss 关（10/20/30/40/50）第 4 波出现 Boss · 双击 Boss 集火 · 每波间隔 10 秒自动开始</div>
 
   <div id="game-container">
     <div id="base-area">
@@ -871,12 +947,16 @@
 
   <div id="difficulty-screen">
     <h1>Darwin 塔防</h1>
-    <p>共 50 关 · 每关抵挡 4 波通关 · 通关解锁下一关 · 第 11 关起出现障碍地形</p>
+    <p>共 50 关 · 每关抵挡 4 波通关 · 第 10/20/30/40/50 关为 Boss 关 · 第 11 关起出现障碍地形</p>
     <div class="difficulty-btns">
       <button data-diff="easy">简单</button>
       <button data-diff="normal">普通</button>
       <button data-diff="hard">困难</button>
     </div>
+    <label id="debug-mode-label" style="margin-top:14px;font-size:13px;color:#aaa;cursor:pointer;">
+      <input type="checkbox" id="debug-mode-check" style="margin-right:6px;" />
+      调试模式（解锁全部关卡，任意选关测试）
+    </label>
   </div>
 
   <div id="level-complete">
@@ -1059,7 +1139,9 @@
     const ENTRY_X = GRID_W - 0.5;
     const ENTRY_Y = GRID_H + 0.35;
     const ENEMY_HALF = 13;
+    const ENEMY_BOSS_HALF = 18;
     const GRASS_LEFT_EXIT_X = -0.5 - ENEMY_HALF / CELL;
+    const BOSS_LEVELS = [10, 20, 30, 40, 50];
     const MAX_LEVELS = 50;
     const WAVES_PER_LEVEL = 4;
     const WAVE_AUTO_DELAY_MS = 10000;
@@ -1135,8 +1217,12 @@
     const stayLevelBtn = document.getElementById("stay-level-btn");
     const gameOverEl = document.getElementById("game-over");
     const gameOverText = document.getElementById("game-over-text");
+    const debugModeCheck = document.getElementById("debug-mode-check");
+    const debugBadge = document.getElementById("debug-badge");
 
     let difficulty = null;
+    let debugMode = new URLSearchParams(location.search).get("debug") === "1";
+    if (debugMode && debugModeCheck) debugModeCheck.checked = true;
     let gameStarted = false;
     let paused = false;
     let pauseStartedAt = 0;
@@ -1168,6 +1254,7 @@
     let waveCountdown = 0;
     let gameOver = false;
     let lastTime = 0;
+    let focusFireTarget = null;
 
     const towerTypes = {
       arrow: {
@@ -1244,8 +1331,22 @@
       fast: { css: "enemy-fast", hp: 35, speed: 48, gold: 16, damage: 6 },
       tank: { css: "enemy-tank", hp: 180, speed: 18, gold: 28, damage: 15 },
       shield: { css: "enemy-shield", hp: 70, shield: 50, speed: 24, gold: 30, damage: 10 },
-      bomber: { css: "enemy-bomber", hp: 45, speed: 32, gold: 22, damage: 25, explode: true }
+      bomber: { css: "enemy-bomber", hp: 45, speed: 32, gold: 22, damage: 25, explode: true },
+      boss: { css: "enemy-boss", hp: 900, speed: 11, gold: 220, damage: 45, shield: 120, isBoss: true }
     };
+
+    function isBossLevel(level) {
+      return BOSS_LEVELS.includes(level);
+    }
+
+    function getBossTier(level) {
+      const idx = BOSS_LEVELS.indexOf(level);
+      return idx >= 0 ? idx + 1 : 0;
+    }
+
+    function isLevelUnlocked(level) {
+      return debugMode || level <= maxUnlockedLevel;
+    }
 
     function loadProgress() {
       try {
@@ -1298,6 +1399,32 @@
       waveActive = false;
       currentWaveNumber = 0;
       waveCountdown = 0;
+      clearFocusFire();
+    }
+
+    function clearFocusFire() {
+      focusFireTarget = null;
+      for (const enemy of enemies) {
+        enemy.el.classList.remove("focus-marked");
+      }
+    }
+
+    function setFocusFire(enemy) {
+      if (!enemy || !enemy.isBoss || enemy.dead || gameOver) return;
+      focusFireTarget = enemy;
+      for (const e of enemies) {
+        e.el.classList.toggle("focus-marked", e === enemy);
+      }
+      ensureAudio();
+      sound.wave();
+    }
+
+    function getEnemyGridPos(enemy) {
+      if (enemy.phase === "base") {
+        const p = gridToGamePixel(GRASS_LEFT_EXIT_X, enemy.y);
+        return { x: GRASS_LEFT_EXIT_X, y: enemy.y, px: enemy.px, py: enemy.py };
+      }
+      return { x: enemy.x, y: enemy.y, px: null, py: null };
     }
 
     function isGameplayFrozen() {
@@ -1326,21 +1453,24 @@
 
     function buildLevelGrid() {
       levelGrid.innerHTML = "";
+      const panelTitle = document.getElementById("level-panel-title");
+      panelTitle.textContent = debugMode ? "选择关卡（调试：全部解锁）" : "选择已解锁关卡";
       for (let lv = 1; lv <= MAX_LEVELS; lv++) {
         const btn = document.createElement("button");
         btn.className = "level-btn";
-        btn.textContent = lv;
+        btn.textContent = isBossLevel(lv) ? lv + "★" : String(lv);
         btn.dataset.level = lv;
-        const unlocked = lv <= maxUnlockedLevel;
+        const unlocked = isLevelUnlocked(lv);
         const cleared = clearedLevels.has(lv);
         if (!unlocked) btn.classList.add("locked");
         if (cleared) btn.classList.add("cleared");
+        if (isBossLevel(lv)) btn.classList.add("boss-level");
         if (lv === ui.level) btn.classList.add("current");
         btn.disabled = !unlocked || waveActive;
-        btn.title = !unlocked ? "未解锁" : cleared ? "已通关" : "已解锁";
+        btn.title = !unlocked ? "未解锁" : isBossLevel(lv) ? "Boss 关" : cleared ? "已通关" : "已解锁";
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          if (lv <= maxUnlockedLevel) {
+          if (isLevelUnlocked(lv)) {
             enterLevel(lv);
             toggleLevelPanel(false);
           }
@@ -1365,7 +1495,8 @@
     }
 
     function enterLevel(level) {
-      if (!gameStarted || level < 1 || level > maxUnlockedLevel) return;
+      if (!gameStarted || level < 1 || level > MAX_LEVELS) return;
+      if (!isLevelUnlocked(level)) return;
       if (waveActive || enemies.length > 0) return;
       hideMenus();
       clearCombat();
@@ -1389,10 +1520,12 @@
       ui.goldEl.textContent = "金币: " + Math.floor(ui.gold);
       ui.hpEl.textContent = "基地HP: " + Math.floor(baseState.currentHP) + "/" + baseState.maxHP;
       updateBaseVisual();
-      levelInfoEl.textContent = "关卡: " + ui.level + "/" + MAX_LEVELS;
+      const bossTag = isBossLevel(ui.level) ? " [Boss]" : "";
+      levelInfoEl.textContent = "关卡: " + ui.level + "/" + MAX_LEVELS + bossTag;
       waveInfoEl.textContent = "波次: " + ui.waveInLevel + "/" + WAVES_PER_LEVEL;
       if (difficulty) difficultyLabel.textContent = "难度: " + difficulties[difficulty].label;
       ui.enemiesEl.textContent = "敌人: " + enemies.length + (spawnQueue.length ? "+" + spawnQueue.length : "");
+      debugBadge.classList.toggle("active", debugMode && gameStarted);
 
       const levelDone = ui.waveInLevel >= WAVES_PER_LEVEL;
       const secs = Math.ceil(waveCountdown / 1000);
@@ -1410,7 +1543,8 @@
       } else if (levelDone || levelCompletePending) {
         waveCountdownEl.textContent = "本关已通过";
       } else if (waveCountdown > 0) {
-        waveCountdownEl.textContent = "第 " + (ui.waveInLevel + 1) + " 波 " + secs + " 秒后开始...";
+        const bossHint = isBossLevel(ui.level) && ui.waveInLevel + 1 === WAVES_PER_LEVEL ? " · Boss 波" : "";
+        waveCountdownEl.textContent = "第 " + (ui.waveInLevel + 1) + " 波 " + secs + " 秒后开始..." + bossHint;
       } else {
         waveCountdownEl.textContent = "准备下一波...";
       }
@@ -1475,6 +1609,7 @@
 
     function startGame(diff) {
       difficulty = diff;
+      debugMode = debugModeCheck ? debugModeCheck.checked : debugMode;
       const cfg = difficulties[diff];
       gameStarted = true;
       maxUnlockedLevel = 1;
@@ -1499,10 +1634,13 @@
         return;
       }
 
-      levelCompleteTitle.textContent = "第 " + ui.level + " 关通过！";
+      levelCompleteTitle.textContent = isBossLevel(ui.level)
+        ? "Boss 关第 " + ui.level + " 关通过！"
+        : "第 " + ui.level + " 关通过！";
       levelCompleteDesc.textContent =
-        "成功抵挡 " + WAVES_PER_LEVEL + " 波进攻！已解锁第 " + (ui.level + 1) + " 关。" +
-        "进入下一关将清除防御塔，并获得 " + getLevelStartGold(ui.level + 1) + " 初始金币。";
+        (isBossLevel(ui.level) ? "Boss 已被击败！" : "成功抵挡 " + WAVES_PER_LEVEL + " 波进攻！") +
+        "已解锁第 " + (ui.level + 1) + " 关。进入下一关将清除防御塔，并获得 " +
+        getLevelStartGold(ui.level + 1) + " 初始金币。";
       nextLevelBtn.style.display = "inline-block";
       levelCompleteEl.style.display = "block";
       refreshUI();
@@ -1661,11 +1799,48 @@
       refreshUI();
     }
 
+    function makeBossWavePlan(level) {
+      const plan = [];
+      const cfg = difficulties[difficulty];
+      const tier = getBossTier(level);
+      const waveIndex = getWaveDifficulty(level, WAVES_PER_LEVEL);
+      const hpScale = (1 + waveIndex * 0.055 + Math.pow(level, 1.2) * 0.006) * cfg.enemyHp;
+      const baseInterval = Math.max(280, 900 - level * 5) / cfg.spawnInterval;
+      const minionTypes = ["normal", "fast"];
+      if (level >= 20) minionTypes.push("tank");
+      if (level >= 30) minionTypes.push("shield");
+      if (level >= 40) minionTypes.push("bomber");
+
+      plan.push({
+        type: "boss",
+        row: Math.floor(GRID_H / 2),
+        hpScale,
+        bossTier: tier,
+        delay: 600
+      });
+
+      const minionCount = 4 + tier * 3;
+      for (let i = 0; i < minionCount; i++) {
+        const type = minionTypes[Math.floor(Math.random() * minionTypes.length)];
+        plan.push({
+          type,
+          row: Math.floor(Math.random() * GRID_H),
+          hpScale: hpScale * 0.85,
+          delay: i === 0 ? 900 : baseInterval
+        });
+      }
+      return plan;
+    }
+
     function makeWavePlan(level, waveInLevel) {
+      if (isBossLevel(level) && waveInLevel === WAVES_PER_LEVEL) {
+        return makeBossWavePlan(level);
+      }
       const plan = [];
       const cfg = difficulties[difficulty];
       const waveIndex = getWaveDifficulty(level, waveInLevel);
-      const count = Math.min(3 + Math.floor(waveIndex * 1.1 + level * 0.8), 70);
+      let count = Math.min(3 + Math.floor(waveIndex * 1.1 + level * 0.8), 70);
+      if (isBossLevel(level)) count = Math.min(count + 2, 70);
       const types = ["normal"];
       if (level >= 2 || waveInLevel >= 2) types.push("fast");
       if (level >= 5 || waveInLevel >= 3) types.push("tank");
@@ -1692,7 +1867,7 @@
       currentWaveNumber = nextWave;
       waveActive = true;
       spawnQueue = makeWavePlan(ui.level, nextWave);
-      spawnTimer = 0;
+      spawnTimer = spawnQueue.length > 0 ? spawnQueue[0].delay : 0;
       sound.wave();
       hideMenus();
       refreshUI();
@@ -1711,8 +1886,9 @@
       el.appendChild(hpBar);
       enemyLayer.appendChild(el);
 
-      const maxHP = Math.round(def.hp * entry.hpScale);
+      const maxHP = Math.round(def.hp * entry.hpScale * (entry.bossTier ? 1 + (entry.bossTier - 1) * 0.75 : 1));
       const targetRow = entry.row;
+      const isBoss = !!(def.isBoss || entry.type === "boss");
       const enemy = {
         type: entry.type,
         phase: "enter",
@@ -1722,12 +1898,14 @@
         y: ENTRY_Y,
         hp: maxHP,
         maxHP,
-        shield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
-        maxShield: def.shield ? Math.round(def.shield * entry.hpScale) : 0,
-        speed: def.speed * cfg.enemySpeed,
-        gold: Math.round((def.gold + Math.floor(ui.level * 1.5 + currentWaveNumber * 2)) * cfg.goldReward),
-        damage: Math.round(def.damage * cfg.enemyDamage * (1 + ui.level * 0.025 + currentWaveNumber * 0.01)),
+        shield: def.shield ? Math.round(def.shield * entry.hpScale * (entry.bossTier ? 1 + entry.bossTier * 0.3 : 1)) : 0,
+        maxShield: def.shield ? Math.round(def.shield * entry.hpScale * (entry.bossTier ? 1 + entry.bossTier * 0.3 : 1)) : 0,
+        speed: def.speed * cfg.enemySpeed * (isBoss ? 0.92 : 1),
+        gold: Math.round((def.gold + Math.floor(ui.level * 2 + currentWaveNumber * 3)) * cfg.goldReward * (isBoss ? 2.5 : 1)),
+        damage: Math.round(def.damage * cfg.enemyDamage * (1 + ui.level * 0.025 + currentWaveNumber * 0.01) * (isBoss ? 1.35 : 1)),
         explode: !!def.explode,
+        isBoss,
+        bossTier: entry.bossTier || 0,
         el,
         hpFill,
         slowUntil: 0,
@@ -1735,6 +1913,14 @@
         burnTick: 0,
         dead: false
       };
+      if (isBoss) {
+        el.title = "双击集火 Boss";
+        el.addEventListener("dblclick", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setFocusFire(enemy);
+        });
+      }
       enemies.push(enemy);
       updateEnemyPosition(enemy);
       refreshUI();
@@ -1750,8 +1936,8 @@
         px = p.px;
         py = p.py;
       }
-      enemy.el.style.left = (px - 13) + "px";
-      enemy.el.style.top = (py - 13) + "px";
+      enemy.el.style.left = (px - (enemy.isBoss ? ENEMY_BOSS_HALF : ENEMY_HALF)) + "px";
+      enemy.el.style.top = (py - (enemy.isBoss ? ENEMY_BOSS_HALF : ENEMY_HALF)) + "px";
       const ratio = Math.max(0, enemy.hp / enemy.maxHP);
       enemy.hpFill.style.width = (ratio * 100) + "%";
       enemy.hpFill.style.background = ratio > 0.5 ? "#4caf50" : ratio > 0.25 ? "#ff9800" : "#f44336";
@@ -1764,15 +1950,20 @@
     }
 
     function findTarget(tower, stats) {
+      if (focusFireTarget && !focusFireTarget.dead) {
+        const pos = getEnemyGridPos(focusFireTarget);
+        const d = dist(tower.x + 0.5, tower.y + 0.5, pos.x, pos.y);
+        if (d <= stats.range) return focusFireTarget;
+      }
+
       let best = null;
       let bestScore = -Infinity;
       for (const enemy of enemies) {
         if (enemy.dead) continue;
-        const ex = enemy.phase === "base" ? 0 : enemy.x;
-        const ey = enemy.y;
-        const d = dist(tower.x + 0.5, tower.y + 0.5, ex, ey);
+        const pos = getEnemyGridPos(enemy);
+        const d = dist(tower.x + 0.5, tower.y + 0.5, pos.x, pos.y);
         if (d > stats.range) continue;
-        const score = ex * 10 - d;
+        const score = pos.x * 10 - d + (enemy.isBoss ? 500 : 0);
         if (score > bestScore) {
           bestScore = score;
           best = enemy;
@@ -1836,6 +2027,7 @@
     function killEnemy(enemy) {
       if (enemy.dead) return;
       enemy.dead = true;
+      if (focusFireTarget === enemy) clearFocusFire();
       ui.gold += enemy.gold;
       enemy.el.remove();
       const idx = enemies.indexOf(enemy);
@@ -2017,8 +2209,7 @@
       if (spawnTimer <= 0) {
         const next = spawnQueue.shift();
         spawnEnemy(next);
-        const cfg = difficulties[difficulty];
-        spawnTimer = Math.max(220, 850 - ui.level * 6 - currentWaveNumber * 10) / cfg.spawnInterval;
+        spawnTimer = spawnQueue.length > 0 ? spawnQueue[0].delay : 0;
       }
     }
 
@@ -2085,6 +2276,12 @@
       });
     });
 
+    if (debugModeCheck) {
+      debugModeCheck.addEventListener("change", () => {
+        debugMode = debugModeCheck.checked;
+      });
+    }
+
     document.addEventListener("keydown", (e) => {
       if (e.code === "Space" && gameStarted && !gameOver) {
         e.preventDefault();
@@ -2111,15 +2308,18 @@
       window.__darwin = {
         getState() {
           return {
-            waveActive, paused, gameOver, gameStarted, levelCompletePending,
+            waveActive, paused, gameOver, gameStarted, levelCompletePending, debugMode,
             waveInLevel: ui.waveInLevel, level: ui.level, gold: ui.gold,
             enemies: enemies.length,
-            enemyXs: enemies.map((e) => ({ x: e.x, y: e.y, phase: e.phase, hp: e.hp })),
+            enemyXs: enemies.map((e) => ({ x: e.x, y: e.y, phase: e.phase, hp: e.hp, isBoss: e.isBoss, type: e.type })),
+            focusTarget: focusFireTarget ? focusFireTarget.type : null,
             towers: towers.length,
-            spawnLeft: spawnQueue.length
+            spawnLeft: spawnQueue.length,
+            bossLevel: isBossLevel(ui.level)
           };
         },
         ui, enterLevel, startWave, clearCombat, generateTerrain, WAVES_PER_LEVEL, cells,
+        setFocusFire, isBossLevel, getBossTier, BOSS_LEVELS,
         get maxUnlockedLevel() { return maxUnlockedLevel; }
       };
     }
