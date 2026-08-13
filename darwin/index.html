@@ -838,6 +838,34 @@
       display: inline-block;
     }
 
+    .debug-toggle {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      background: #303048;
+      border: 1px solid #555;
+      font-size: 12px;
+      color: #ccc;
+      cursor: pointer;
+      border-radius: 3px;
+      user-select: none;
+    }
+
+    .debug-toggle.visible {
+      display: inline-flex;
+    }
+
+    .debug-toggle.active {
+      border-color: #e91e63;
+      color: #f48fb1;
+      background: #3a1830;
+    }
+
+    .debug-toggle input {
+      cursor: pointer;
+    }
+
     #level-complete {
       position: fixed;
       top: 38%;
@@ -909,6 +937,9 @@
     </div>
     <button id="pause-btn" class="ctrl-btn">暂停</button>
     <button id="resume-btn" class="ctrl-btn" style="display:none;">继续</button>
+    <label id="debug-ingame-label" class="debug-toggle" title="解锁全部关卡，可随时跳转测试">
+      <input type="checkbox" id="debug-ingame-check" /> 调试
+    </label>
     <span id="debug-badge">调试模式</span>
   </div>
 
@@ -1218,11 +1249,29 @@
     const gameOverEl = document.getElementById("game-over");
     const gameOverText = document.getElementById("game-over-text");
     const debugModeCheck = document.getElementById("debug-mode-check");
+    const debugIngameCheck = document.getElementById("debug-ingame-check");
+    const debugIngameLabel = document.getElementById("debug-ingame-label");
     const debugBadge = document.getElementById("debug-badge");
 
     let difficulty = null;
     let debugMode = new URLSearchParams(location.search).get("debug") === "1";
-    if (debugMode && debugModeCheck) debugModeCheck.checked = true;
+
+    function syncDebugCheckboxes() {
+      if (debugModeCheck) debugModeCheck.checked = debugMode;
+      if (debugIngameCheck) debugIngameCheck.checked = debugMode;
+      if (debugIngameLabel) {
+        debugIngameLabel.classList.toggle("visible", gameStarted);
+        debugIngameLabel.classList.toggle("active", debugMode && gameStarted);
+      }
+    }
+
+    function setDebugMode(on) {
+      debugMode = !!on;
+      syncDebugCheckboxes();
+      if (levelPanelOpen) buildLevelGrid();
+      refreshUI();
+    }
+
     let gameStarted = false;
     let paused = false;
     let pauseStartedAt = 0;
@@ -1466,8 +1515,8 @@
         if (cleared) btn.classList.add("cleared");
         if (isBossLevel(lv)) btn.classList.add("boss-level");
         if (lv === ui.level) btn.classList.add("current");
-        btn.disabled = !unlocked || waveActive;
-        btn.title = !unlocked ? "未解锁" : isBossLevel(lv) ? "Boss 关" : cleared ? "已通关" : "已解锁";
+        btn.disabled = !unlocked || (!debugMode && waveActive);
+        btn.title = !unlocked ? "未解锁" : debugMode ? "调试：点击跳转" : isBossLevel(lv) ? "Boss 关" : cleared ? "已通关" : "已解锁";
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
           if (isLevelUnlocked(lv)) {
@@ -1497,7 +1546,7 @@
     function enterLevel(level) {
       if (!gameStarted || level < 1 || level > MAX_LEVELS) return;
       if (!isLevelUnlocked(level)) return;
-      if (waveActive || enemies.length > 0) return;
+      if (!debugMode && (waveActive || enemies.length > 0)) return;
       hideMenus();
       clearCombat();
       clearTowers();
@@ -1526,6 +1575,7 @@
       if (difficulty) difficultyLabel.textContent = "难度: " + difficulties[difficulty].label;
       ui.enemiesEl.textContent = "敌人: " + enemies.length + (spawnQueue.length ? "+" + spawnQueue.length : "");
       debugBadge.classList.toggle("active", debugMode && gameStarted);
+      syncDebugCheckboxes();
 
       const levelDone = ui.waveInLevel >= WAVES_PER_LEVEL;
       const secs = Math.ceil(waveCountdown / 1000);
@@ -1562,7 +1612,6 @@
         }
       }
 
-      if (levelPanelOpen) buildLevelGrid();
     }
 
     function clearTerrain() {
@@ -1609,9 +1658,10 @@
 
     function startGame(diff) {
       difficulty = diff;
-      debugMode = debugModeCheck ? debugModeCheck.checked : debugMode;
+      if (debugModeCheck) debugMode = debugModeCheck.checked;
       const cfg = difficulties[diff];
       gameStarted = true;
+      syncDebugCheckboxes();
       maxUnlockedLevel = 1;
       clearedLevels = new Set();
       loadProgress();
@@ -2277,9 +2327,10 @@
     });
 
     if (debugModeCheck) {
-      debugModeCheck.addEventListener("change", () => {
-        debugMode = debugModeCheck.checked;
-      });
+      debugModeCheck.addEventListener("change", () => setDebugMode(debugModeCheck.checked));
+    }
+    if (debugIngameCheck) {
+      debugIngameCheck.addEventListener("change", () => setDebugMode(debugIngameCheck.checked));
     }
 
     document.addEventListener("keydown", (e) => {
@@ -2301,6 +2352,7 @@
     });
 
     createGrid();
+    syncDebugCheckboxes();
     refreshUI();
     requestAnimationFrame(gameLoop);
 
